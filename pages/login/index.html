@@ -501,14 +501,17 @@
         </div>
     </div>
 
+    <script src="/assets/js/i18n.js"></script>
     <script src="/assets/components/button_login_google/button_login_google.js"></script>
     <script src="/assets/components/button_login_guest/button_login_guest.js"></script>
     <script>
         'use strict';
         var _API = window.API_BASE || '';
 
-        renderGoogleLoginButton('btn-google-mount', _API);
-        renderGuestLoginButton('btn-guest-mount', _API);
+        i18n.ready(function () {
+            renderGoogleLoginButton('btn-google-mount', _API);
+            renderGuestLoginButton('btn-guest-mount', _API);
+        });
 
         fetch(_API + '/api/auth/me').then(function (r) {
             if (r.ok) window.location.replace('/agents/');

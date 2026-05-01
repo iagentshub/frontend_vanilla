@@ -1,19 +1,21 @@
 // agents-skill-picker.js — selector de skills con categorías
 'use strict';
 
-var _SKILL_CATEGORIES = [
-    { id: '__all__', label: 'Todas', icon: '◈' },
-    { id: 'ai', label: 'IA', icon: '🤖' },
-    { id: 'messaging', label: 'Mensajería', icon: '🗣️' },
-    { id: 'notes', label: 'Notas', icon: '📝' },
-    { id: 'productivity', label: 'Productividad', icon: '✅' },
-    { id: 'dev', label: 'Desarrollo', icon: '💻' },
-    { id: 'security', label: 'Seguridad', icon: '🔒' },
-    { id: 'media', label: 'Media', icon: '🎬' },
-    { id: 'data', label: 'Datos', icon: '🌐' },
-    { id: 'company', label: 'Empresa', icon: '🏢' },
-    { id: '__none__', label: 'Otras', icon: '📦' },
-];
+function _getSkillCategories() {
+    return [
+        { id: '__all__', label: t('agents.skill_picker.all'), icon: '◈' },
+        { id: 'ai', label: t('skills.categories.ai'), icon: '🤖' },
+        { id: 'messaging', label: t('skills.categories.messaging'), icon: '🗣️' },
+        { id: 'notes', label: t('skills.categories.notes'), icon: '📝' },
+        { id: 'productivity', label: t('skills.categories.productivity'), icon: '✅' },
+        { id: 'dev', label: t('skills.categories.dev_full'), icon: '💻' },
+        { id: 'security', label: t('skills.categories.security'), icon: '🔒' },
+        { id: 'media', label: t('skills.categories.media'), icon: '🎬' },
+        { id: 'data', label: t('skills.categories.data'), icon: '🌐' },
+        { id: 'company', label: t('skills.categories.company'), icon: '🏢' },
+        { id: '__none__', label: t('agents.skill_picker.other'), icon: '📦' },
+    ];
+}
 
 var _selectedSkillIds = [];
 var _activeCat = '__all__';
@@ -48,7 +50,7 @@ function _renderCatTabs() {
     const tabs = document.getElementById('skill-cat-tabs');
     if (!tabs) return;
 
-    const visible = _SKILL_CATEGORIES.filter(cat => {
+    const visible = _getSkillCategories().filter(cat => {
         if (cat.id === '__all__') return true;
         if (cat.id === '__none__') return _skills.some(s => !s.category);
         return _skills.some(s => s.category === cat.id);
@@ -86,7 +88,7 @@ function _renderSkillGrid() {
     });
 
     if (!filtered.length) {
-        container.innerHTML = '<div class="skill-grid-empty">Sin skills en esta categoría</div>';
+        container.innerHTML = '<div class="skill-grid-empty">' + t('agents.skill_picker.no_skills') + '</div>';
         return;
     }
 

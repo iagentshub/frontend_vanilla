@@ -1,4 +1,4 @@
-// skill-card.js — tarjetas de skill (cuadricula estilo gaia-control)
+// skill-card.js — tarjetas de skill
 'use strict';
 
 (function () {
@@ -7,18 +7,6 @@
             .replace(/&/g, '&amp;').replace(/</g, '&lt;')
             .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
-
-    var _CATEGORY_LABELS = {
-        ai: '🤖 IA',
-        messaging: '🗣️ Mensajería',
-        notes: '📝 Notas',
-        productivity: '✅ Productividad',
-        dev: '💻 Dev',
-        security: '🔒 Seguridad',
-        media: '🎬 Media',
-        data: '🌐 Datos',
-        company: '🏢 Empresa',
-    };
 
     var FALLBACK_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 
@@ -40,19 +28,20 @@
                 : '';
 
             var scopeBadge = isPrivate
-                ? '<span class="skill-card-scope-badge skill-card-scope-badge--private">privada</span>'
-                : '<span class="skill-card-scope-badge skill-card-scope-badge--public">pública</span>';
+                ? '<span class="skill-card-scope-badge skill-card-scope-badge--private">' + (window.t ? window.t('skills.scope.badge_private') : 'privada') + '</span>'
+                : '<span class="skill-card-scope-badge skill-card-scope-badge--public">' + (window.t ? window.t('skills.scope.badge_public') : 'pública') + '</span>';
 
-            var catLabel = skill.category ? (_CATEGORY_LABELS[skill.category] || skill.category) : '';
+            var catKey = skill.category;
+            var catLabel = catKey ? (window.t ? window.t('skills.categories.' + catKey) : catKey) : '';
             var categoryBadge = catLabel
                 ? '<span class="skill-card-category-badge">' + esc(catLabel) + '</span>'
                 : '';
 
             var editBtn = isPrivate
-                ? '<button class="card-action-btn card-action-btn--edit" data-action="edit-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">Editar</button>'
+                ? '<button class="card-action-btn card-action-btn--edit" data-action="edit-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">' + (window.t ? window.t('skills.actions.edit') : 'Editar') + '</button>'
                 : '';
             var deleteBtn = isPrivate
-                ? '<button class="card-action-btn card-action-btn--delete" data-action="del-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">Eliminar</button>'
+                ? '<button class="card-action-btn card-action-btn--delete" data-action="del-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">' + (window.t ? window.t('skills.actions.delete') : 'Eliminar') + '</button>'
                 : '';
 
             return (
@@ -72,7 +61,7 @@
                 previewHtml +
                 '</div>' +
                 '<footer class="skill-card-actions">' +
-                '<button class="card-action-btn card-action-btn--view" data-action="view-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">Ver</button>' +
+                '<button class="card-action-btn card-action-btn--view" data-action="view-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">' + (window.t ? window.t('skills.actions.view') : 'Ver') + '</button>' +
                 editBtn +
                 deleteBtn +
                 '</footer>' +
@@ -82,7 +71,8 @@
 
         renderTab: function (skills, scope, container) {
             if (!skills.length) {
-                var msg = scope === 'public' ? 'No hay skills publicas.' : 'Sin skills privadas todavia.';
+                var key = scope === 'public' ? 'skills.empty.public' : 'skills.empty.private';
+                var msg = window.t ? window.t(key) : (scope === 'public' ? 'No hay skills publicas.' : 'Sin skills privadas todavia.');
                 container.innerHTML = '<p class="skills-empty">' + msg + '</p>';
                 return;
             }
@@ -93,7 +83,8 @@
 
         renderAll: function (skills, container) {
             if (!skills.length) {
-                container.innerHTML = '<p class="skills-empty">No hay skills que coincidan.</p>';
+                var msg = window.t ? window.t('skills.empty.no_match') : 'No hay skills que coincidan.';
+                container.innerHTML = '<p class="skills-empty">' + msg + '</p>';
                 return;
             }
             container.innerHTML = skills.map(function (s) {

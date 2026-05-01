@@ -16,22 +16,22 @@ async function loadUsers() {
         if (e.status === 403) {
             window.location.replace('/agents/');
         } else {
-            wrap.innerHTML = '<div class="loading-state">Error al cargar usuarios.</div>';
+            wrap.innerHTML = '<div class="loading-state">' + t('admin.error_load') + '</div>';
         }
     }
 }
 
 function renderTable(users, wrap) {
     if (!users.length) {
-        wrap.innerHTML = '<div class="empty-users">No hay usuarios registrados.</div>';
+        wrap.innerHTML = '<div class="empty-users">' + t('admin.empty') + '</div>';
         return;
     }
 
     var rows = users.map(function (u) {
         var initial = (u.username || '?').charAt(0).toUpperCase();
         var roleCls = u.role === 'admin' ? 'role-badge--admin' : 'role-badge--standard';
-        var roleLabel = u.role === 'admin' ? 'Admin' : 'Estándar';
-        var date = u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : '—';
+        var roleLabel = u.role === 'admin' ? t('admin.roles.admin') : t('admin.roles.standard');
+        var date = u.created_at ? new Date(u.created_at).toLocaleDateString(window.i18n ? window.i18n.getLang() + '-' + window.i18n.getLang().toUpperCase() : 'es-ES') : '—';
         return '<tr>' +
             '<td><div class="user-name-cell">' +
             '<div class="user-avatar">' + esc(initial) + '</div>' +
@@ -42,7 +42,7 @@ function renderTable(users, wrap) {
             '<td>' + date + '</td>' +
             '<td>' +
             (u.role !== 'admin'
-                ? '<button class="btn-delete" data-username="' + esc(u.username) + '">Eliminar</button>'
+                ? '<button class="btn-delete" data-username="' + esc(u.username) + '">' + t('admin.delete_btn') + '</button>'
                 : '—') +
             '</td>' +
             '</tr>';
@@ -51,7 +51,7 @@ function renderTable(users, wrap) {
     wrap.innerHTML =
         '<table class="users-table">' +
         '<thead><tr>' +
-        '<th>Usuario</th><th>Email</th><th>Rol</th><th>Registro</th><th></th>' +
+        '<th>' + t('admin.table.user') + '</th><th>' + t('admin.table.email') + '</th><th>' + t('admin.table.role') + '</th><th>' + t('admin.table.created') + '</th><th></th>' +
         '</tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
         '</table>';
@@ -59,13 +59,13 @@ function renderTable(users, wrap) {
     wrap.querySelectorAll('.btn-delete').forEach(function (btn) {
         btn.addEventListener('click', async function () {
             var username = btn.dataset.username;
-            if (!confirm('¿Eliminar al usuario ' + username + '? Esta acción no se puede deshacer.')) return;
+            if (!confirm(t('admin.confirm_delete', { username: username }))) return;
             try {
                 await api.del('/api/admin/users/' + encodeURIComponent(username));
-                toast('Usuario eliminado', 'success');
+                toast(t('admin.deleted'), 'success');
                 await loadUsers();
             } catch (e) {
-                toast(e.message || 'Error al eliminar', 'error');
+                toast(e.message || t('admin.error_delete'), 'error');
             }
         });
     });

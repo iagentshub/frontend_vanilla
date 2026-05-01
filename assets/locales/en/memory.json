@@ -1,0 +1,30 @@
+{
+  "page": {
+    "title": "Memory",
+    "subtitle": "Persistent context files for your agents",
+    "new_btn": "+ New memory"
+  },
+  "filter": {
+    "search_placeholder": "Search file…"
+  },
+  "search": {
+    "clear_aria": "Clear"
+  },
+  "modal": {
+    "title_new": "New memory",
+    "title_edit": "Edit memory",
+    "field_name": "File name",
+    "field_content": "Content",
+    "filename_required": "File name required",
+    "saving": "Saving...",
+    "save_btn": "Save",
+    "saved": "Memory saved"
+  },
+  "empty": "No memory files.",
+  "confirm_delete": "Delete \"{{file}}\"?",
+  "deleted": "Memory deleted",
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

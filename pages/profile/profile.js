@@ -3,17 +3,21 @@
 
 var _currentRole = 'standard';
 
-var ROLE_LABELS = {
-    admin:    'Administrador',
-    standard: 'Usuario',
-    guest:    'Invitado',
-};
+function _getRoleLabel(role) {
+    return t('profile.roles.' + role) || role;
+}
+
+var _LANGS = [
+    { id: 'es', label: 'Español', flag: '🇪🇸' },
+    { id: 'en', label: 'English', flag: '🇬🇧' },
+];
 
 async function init() {
     await window.requireAuth();
     renderNav('nav-root', 'profile');
     await loadUser();
     await renderThemePicker();
+    renderLangPicker();
     bindEvents();
 }
 
@@ -28,7 +32,7 @@ async function loadUser() {
         var elRole = document.getElementById('profile-role');
         var elAvatar = document.getElementById('profile-avatar');
         if (elName) elName.textContent = u;
-        if (elRole) elRole.textContent = ROLE_LABELS[_currentRole] || _currentRole;
+        if (elRole) elRole.textContent = _getRoleLabel(_currentRole);
         if (elAvatar) elAvatar.textContent = u.charAt(0).toUpperCase() || '?';
 
         // Ocultar cambio de contraseña para invitados
@@ -85,6 +89,35 @@ async function renderThemePicker() {
     });
 }
 
+function renderLangPicker() {
+    var container = document.getElementById('lang-picker');
+    if (!container || !window.i18n) return;
+
+    var current = window.i18n.getLang();
+
+    function _render() {
+        current = window.i18n.getLang();
+        container.innerHTML = _LANGS.map(function (l) {
+            var active = current === l.id;
+            return '<button type="button" class="lang-option' + (active ? ' lang-option--active' : '') + '" data-lang="' + l.id + '">' +
+                '<span class="lang-flag">' + l.flag + '</span>' +
+                '<span class="lang-label">' + l.label + '</span>' +
+                (active ? '<svg class="lang-check" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
+                '</button>';
+        }).join('');
+
+        container.querySelectorAll('[data-lang]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var lang = btn.dataset.lang;
+                if (lang === window.i18n.getLang()) return;
+                window.i18n.setLang(lang).then(function () { _render(); });
+            });
+        });
+    }
+
+    _render();
+}
+
 function bindEvents() {
     var form = document.getElementById('password-form');
     if (!form) return;
@@ -94,21 +127,21 @@ function bindEvents() {
         var newPw = document.getElementById('pw-new').value;
         var confirm = document.getElementById('pw-confirm').value;
         if (!current || !newPw || !confirm) {
-            toast('Completa todos los campos', 'error'); return;
+            toast(t('profile.password.fill_all'), 'error'); return;
         }
         if (newPw !== confirm) {
-            toast('Las contrasenas no coinciden', 'error'); return;
+            toast(t('profile.password.mismatch'), 'error'); return;
         }
         var btn = document.getElementById('pw-save-btn');
-        btn.disabled = true; btn.textContent = 'Guardando...';
+        btn.disabled = true; btn.textContent = t('profile.password.saving');
         try {
             await api.post('/api/auth/change-password', { current_password: current, new_password: newPw });
-            toast('Contrasena actualizada', 'success');
+            toast(t('profile.password.saved'), 'success');
             form.reset();
         } catch (err) {
-            toast(err.message || 'Error al cambiar contrasena', 'error');
+            toast(err.message || t('profile.password.error'), 'error');
         } finally {
-            btn.disabled = false; btn.textContent = 'Guardar cambios';
+            btn.disabled = false; btn.textContent = t('profile.password.save_btn');
         }
     });
 }

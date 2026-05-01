@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "agents": "Agents",
+    "skills": "Skills",
+    "connections": "Connections",
+    "memory": "Memory",
+    "profile": "Profile",
+    "admin": "Admin",
+    "admin_users": "Users",
+    "logout": "Log out"
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export",
+    "close": "Close",
+    "clear": "Clear",
+    "clear_filters": "× Clear",
+    "send": "Send",
+    "test": "Test",
+    "view": "View",
+    "new_agent": "New agent"
+  },
+  "search": {
+    "clear_aria": "Clear search"
+  },
+  "redirect": "Redirecting to {{target}}…"
+}

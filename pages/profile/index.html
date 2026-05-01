@@ -27,8 +27,8 @@
         <main class="page-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Perfil</h1>
-                    <p class="page-subtitle">Configuracion de tu cuenta</p>
+                    <h1 class="page-title" data-i18n="profile.page.title">Perfil</h1>
+                    <p class="page-subtitle" data-i18n="profile.page.subtitle">Configuracion de tu cuenta</p>
                 </div>
             </div>
 
@@ -43,30 +43,35 @@
             </div>
 
             <div class="profile-card" id="theme-picker-card">
-                <div class="profile-card-title">Tema</div>
+                <div class="profile-card-title" data-i18n="profile.theme_title">Tema</div>
                 <div class="theme-picker" id="theme-picker"></div>
             </div>
 
+            <div class="profile-card" id="lang-picker-card">
+                <div class="profile-card-title" data-i18n="profile.lang_title">Idioma / Language</div>
+                <div class="lang-picker" id="lang-picker"></div>
+            </div>
+
             <div class="profile-card" id="password-card">
-                <div class="profile-card-title">Cambiar contrasena</div>
+                <div class="profile-card-title" data-i18n="profile.password_title">Cambiar contraseña</div>
                 <form id="password-form" novalidate>
                     <div class="field">
-                        <label>Contrasena actual</label>
+                        <label data-i18n="profile.password.field_current">Contraseña actual</label>
                         <input id="pw-current" class="input" type="password" autocomplete="current-password"
                             placeholder="••••••••" />
                     </div>
                     <div class="field">
-                        <label>Nueva contrasena</label>
+                        <label data-i18n="profile.password.field_new">Nueva contraseña</label>
                         <input id="pw-new" class="input" type="password" autocomplete="new-password"
                             placeholder="••••••••" />
                     </div>
                     <div class="field">
-                        <label>Confirmar nueva contrasena</label>
+                        <label data-i18n="profile.password.field_confirm">Confirmar contraseña</label>
                         <input id="pw-confirm" class="input" type="password" autocomplete="new-password"
                             placeholder="••••••••" />
                     </div>
                     <div class="profile-form-footer">
-                        <button type="submit" class="btn btn-primary" id="pw-save-btn">Guardar cambios</button>
+                        <button type="submit" class="btn btn-primary" id="pw-save-btn" data-i18n="profile.password.save_btn">Guardar cambios</button>
                     </div>
                 </form>
             </div>
@@ -74,6 +79,7 @@
     </div>
 
     <!-- JS globales -->
+    <script src="/assets/js/i18n.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/toast.js"></script>

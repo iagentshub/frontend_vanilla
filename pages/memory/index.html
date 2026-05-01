@@ -28,8 +28,8 @@
         <main class="page-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Memoria</h1>
-                    <p class="page-subtitle">Archivos de contexto persistente para tus agentes</p>
+                    <h1 class="page-title" data-i18n="memory.page.title">Memoria</h1>
+                    <p class="page-subtitle" data-i18n="memory.page.subtitle">Archivos de contexto persistente para tus agentes</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-primary" id="btn-new-memory">
@@ -37,7 +37,7 @@
                             <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.8"
                                 stroke-linecap="round" />
                         </svg>
-                        Nueva memoria
+                        <span data-i18n="memory.page.new_btn">Nueva memoria</span>
                     </button>
                 </div>
             </div>
@@ -51,7 +51,7 @@
     <div id="memory-modal" class="modal-bg" style="display:none">
         <div class="modal-box mem-modal-box">
             <div class="modal-header">
-                <span class="modal-title" id="memory-modal-title">Nueva memoria</span>
+                <span class="modal-title" id="memory-modal-title" data-i18n="memory.modal.title_new">Nueva memoria</span>
                 <button class="modal-close" id="memory-modal-close" type="button">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
@@ -61,7 +61,7 @@
             </div>
             <div class="modal-body">
                 <div id="field-filename" class="field">
-                    <label>Nombre del archivo</label>
+                    <label data-i18n="memory.modal.field_name">Nombre del archivo</label>
                     <div class="mem-filename-wrap">
                         <input id="mem-filename" class="input" placeholder="mi-agente" autocomplete="off" />
                         <span class="mem-filename-ext">.md</span>
@@ -70,19 +70,20 @@
                         <code>{nombre}.md</code></span>
                 </div>
                 <div class="field">
-                    <label>Contenido (Markdown)</label>
+                    <label data-i18n="memory.modal.field_content">Contenido (Markdown)</label>
                     <textarea id="mem-content" class="textarea mem-textarea"
                         placeholder="# Contexto del agente&#10;&#10;Escribe aquí el contexto..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" id="mem-cancel">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="mem-save-btn">Guardar</button>
+                <button type="button" class="btn btn-ghost" id="mem-cancel" data-i18n="common.actions.cancel">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="mem-save-btn" data-i18n="memory.modal.save_btn">Guardar</button>
             </div>
         </div>
     </div>
 
     <!-- JS globales -->
+    <script src="/assets/js/i18n.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/toast.js"></script>

@@ -35,7 +35,7 @@ async function viewSkill(scope, id) {
     try {
         var s = await api.get('/api/skills/' + scope + '/' + encodeURIComponent(id));
         document.getElementById('skill-view-title').textContent = (s.icon ? s.icon + ' ' : '') + s.name;
-        document.getElementById('skill-view-content').textContent = s.content || '(sin contenido)';
+        document.getElementById('skill-view-content').textContent = s.content || t('skills.no_content');
         document.getElementById('skill-view-modal').style.display = 'flex';
     } catch (e) { toast(e.message, 'error'); }
 }
@@ -66,10 +66,10 @@ function bindEvents() {
                 DialogSkill.open(s, loadSkills);
             } catch (e) { toast(e.message, 'error'); }
         } else if (action === 'del-skill') {
-            if (!confirm('¿Eliminar esta skill?')) return;
+            if (!confirm(t('skills.confirm_delete'))) return;
             try {
                 await api.del('/api/skills/private/' + encodeURIComponent(id));
-                toast('Skill eliminada', 'info');
+                toast(t('skills.deleted'), 'info');
                 await loadSkills();
             } catch (e) { toast(e.message, 'error'); }
         }

@@ -3,7 +3,7 @@
 
 function openModal(conn) {
     var defaultType = conn && conn.type ? conn.type : Providers.first();
-    document.getElementById('conn-modal-title').textContent = conn ? 'Editar conexion' : 'Nueva conexion';
+    document.getElementById('conn-modal-title').textContent = conn ? t('connections.modal.title_edit') : t('connections.modal.title_new');
     document.getElementById('conn-id').value = (conn && conn.id) ? conn.id : '';
     document.getElementById('conn-name').value = (conn && conn.name) ? conn.name : '';
     document.getElementById('conn-type').value = defaultType;

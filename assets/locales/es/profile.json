@@ -1,0 +1,25 @@
+{
+  "page": {
+    "title": "Perfil",
+    "subtitle": "Configuración de tu cuenta"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "standard": "Usuario",
+    "guest": "Invitado"
+  },
+  "theme_title": "Tema",
+  "lang_title": "Idioma",
+  "password_title": "Cambiar contraseña",
+  "password": {
+    "field_current": "Contraseña actual",
+    "field_new": "Nueva contraseña",
+    "field_confirm": "Confirmar contraseña",
+    "fill_all": "Completa todos los campos",
+    "mismatch": "Las contraseñas no coinciden",
+    "saving": "Guardando...",
+    "save_btn": "Guardar cambios",
+    "saved": "Contraseña actualizada",
+    "error": "Error al cambiar contraseña"
+  }
+}

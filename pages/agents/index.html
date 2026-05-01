@@ -30,8 +30,8 @@
         <main class="page-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Agentes</h1>
-                    <p class="page-subtitle">Gestiona y chatea con tus agentes de IA</p>
+                    <h1 class="page-title" data-i18n="agents.page.title">Agentes</h1>
+                    <p class="page-subtitle" data-i18n="agents.page.subtitle">Gestiona y chatea con tus agentes de IA</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-primary" id="btn-new-agent">
@@ -39,7 +39,7 @@
                             <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.8"
                                 stroke-linecap="round" />
                         </svg>
-                        Nuevo agente
+                        <span data-i18n="agents.modal.title_new">Nuevo agente</span>
                     </button>
                 </div>
             </div>
@@ -52,7 +52,7 @@
     <div id="agent-modal" class="modal-bg" style="display:none">
         <div class="modal-box">
             <div class="modal-header">
-                <span class="modal-title" id="agent-modal-title">Nuevo agente</span>
+                <span class="modal-title" id="agent-modal-title" data-i18n="agents.modal.title_new">Nuevo agente</span>
                 <button class="modal-close" id="agent-modal-close" type="button">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
@@ -65,47 +65,47 @@
                     <input type="hidden" id="agent-id" />
                     <div class="form-row-2">
                         <div class="field">
-                            <label>Nombre *</label>
-                            <input id="agent-name" class="input" placeholder="Mi agente" required />
+                            <label data-i18n="agents.modal.field_name">Nombre *</label>
+                            <input id="agent-name" class="input" data-i18n-placeholder="agents.modal.placeholder_name" placeholder="Mi agente" required />
                         </div>
                         <div class="field">
-                            <label>Conexion IA</label>
+                            <label data-i18n="agents.modal.field_connection">Conexion IA</label>
                             <select id="agent-connection" class="select">
-                                <option value="">-- Sin conexion --</option>
+                                <option value="" data-i18n="agents.modal.no_connection">-- Sin conexion --</option>
                             </select>
                         </div>
                     </div>
                     <div class="field" id="agent-scope-field">
-                        <label>Visibilidad</label>
+                        <label data-i18n="agents.modal.field_visibility">Visibilidad</label>
                         <div class="scope-radio-group">
                             <label class="scope-radio">
                                 <input type="radio" name="agent-scope" value="private" checked />
-                                <span>Privado</span>
+                                <span data-i18n="agents.modal.scope_private">Privado</span>
                             </label>
                             <label class="scope-radio">
                                 <input type="radio" name="agent-scope" value="public" />
-                                <span>Público</span>
+                                <span data-i18n="agents.modal.scope_public">Público</span>
                             </label>
                         </div>
                     </div>
                     <div class="field">
-                        <label>Descripcion</label>
-                        <input id="agent-desc" class="input" placeholder="Para que sirve este agente" />
+                        <label data-i18n="agents.modal.field_description">Descripcion</label>
+                        <input id="agent-desc" class="input" data-i18n-placeholder="agents.modal.placeholder_desc" placeholder="Para que sirve este agente" />
                     </div>
                     <div class="field">
-                        <label>System prompt</label>
-                        <textarea id="agent-prompt" class="textarea" placeholder="Eres un asistente..."
+                        <label data-i18n="agents.modal.field_prompt">System prompt</label>
+                        <textarea id="agent-prompt" class="textarea" data-i18n-placeholder="agents.modal.placeholder_prompt" placeholder="Eres un asistente..."
                             style="min-height:100px"></textarea>
                     </div>
                     <div class="field">
-                        <label>Temperatura</label>
+                        <label data-i18n="agents.modal.field_temp">Temperatura</label>
                         <div class="range-wrap">
                             <input id="agent-temp" type="range" min="0" max="1" step="0.05" value="0.7" />
                             <span class="range-val" id="agent-temp-val">0.70</span>
                         </div>
                     </div>
                     <div class="field">
-                        <label>Skills asignadas</label>
+                        <label data-i18n="agents.modal.field_skills">Skills asignadas</label>
                         <div class="skill-picker" id="skill-picker">
                             <div class="skill-picker-chips" id="skill-selected-chips"></div>
                             <div class="skill-cat-tabs" id="skill-cat-tabs"></div>
@@ -117,19 +117,19 @@
                             <label class="toggle-label">
                                 <input type="checkbox" id="agent-use-memory" class="toggle-checkbox" />
                                 <span class="toggle-track"></span>
-                                Habilitar memoria
+                                <span data-i18n="agents.modal.field_memory">Habilitar memoria</span>
                             </label>
                         </div>
                         <div id="memory-file-field" style="display:none;margin-top:8px">
-                            <label>Archivo de memoria</label>
+                            <label data-i18n="agents.modal.field_memory_file">Archivo de memoria</label>
                             <select id="agent-memory-file" class="select"></select>
-                            <span class="input-hint">Usa el archivo del agente por defecto o elige otro</span>
+                            <span class="input-hint" data-i18n="agents.modal.memory_hint">Usa el archivo del agente por defecto o elige otro</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" id="agent-modal-cancel">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="agent-save-btn">Guardar agente</button>
+                    <button type="button" class="btn btn-ghost" id="agent-modal-cancel" data-i18n="common.actions.cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="agent-save-btn" data-i18n="agents.modal.save_btn">Guardar agente</button>
                 </div>
             </form>
         </div>
@@ -139,7 +139,7 @@
     <div id="export-modal" class="modal-bg" style="display:none">
         <div class="modal-box" style="width:400px">
             <div class="modal-header">
-                <span class="modal-title">Exportar agente</span>
+                <span class="modal-title" data-i18n="agents.export.title">Exportar agente</span>
                 <button class="modal-close" id="export-modal-close" type="button">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
@@ -148,13 +148,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p style="font-size:13px;color:var(--ink-2);margin-bottom:4px">Elige el formato:</p>
+                <p style="font-size:13px;color:var(--ink-2);margin-bottom:4px" data-i18n="agents.export.choose_format">Elige el formato:</p>
                 <div id="export-options" class="export-options"></div>
             </div>
         </div>
     </div>
 
     <!-- JS globales -->
+    <script src="/assets/js/i18n.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/toast.js"></script>

@@ -10,11 +10,15 @@ function renderGoogleLoginButton(mountId, apiBase) {
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'btn-google';
-    btn.innerHTML = _GOOGLE_ICON + '<span class="btn-google__label">Continuar con Google</span>';
+
+    var loginLabel = window.t ? window.t('auth.google_login') : 'Continuar con Google';
+    var redirectLabel = window.t ? window.t('auth.google_redirecting') : 'Redirigiendo…';
+
+    btn.innerHTML = _GOOGLE_ICON + '<span class="btn-google__label">' + loginLabel + '</span>';
 
     btn.addEventListener('click', function () {
         btn.setAttribute('aria-busy', 'true');
-        btn.querySelector('.btn-google__label').textContent = 'Redirigiendo…';
+        btn.querySelector('.btn-google__label').textContent = redirectLabel;
         window.location.href = (apiBase || '') + '/api/auth/google';
     });
 

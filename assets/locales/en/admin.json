@@ -1,0 +1,21 @@
+{
+  "page": {
+    "title": "Administration"
+  },
+  "error_load": "Error loading users.",
+  "empty": "No registered users.",
+  "roles": {
+    "admin": "Admin",
+    "standard": "Standard"
+  },
+  "table": {
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "created": "Registered"
+  },
+  "confirm_delete": "Delete user {{username}}? This action cannot be undone.",
+  "deleted": "User deleted",
+  "error_delete": "Error deleting user",
+  "delete_btn": "Delete"
+}

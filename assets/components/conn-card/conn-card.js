@@ -1,4 +1,4 @@
-// conn-card.js — tarjetas de conexion AI (cuadricula estilo gaia-control)
+// conn-card.js — tarjetas de conexion AI
 'use strict';
 
 (function () {
@@ -16,6 +16,9 @@
             var typeLabel = TYPE_LABEL[type] || type.toUpperCase();
             var sub = conn.model || conn.host || '';
 
+            var editLabel  = window.t ? window.t('connections.actions.edit')   : 'Editar';
+            var deleteTitle = window.t ? window.t('connections.actions.delete') : 'Eliminar';
+
             return (
                 '<article class="conn-card" data-conn-id="' + esc(conn.id) + '" data-type="' + esc(type) + '">' +
                   '<div class="conn-card-body">' +
@@ -31,8 +34,8 @@
                       '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M5 3l8 5-8 5V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
                       'Test' +
                     '</button>' +
-                    '<button class="card-action-btn card-action-btn--edit" data-action="edit-conn" data-id="' + esc(conn.id) + '">Editar</button>' +
-                    '<button class="card-action-btn card-action-btn--delete card-action-btn--icon" data-action="del-conn" data-id="' + esc(conn.id) + '" title="Eliminar">' +
+                    '<button class="card-action-btn card-action-btn--edit" data-action="edit-conn" data-id="' + esc(conn.id) + '">' + esc(editLabel) + '</button>' +
+                    '<button class="card-action-btn card-action-btn--delete card-action-btn--icon" data-action="del-conn" data-id="' + esc(conn.id) + '" title="' + esc(deleteTitle) + '">' +
                       '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1m1 0-.4 9a1.3 1.3 0 0 1-1.3 1.2h-4A1.3 1.3 0 0 1 4 13L3.6 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
                     '</button>' +
                   '</footer>' +
@@ -42,7 +45,8 @@
 
         renderList: function (connections, container) {
             if (!connections.length) {
-                container.innerHTML = '<p style="font-size:13px;color:var(--ink-3);padding:4px 0">Sin conexiones. Anade la primera.</p>';
+                var msg = window.t ? window.t('connections.empty') : 'Sin conexiones. Anade la primera.';
+                container.innerHTML = '<p style="font-size:13px;color:var(--ink-3);padding:4px 0">' + msg + '</p>';
                 return;
             }
             var self = this;

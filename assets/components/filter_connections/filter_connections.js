@@ -16,23 +16,27 @@ var FilterConnections = (function () {
 
         var hasAny = _state.query || _state.types.length > 0;
 
-        var chips = _TYPES.map(function (t) {
-            var active = _state.types.indexOf(t.id) !== -1;
-            return '<button type="button" class="fco-chip' + (active ? ' fco-chip--active' : '') + '" data-type="' + esc(t.id) + '">' + esc(t.label) + '</button>';
+        var chips = _TYPES.map(function (t_) {
+            var active = _state.types.indexOf(t_.id) !== -1;
+            return '<button type="button" class="fco-chip' + (active ? ' fco-chip--active' : '') + '" data-type="' + esc(t_.id) + '">' + esc(t_.label) + '</button>';
         }).join('');
+
+        var placeholder = window.t ? window.t('connections.filter.search_placeholder') : 'Buscar conexión…';
+        var clearLabel  = window.t ? window.t('actions.clear') : 'Limpiar';
+        var clearAria   = window.t ? window.t('search.clear_aria') : 'Limpiar';
 
         mountEl.innerHTML =
             '<div class="fco-bar">' +
               '<div class="fco-top-row">' +
                 '<div class="fco-search-wrap">' +
                   _SVG_SEARCH +
-                  '<input id="fco-search" class="fco-search-input" placeholder="Buscar conexión…"' +
+                  '<input id="fco-search" class="fco-search-input" placeholder="' + placeholder + '"' +
                   ' value="' + esc(_state.query) + '" autocomplete="off"/>' +
                   (_state.query
-                    ? '<button type="button" class="fco-search-clear" id="fco-clear" aria-label="Limpiar">' + _SVG_CLEAR + '</button>'
+                    ? '<button type="button" class="fco-search-clear" id="fco-clear" aria-label="' + clearAria + '">' + _SVG_CLEAR + '</button>'
                     : '') +
                 '</div>' +
-                (hasAny ? '<button type="button" class="fco-clear-all" id="fco-clear-all">Limpiar</button>' : '') +
+                (hasAny ? '<button type="button" class="fco-clear-all" id="fco-clear-all">' + clearLabel + '</button>' : '') +
               '</div>' +
               (chips ? '<div class="fco-chips-row">' + chips + '</div>' : '') +
             '</div>';

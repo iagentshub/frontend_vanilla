@@ -27,8 +27,8 @@
         <main class="page-content">
             <div class="page-header">
                 <div>
-                    <h1 class="page-title">Conexiones</h1>
-                    <p class="page-subtitle">Proveedores de IA configurados</p>
+                    <h1 class="page-title" data-i18n="connections.page.title">Conexiones</h1>
+                    <p class="page-subtitle" data-i18n="connections.page.subtitle">Proveedores de IA configurados</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-ghost" id="btn-test-all">
@@ -36,14 +36,14 @@
                             <path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5"
                                 stroke-linejoin="round" />
                         </svg>
-                        Testear todo
+                        <span data-i18n="connections.page.test_all">Testear todo</span>
                     </button>
                     <button class="btn btn-primary" id="btn-new-conn">
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                             <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.8"
                                 stroke-linecap="round" />
                         </svg>
-                        Nueva conexión
+                        <span data-i18n="connections.page.new_btn">Nueva conexión</span>
                     </button>
                 </div>
             </div>
@@ -56,7 +56,7 @@
     <div id="conn-modal" class="modal-bg" style="display:none">
         <div class="modal-box">
             <div class="modal-header">
-                <span class="modal-title" id="conn-modal-title">Nueva conexión</span>
+                <span class="modal-title" id="conn-modal-title" data-i18n="connections.modal.title_new">Nueva conexión</span>
                 <button class="modal-close" id="conn-modal-close" type="button">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
@@ -68,38 +68,39 @@
                 <div class="modal-body">
                     <input type="hidden" id="conn-id" />
                     <div class="field">
-                        <label>Nombre *</label>
-                        <input id="conn-name" class="input" placeholder="Mi OpenAI" required />
+                        <label data-i18n="connections.modal.field_name">Nombre *</label>
+                        <input id="conn-name" class="input" data-i18n-placeholder="connections.modal.placeholder_name" placeholder="Mi OpenAI" required />
                     </div>
                     <div class="field">
-                        <label>Proveedor</label>
+                        <label data-i18n="connections.modal.field_provider">Proveedor</label>
                         <select id="conn-type" class="select">
                             <!-- poblado dinámicamente por connections-modal.js vía Providers -->
                         </select>
                     </div>
                     <div class="field" id="field-api-key">
-                        <label>API Key</label>
+                        <label data-i18n="connections.modal.field_api_key">API Key</label>
                         <input id="conn-apikey" class="input" type="password" placeholder="sk-…" autocomplete="off" />
-                        <span class="input-hint">Déjalo vacío para no cambiar.</span>
+                        <span class="input-hint" data-i18n="connections.modal.api_key_hint">Déjalo vacío para no cambiar.</span>
                     </div>
                     <div class="field" id="field-host" style="display:none">
-                        <label>Host Ollama</label>
-                        <input id="conn-host" class="input" placeholder="http://localhost:11434" />
+                        <label data-i18n="connections.modal.field_host">Host Ollama</label>
+                        <input id="conn-host" class="input" data-i18n-placeholder="connections.modal.placeholder_host" placeholder="http://localhost:11434" />
                     </div>
                     <div class="field">
-                        <label>Modelo por defecto</label>
-                        <input id="conn-model" class="input" placeholder="gpt-4o / claude-sonnet-4-5 / llama3.2" />
+                        <label data-i18n="connections.modal.field_model">Modelo por defecto</label>
+                        <input id="conn-model" class="input" data-i18n-placeholder="connections.modal.placeholder_model" placeholder="gpt-4o / claude-sonnet-4-5 / llama3.2" />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" id="conn-cancel">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-ghost" id="conn-cancel" data-i18n="common.actions.cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.actions.save">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- JS globales -->
+    <script src="/assets/js/i18n.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/toast.js"></script>

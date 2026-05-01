@@ -53,10 +53,10 @@ function bindEvents() {
                 openModal({ filename: file, content: mem.content || '' });
             } catch (e) { toast(e.message, 'error'); }
         } else if (btn.dataset.action === 'delete') {
-            if (!confirm('Eliminar "' + file + '"?')) return;
+            if (!confirm(t('memory.confirm_delete', { file: file }))) return;
             try {
                 await api.del('/api/memory/' + encodeURIComponent(file));
-                toast('Memoria eliminada', 'info');
+                toast(t('memory.deleted'), 'info');
                 await loadMemories();
             } catch (e) { toast(e.message, 'error'); }
         }

@@ -51,10 +51,10 @@ function bindEvents() {
             var c = _connections.find(function (x) { return x.id === id; });
             if (c) openModal(c);
         } else if (action === 'delete') {
-            if (!confirm('Eliminar esta conexion?')) return;
+            if (!confirm(t('connections.confirm_delete'))) return;
             try {
                 await api.del('/api/connections/' + encodeURIComponent(id));
-                toast('Conexion eliminada', 'info');
+                toast(t('connections.deleted'), 'info');
                 await loadConnections();
             } catch (e) { toast(e.message, 'error'); }
         }
@@ -79,7 +79,7 @@ function bindEvents() {
         });
         try {
             await api.post('/api/connections', payload);
-            toast('Conexion guardada', 'success');
+            toast(t('connections.saved'), 'success');
             closeModal();
             await loadConnections();
         } catch (err) { toast(err.message, 'error'); }

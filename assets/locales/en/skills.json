@@ -1,0 +1,58 @@
+{
+  "page": {
+    "title": "Skills",
+    "new_btn": "+ New private skill"
+  },
+  "categories": {
+    "ai": "🤖 AI",
+    "ai_agents": "🤖 AI & Agents",
+    "messaging": "🗣️ Messaging",
+    "notes": "📝 Notes",
+    "productivity": "✅ Productivity",
+    "dev": "💻 Dev",
+    "dev_full": "💻 Development",
+    "security": "🔒 Security",
+    "media": "🎬 Media",
+    "data": "🌐 Data",
+    "company": "🏢 Company"
+  },
+  "scope": {
+    "all": "All",
+    "public": "Public",
+    "private": "Private",
+    "badge_public": "public",
+    "badge_private": "private"
+  },
+  "filter": {
+    "search_placeholder": "Search skill…"
+  },
+  "empty": {
+    "public": "No public skills.",
+    "private": "No private skills yet.",
+    "no_match": "No skills match."
+  },
+  "no_content": "(no content)",
+  "confirm_delete": "Delete this skill?",
+  "deleted": "Skill deleted",
+  "dialog": {
+    "title_new": "New private skill",
+    "title_edit": "Edit private skill",
+    "field_icon": "Icon",
+    "field_name": "Name",
+    "field_description": "Description",
+    "field_category": "Category",
+    "field_content": "Content (Markdown / instructions)",
+    "no_category": "No category",
+    "placeholder_name": "My skill...",
+    "placeholder_desc": "What does this skill do...",
+    "placeholder_content": "Instructions for the agent...",
+    "name_required": "Name is required",
+    "saved": "Skill saved",
+    "save_error": "Error: {{message}}"
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

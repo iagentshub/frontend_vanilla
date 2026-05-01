@@ -2,29 +2,27 @@
 'use strict';
 
 var FilterSkills = (function () {
-    var _CATEGORIES = [
-        { id: 'ai',           label: '🤖 IA' },
-        { id: 'messaging',    label: '🗣️ Mensajería' },
-        { id: 'notes',        label: '📝 Notas' },
-        { id: 'productivity', label: '✅ Productividad' },
-        { id: 'dev',          label: '💻 Dev' },
-        { id: 'security',     label: '🔒 Seguridad' },
-        { id: 'media',        label: '🎬 Media' },
-        { id: 'data',         label: '🌐 Datos' },
-        { id: 'company',      label: '🏢 Empresa' },
-    ];
-
-    var _SCOPES = [
-        { id: '',        label: 'Todas' },
-        { id: 'public',  label: 'Públicas' },
-        { id: 'private', label: 'Privadas' },
-    ];
+    var _CATEGORY_IDS = ['ai', 'messaging', 'notes', 'productivity', 'dev', 'security', 'media', 'data', 'company'];
 
     var _SVG_SEARCH = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     var _SVG_CLEAR  = '<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 
     var _state    = { query: '', scope: '', categories: [] };
     var _onChange = null;
+
+    function _categories() {
+        return _CATEGORY_IDS.map(function (id) {
+            return { id: id, label: t('skills.categories.' + id) };
+        });
+    }
+
+    function _scopes() {
+        return [
+            { id: '',        label: t('skills.scope.all') },
+            { id: 'public',  label: t('skills.scope.public') },
+            { id: 'private', label: t('skills.scope.private') },
+        ];
+    }
 
     function _hasFilter() {
         return _state.query || _state.scope || _state.categories.length;
@@ -35,12 +33,12 @@ var FilterSkills = (function () {
         var hadFocus = inp && document.activeElement === inp;
         var cursor   = hadFocus ? inp.selectionStart : null;
 
-        var segmentBtns = _SCOPES.map(function (s) {
+        var segmentBtns = _scopes().map(function (s) {
             var active = _state.scope === s.id ? ' fsk-segment-btn--active' : '';
             return '<button type="button" class="fsk-segment-btn' + active + '" data-fsk-scope="' + s.id + '">' + esc(s.label) + '</button>';
         }).join('');
 
-        var catChips = _CATEGORIES.map(function (c) {
+        var catChips = _categories().map(function (c) {
             var active = _state.categories.indexOf(c.id) >= 0 ? ' fsk-chip--active' : '';
             return '<button type="button" class="fsk-chip' + active + '" data-fsk-cat="' + c.id + '">' + esc(c.label) + '</button>';
         }).join('');
@@ -51,15 +49,15 @@ var FilterSkills = (function () {
                 '<div class="fsk-search-wrap">' +
                   _SVG_SEARCH +
                   '<input id="fsk-search" class="fsk-search-input"' +
-                  ' placeholder="Buscar skill…"' +
+                  ' placeholder="' + t('skills.filter.search_placeholder') + '"' +
                   ' value="' + esc(_state.query) + '" autocomplete="off"/>' +
                   (_state.query
-                    ? '<button type="button" class="fsk-search-clear" id="fsk-clear" aria-label="Limpiar búsqueda">' + _SVG_CLEAR + '</button>'
+                    ? '<button type="button" class="fsk-search-clear" id="fsk-clear" aria-label="' + t('search.clear_aria') + '">' + _SVG_CLEAR + '</button>'
                     : '') +
                 '</div>' +
                 '<div class="fsk-segment">' + segmentBtns + '</div>' +
                 (_hasFilter()
-                  ? '<button type="button" class="fsk-clear-all" id="fsk-clear-all">Limpiar</button>'
+                  ? '<button type="button" class="fsk-clear-all" id="fsk-clear-all">' + t('actions.clear') + '</button>'
                   : '') +
               '</div>' +
               (catChips

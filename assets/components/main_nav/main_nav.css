@@ -210,3 +210,27 @@
     flex-shrink: 0;
     border: 1px solid rgba(204, 32, 32, 0.25);
 }
+
+/* ── Lang switcher ── */
+.nav-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    padding: 5px 16px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    margin-bottom: 4px;
+}
+
+.nav-lang-btn:hover {
+    color: var(--ink-1);
+    background: rgba(255, 255, 255, 0.05);
+}

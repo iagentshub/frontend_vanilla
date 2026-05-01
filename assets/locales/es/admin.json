@@ -1,0 +1,21 @@
+{
+  "page": {
+    "title": "Administración"
+  },
+  "error_load": "Error al cargar usuarios.",
+  "empty": "No hay usuarios registrados.",
+  "roles": {
+    "admin": "Admin",
+    "standard": "Estándar"
+  },
+  "table": {
+    "user": "Usuario",
+    "email": "Email",
+    "role": "Rol",
+    "created": "Registro"
+  },
+  "confirm_delete": "¿Eliminar al usuario {{username}}? Esta acción no se puede deshacer.",
+  "deleted": "Usuario eliminado",
+  "error_delete": "Error al eliminar",
+  "delete_btn": "Eliminar"
+}

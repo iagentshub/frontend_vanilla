@@ -24,10 +24,10 @@ function renderGrouped(conns) {
     var root = document.getElementById('connections-root');
     var list = conns !== undefined ? conns : _connections;
     if (!list.length) {
-        root.innerHTML = '<div class="conn-empty">Sin conexiones' +
+        root.innerHTML = '<div class="conn-empty">' +
             (conns && conns.length < _connections.length
-                ? ' que coincidan con el filtro.'
-                : ' aun. Crea la primera.') + '</div>';
+                ? t('connections.empty_filtered')
+                : t('connections.empty_none')) + '</div>';
         return;
     }
 
@@ -48,10 +48,10 @@ function renderGrouped(conns) {
         html += '<div class="conn-group" data-group="' + esc(type) + '">';
         html += '<div class="conn-group-header">';
         html += '<span class="conn-group-label conn-group-label--' + esc(meta.cls) + '">' + esc(meta.label) + '</span>';
-        html += '<span class="conn-group-count">' + items.length + ' conexi' + (items.length === 1 ? 'on' : 'ones') + '</span>';
+        html += '<span class="conn-group-count">' + (items.length === 1 ? t('connections.count_one', { n: items.length }) : t('connections.count_many', { n: items.length })) + '</span>';
         html += '<button class="conn-group-test" data-group-test="' + esc(type) + '">';
         html += '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
-        html += 'Testear grupo</button></div>';
+        html += t('connections.test_group') + '</button></div>';
         html += '<div class="conn-group-grid">';
         items.forEach(function (c) { html += renderCard(c); });
         html += '</div></div>';
@@ -70,10 +70,10 @@ function renderCard(c) {
         '</div>' +
         '<footer class="conn-card-footer">' +
         '<button class="cca-btn cca-btn--test" data-action="test" data-id="' + esc(c.id) + '">' +
-        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Test</button>' +
+        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' + t('connections.actions.test') + '</button>' +
         '<button class="cca-btn" data-action="edit" data-id="' + esc(c.id) + '">' +
-        '<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button>' +
-        '<button class="cca-btn cca-btn--delete" data-action="delete" data-id="' + esc(c.id) + '" title="Eliminar">' +
+        '<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t('connections.actions.edit') + '</button>' +
+        '<button class="cca-btn cca-btn--delete" data-action="delete" data-id="' + esc(c.id) + '" title="' + t('connections.actions.delete') + '">' +
         '<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M5 6h10M8 6V4.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V6m1.5 0-.5 10a1.5 1.5 0 0 1-1.5 1.4h-3A1.5 1.5 0 0 1 7 16L6.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
         '</button></footer></article>';
 }
@@ -86,13 +86,13 @@ function setStatus(id, state, msg) {
     if (!el) return;
     if (state === 'testing') {
         el.removeAttribute('data-ok');
-        el.textContent = 'Testeando…';
+        el.textContent = t('connections.testing');
     } else if (state === 'ok') {
         el.dataset.ok = 'true';
-        el.textContent = '✓ ' + (msg || 'OK');
+        el.textContent = t('connections.test_ok') + (msg && msg !== 'OK' ? ' ' + msg : '');
     } else if (state === 'error') {
         el.dataset.ok = 'false';
-        el.textContent = '✗ ' + (msg || 'Error');
+        el.textContent = t('connections.test_error') + (msg && msg !== 'Error' ? ': ' + msg : '');
     } else {
         el.removeAttribute('data-ok');
         el.textContent = '';

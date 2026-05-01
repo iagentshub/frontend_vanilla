@@ -110,3 +110,47 @@
     color: var(--ink);
     font-weight: 600;
 }
+
+/* ── Lang picker ──────────────────────────────── */
+.lang-picker {
+    display: flex;
+    gap: 10px;
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+    user-select: none;
+}
+
+.lang-option:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+}
+
+.lang-option--active {
+    border-color: var(--accent);
+    color: var(--ink);
+    font-weight: 600;
+    background: var(--surface);
+}
+
+.lang-flag {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.lang-check {
+    color: var(--accent);
+    flex-shrink: 0;
+}

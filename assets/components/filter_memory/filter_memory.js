@@ -13,14 +13,17 @@ var FilterMemory = (function () {
         var hadFocus = inp && document.activeElement === inp;
         var cursor   = hadFocus ? inp.selectionStart : null;
 
+        var placeholder = window.t ? window.t('memory.filter.search_placeholder') : 'Buscar archivo…';
+        var clearAria   = window.t ? window.t('memory.search.clear_aria') : 'Limpiar';
+
         mountEl.innerHTML =
             '<div class="fmem-bar">' +
               '<div class="fmem-search-wrap">' +
                 _SVG_SEARCH +
-                '<input id="fmem-search" class="fmem-search-input" placeholder="Buscar archivo…"' +
+                '<input id="fmem-search" class="fmem-search-input" placeholder="' + placeholder + '"' +
                 ' value="' + esc(_state.query) + '" autocomplete="off"/>' +
                 (_state.query
-                  ? '<button type="button" class="fmem-search-clear" id="fmem-clear" aria-label="Limpiar">' + _SVG_CLEAR + '</button>'
+                  ? '<button type="button" class="fmem-search-clear" id="fmem-clear" aria-label="' + clearAria + '">' + _SVG_CLEAR + '</button>'
                   : '') +
               '</div>' +
             '</div>';

@@ -3,8 +3,8 @@
 
 class AgentChatDialog {
     constructor(agent) {
-        this.agent = agent;   // { id, name, model, timeout }
-        this.messages = [];      // historial { role, content }
+        this.agent = agent;
+        this.messages = [];
         this._timerInterval = null;
         this._timerSecs = 0;
         this._timerRemaining = 0;
@@ -36,7 +36,7 @@ class AgentChatDialog {
                         </svg>
                         <span id="ga-ccd-label">—</span>
                     </div>` : ''}
-                    <button class="modal-close" id="ga-chat-close" type="button" title="Cerrar">
+                    <button class="modal-close" id="ga-chat-close" type="button" title="${t('agents.chat.close')}">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                         </svg>
@@ -45,8 +45,8 @@ class AgentChatDialog {
             </div>
             <div class="chat-messages" id="ga-chat-msgs"></div>
             <div class="chat-input-bar">
-                <textarea class="chat-input" id="ga-chat-input" placeholder="Escribe un mensaje…" rows="1"></textarea>
-                <button class="chat-send-btn" id="ga-chat-send" title="Enviar">
+                <textarea class="chat-input" id="ga-chat-input" placeholder="${t('agents.chat.placeholder')}" rows="1"></textarea>
+                <button class="chat-send-btn" id="ga-chat-send" title="${t('actions.send')}">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 14L14 8 2 2v4l8 2-8 2v4z" fill="currentColor"/>
                     </svg>
@@ -177,7 +177,6 @@ class AgentChatDialog {
         if (input) input.disabled = on;
     }
 
-    // ── Countdown timer ────────────────────────────────────────────────
     _startTimer() {
         const secs = Number(this.agent.timeout) || 0;
         if (!secs) return;
@@ -199,7 +198,6 @@ class AgentChatDialog {
             const m = Math.floor(this._timerRemaining / 60);
             const s = this._timerRemaining % 60;
             label.textContent = m > 0 ? `${m}:${String(s).padStart(2, '0')}` : `${s}s`;
-            // color según fracción
             cdEl.classList.toggle('expiring', frac <= 0.2 && frac > 0);
             cdEl.classList.toggle('expired', frac <= 0);
         };
@@ -227,7 +225,6 @@ class AgentChatDialog {
     }
 }
 
-// Hook global para ser llamado desde agents.js
 window.openChat = function (agent) {
     const dlg = new AgentChatDialog(agent);
     dlg.open();

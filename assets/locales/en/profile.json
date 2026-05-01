@@ -1,0 +1,25 @@
+{
+  "page": {
+    "title": "Profile",
+    "subtitle": "Your account settings"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "standard": "User",
+    "guest": "Guest"
+  },
+  "theme_title": "Theme",
+  "lang_title": "Language",
+  "password_title": "Change password",
+  "password": {
+    "field_current": "Current password",
+    "field_new": "New password",
+    "field_confirm": "Confirm password",
+    "fill_all": "Fill in all fields",
+    "mismatch": "Passwords do not match",
+    "saving": "Saving...",
+    "save_btn": "Save changes",
+    "saved": "Password updated",
+    "error": "Error changing password"
+  }
+}
