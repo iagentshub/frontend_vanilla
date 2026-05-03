@@ -1,5 +1,8 @@
-// agents-skill-picker.js — selector de skills con categorías
+// agents-skill-picker.js — selector de skills con búsqueda y exploración por categoría
 'use strict';
+
+var _selectedSkillIds = [];
+var _activeCat = '__all__';
 
 function _getSkillCategories() {
     return [
@@ -17,13 +20,11 @@ function _getSkillCategories() {
     ];
 }
 
-var _selectedSkillIds = [];
-var _activeCat = '__all__';
-
 function _initSkillPicker(selected) {
     _selectedSkillIds = [...selected];
     _activeCat = '__all__';
     _renderSkillChips();
+    _resetSkillSearch();
     _renderCatTabs();
     _renderSkillGrid();
 }
@@ -41,10 +42,57 @@ function _renderSkillChips() {
         btn.addEventListener('click', () => {
             _selectedSkillIds = _selectedSkillIds.filter(id => id !== btn.dataset.skillId);
             _renderSkillChips();
+            _renderSkillDropdown(document.getElementById('skill-search-input')?.value || '');
             _renderSkillGrid();
         });
     });
 }
+
+/* ── Pestaña Buscar ──────────────────────────────────────────── */
+
+function _resetSkillSearch() {
+    const input = document.getElementById('skill-search-input');
+    if (input) input.value = '';
+    _renderSkillDropdown('');
+}
+
+function _renderSkillDropdown(query) {
+    const dropdown = document.getElementById('skill-search-dropdown');
+    if (!dropdown) return;
+
+    const q = query.trim().toLowerCase();
+    if (!q) { dropdown.hidden = true; return; }
+
+    const matches = _skills.filter(sk =>
+        !_selectedSkillIds.includes(sk.id) &&
+        (sk.name.toLowerCase().includes(q) || (sk.description || '').toLowerCase().includes(q))
+    );
+
+    if (!matches.length) {
+        dropdown.innerHTML = `<div class="skill-dropdown-empty">${esc(t('agents.skill_picker.no_skills'))}</div>`;
+        dropdown.hidden = false;
+        return;
+    }
+
+    dropdown.innerHTML = matches.map(sk =>
+        `<button type="button" class="skill-dropdown-item" data-skill-id="${esc(sk.id)}">
+            ${sk.icon ? `<span class="sdi-icon">${esc(sk.icon)}</span>` : ''}
+            <span class="sdi-name">${esc(sk.name)}</span>
+        </button>`
+    ).join('');
+    dropdown.hidden = false;
+
+    dropdown.querySelectorAll('.skill-dropdown-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            _selectedSkillIds.push(btn.dataset.skillId);
+            document.getElementById('skill-search-input').value = '';
+            dropdown.hidden = true;
+            _renderSkillChips();
+        });
+    });
+}
+
+/* ── Pestaña Explorar ────────────────────────────────────────── */
 
 function _renderCatTabs() {
     const tabs = document.getElementById('skill-cat-tabs');
@@ -88,27 +136,60 @@ function _renderSkillGrid() {
     });
 
     if (!filtered.length) {
-        container.innerHTML = '<div class="skill-grid-empty">' + t('agents.skill_picker.no_skills') + '</div>';
+        container.innerHTML = `<div class="skill-grid-empty">${t('agents.skill_picker.no_skills')}</div>`;
         return;
     }
 
-    container.innerHTML = filtered.map(sk => {
-        return `<button type="button" class="skill-grid-chip" data-skill-id="${esc(sk.id)}">
+    container.innerHTML = filtered.map(sk =>
+        `<button type="button" class="skill-grid-chip" data-skill-id="${esc(sk.id)}">
             ${sk.icon ? `<span class="sgc-icon">${esc(sk.icon)}</span>` : ''}
             <span class="sgc-name">${esc(sk.name)}</span>
-        </button>`;
-    }).join('');
+        </button>`
+    ).join('');
 
     container.querySelectorAll('.skill-grid-chip').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = btn.dataset.skillId;
-            if (_selectedSkillIds.includes(id)) {
-                _selectedSkillIds = _selectedSkillIds.filter(x => x !== id);
-            } else {
-                _selectedSkillIds.push(id);
-            }
+            _selectedSkillIds.push(btn.dataset.skillId);
             _renderSkillChips();
             _renderSkillGrid();
+        });
+    });
+}
+
+/* ── Pestañas del picker ─────────────────────────────────────── */
+
+function _bindSkillSearch() {
+    const input = document.getElementById('skill-search-input');
+    const dropdown = document.getElementById('skill-search-dropdown');
+    if (!input) return;
+
+    input.addEventListener('input', () => _renderSkillDropdown(input.value));
+    input.addEventListener('focus', () => { if (input.value.trim()) _renderSkillDropdown(input.value); });
+
+    document.addEventListener('click', e => {
+        if (!input.contains(e.target) && dropdown && !dropdown.contains(e.target)) {
+            dropdown.hidden = true;
+        }
+    });
+
+    // Flechas de scroll de categorías
+    const tabsEl = document.getElementById('skill-cat-tabs');
+    document.getElementById('skill-cat-prev')?.addEventListener('click', () => {
+        tabsEl.scrollBy({ left: -120, behavior: 'smooth' });
+    });
+    document.getElementById('skill-cat-next')?.addEventListener('click', () => {
+        tabsEl.scrollBy({ left: 120, behavior: 'smooth' });
+    });
+
+    // Pestañas
+    document.querySelectorAll('.spt-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.spt-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const isSearch = tab.dataset.tab === 'search';
+            document.getElementById('skill-panel-search').hidden = !isSearch;
+            document.getElementById('skill-panel-browse').hidden = isSearch;
+            if (!isSearch) { _renderCatTabs(); _renderSkillGrid(); }
         });
     });
 }

@@ -4,7 +4,7 @@
 class AgentChatDialog {
     constructor(agent) {
         this.agent = agent;
-        this.messages = [];
+        this.messages = this._loadHistory();
         this._timerInterval = null;
         this._timerSecs = 0;
         this._timerRemaining = 0;
@@ -58,6 +58,7 @@ class AgentChatDialog {
         this._bindClose();
         this._bindSend();
         this._autoResizeInput();
+        this._renderMessages();
         document.getElementById('ga-chat-input').focus();
     }
 
@@ -78,6 +79,19 @@ class AgentChatDialog {
         });
     }
 
+    _loadHistory() {
+        try {
+            const raw = localStorage.getItem(`chat_history_${this.agent.id}`);
+            return raw ? JSON.parse(raw) : [];
+        } catch { return []; }
+    }
+
+    _saveHistory() {
+        try {
+            localStorage.setItem(`chat_history_${this.agent.id}`, JSON.stringify(this.messages));
+        } catch { /* storage lleno o no disponible */ }
+    }
+
     _autoResizeInput() {
         const input = document.getElementById('ga-chat-input');
         if (!input) return;
@@ -95,6 +109,7 @@ class AgentChatDialog {
         input.style.height = 'auto';
         this._setLoading(true);
         this.messages.push({ role: 'user', content: text });
+        this._saveHistory();
         this._renderMessages();
         this._appendTyping();
         this._startTimer();
@@ -127,6 +142,7 @@ class AgentChatDialog {
             this._stopTimer();
             this._removeTyping();
             this.messages.push({ role: 'assistant', content: reply });
+            this._saveHistory();
             this._renderMessages();
         } catch (e) {
             this._stopTimer();
@@ -225,7 +241,13 @@ class AgentChatDialog {
     }
 }
 
+if (!window._chatInstances) window._chatInstances = new Map();
+
 window.openChat = function (agent) {
-    const dlg = new AgentChatDialog(agent);
+    let dlg = window._chatInstances.get(agent.id);
+    if (!dlg) {
+        dlg = new AgentChatDialog(agent);
+        window._chatInstances.set(agent.id, dlg);
+    }
     dlg.open();
 };

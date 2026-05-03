@@ -13,7 +13,9 @@
     "no_description": "No description",
     "no_ai": "No AI",
     "use_your_ai": "USE YOUR AI",
-    "chat": "Chat"
+    "chat": "Chat",
+    "chat_no_conn": "Set up a connection for this agent",
+    "chat_conn_error": "Connection is not available"
   },
   "filter": {
     "search_placeholder": "Search by name or description...",
@@ -74,5 +76,13 @@
   "chat": {
     "placeholder": "Type a message…",
     "close": "Close"
+  },
+  "catalog": {
+    "open_btn": "Catalog",
+    "title": "Agent catalog",
+    "search_placeholder": "Search agents…",
+    "empty": "No public agents available",
+    "empty_search": "No agents match your search",
+    "fork_btn": "Customize"
   }
 }

@@ -29,7 +29,7 @@ Scripts are loaded with `<script>` tags in a specific order. Global utilities mu
 
 | Page | Files |
 |---|---|
-| Agents | `agents/agents-state.js`, `agents/agents-modal.js`, `agents/agents-skill-picker.js`, `agents/agents-export.js`, `agents/agents.js` |
+| Agents | `agents/agents-state.js`, `agents/agents-modal.js`, `agents/agents-skill-picker.js`, `agents/agents-export.js`, `agents/agents-catalog.js`, `agents/agents.js` |
 | Connections | `connections/connections-state.js`, `connections/connections-modal.js`, `connections/connections.js` — providers loaded dynamically via `Providers` |
 | Memory | `memory/memory-render.js`, `memory/memory-modal.js`, `memory/memory.js` |
 | Skills | `skills/skills.js` |

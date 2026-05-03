@@ -7,7 +7,7 @@ function openModal(conn) {
     document.getElementById('conn-id').value = (conn && conn.id) ? conn.id : '';
     document.getElementById('conn-name').value = (conn && conn.name) ? conn.name : '';
     document.getElementById('conn-type').value = defaultType;
-    document.getElementById('conn-apikey').value = '';
+    document.getElementById('conn-api-key').value = (conn && conn.api_key) ? conn.api_key : '';
     document.getElementById('conn-host').value = (conn && conn.host) ? conn.host : '';
     document.getElementById('conn-model').value = (conn && conn.model) ? conn.model : '';
     toggleTypeFields(defaultType);

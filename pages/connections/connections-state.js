@@ -60,11 +60,25 @@ function renderGrouped(conns) {
     root.innerHTML = html;
 }
 
+function _fmtTokens(n) {
+    if (!n) return '0';
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    return String(n);
+}
+
 function renderCard(c) {
     var sub = c.model || (c.host ? c.host : '');
+    var totalTokens = (c.tokens_in || 0) + (c.tokens_out || 0);
+    var tokenBadge = totalTokens
+        ? '<span class="conn-token-badge" title="' + _fmtTokens(c.tokens_in || 0) + ' in / ' + _fmtTokens(c.tokens_out || 0) + ' out">' + _fmtTokens(totalTokens) + ' tok</span>'
+        : '';
     return '<article class="conn-card" data-conn-id="' + esc(c.id) + '">' +
         '<div class="conn-card-body">' +
+        '<div class="conn-card-name-row">' +
         '<div class="conn-card-name">' + esc(c.name) + '</div>' +
+        tokenBadge +
+        '</div>' +
         (sub ? '<div class="conn-card-sub">' + esc(sub) + '</div>' : '') +
         '<div class="conn-card-status"></div>' +
         '</div>' +
@@ -78,7 +92,7 @@ function renderCard(c) {
         '</button></footer></article>';
 }
 
-function setStatus(id, state, msg) {
+function setStatus(id, state, msg, detail) {
     var card = document.querySelector('[data-conn-id="' + CSS.escape(id) + '"]');
     if (!card) return;
     card.dataset.status = state;
@@ -89,10 +103,13 @@ function setStatus(id, state, msg) {
         el.textContent = t('connections.testing');
     } else if (state === 'ok') {
         el.dataset.ok = 'true';
-        el.textContent = t('connections.test_ok') + (msg && msg !== 'OK' ? ' ' + msg : '');
+        el.textContent = t('connections.test_ok') + (msg && msg !== 'OK' && !msg.startsWith('OK') ? ' — ' + msg : '');
     } else if (state === 'error') {
         el.dataset.ok = 'false';
-        el.textContent = t('connections.test_error') + (msg && msg !== 'Error' ? ': ' + msg : '');
+        var text = t('connections.test_error');
+        if (msg && msg !== 'Error') text += ': ' + msg;
+        if (detail && detail !== msg) text += ' — ' + detail;
+        el.textContent = text;
     } else {
         el.removeAttribute('data-ok');
         el.textContent = '';
@@ -104,7 +121,7 @@ async function testConnections(ids) {
     try {
         var results = await api.post('/api/connections/test-all', { ids: ids });
         results.forEach(function (r) {
-            setStatus(r.id, r.ok ? 'ok' : 'error', r.message || (r.ok ? 'OK' : 'Error'));
+            setStatus(r.id, r.ok ? 'ok' : 'error', r.message || (r.ok ? 'OK' : 'Error'), r.detail);
         });
     } catch (e) {
         ids.forEach(function (id) { setStatus(id, 'error', e.message); });

@@ -110,13 +110,36 @@
     gap: 6px;
 }
 
+.conn-card-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 0;
+}
+
 .conn-card-name {
+    min-width: 0;
     font-size: 13px;
     font-weight: 600;
     color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.conn-token-badge {
+    flex-shrink: 0;
+    font-size: 0.6rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--ink-3);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+    cursor: default;
 }
 
 .conn-card-sub {

@@ -6,6 +6,7 @@ async function init() {
     renderNav('nav-root', 'agents');
     await _loadAll();
     _initFilters();
+    _initCatalog();
     if (window.i18n) {
         window.i18n.onLangChange(async function () {
             await _loadAll();
@@ -17,11 +18,30 @@ async function init() {
     _bindExportModal();
 }
 
+function _initCatalog() {
+    AgentCatalog.init({
+        mountEl: document.getElementById('btn-catalog'),
+        onFork: function (agent) {
+            _openAgentModal({
+                name: agent.name,
+                description: agent.description,
+                system_prompt: agent.system_prompt,
+                temperature: agent.temperature,
+                skills: agent.skills,
+                use_memory: agent.use_memory,
+                memory_file: agent.memory_file,
+                connection_id: agent.connection_id,
+            });
+        },
+    });
+}
+
 function _initFilters() {
     FilterAgents.init({
         mountEl: '#filter-agents-root',
         skills: _skills,
         connections: _connections,
+        initialScope: 'private',
         onChange: function () { _applyFilter(); },
     });
 }

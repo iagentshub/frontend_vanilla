@@ -21,9 +21,14 @@
     transition: border-color .15s;
 }
 
-.fa-search-wrap:focus-within { border-color: var(--accent); }
+.fa-search-wrap:focus-within {
+    border-color: var(--accent);
+}
 
-.fa-search-wrap > svg { flex-shrink: 0; color: var(--ink-3); }
+.fa-search-wrap>svg {
+    flex-shrink: 0;
+    color: var(--ink-3);
+}
 
 .fa-search-input {
     flex: 1;
@@ -37,7 +42,9 @@
     min-width: 0;
 }
 
-.fa-search-input::placeholder { color: var(--ink-3); }
+.fa-search-input::placeholder {
+    color: var(--ink-3);
+}
 
 .fa-search-clear {
     display: flex;
@@ -55,40 +62,9 @@
     transition: color .1s, background .1s;
 }
 
-.fa-search-clear:hover { color: var(--ink); background: var(--surface-2); }
-
-/* ── Scope tabs ── */
-.fa-scope-tabs {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-}
-
-.fa-scope-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line-strong);
-    background: transparent;
-    color: var(--ink-3);
-    font-size: 12px;
-    font-weight: 500;
-    font-family: var(--font);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: border-color .12s, color .12s, background .12s;
-}
-
-.fa-scope-tab:hover { border-color: var(--accent); color: var(--ink); }
-
-.fa-scope-tab--active {
-    border-color: var(--accent);
-    background: var(--accent-dim);
-    color: var(--accent);
-    font-weight: 600;
+.fa-search-clear:hover {
+    color: var(--ink);
+    background: var(--surface-2);
 }
 
 /* ── Grupo de filtros ── */
@@ -100,7 +76,9 @@
 }
 
 /* ── Dropdown wrap ── */
-.fa-dropdown-wrap { position: relative; }
+.fa-dropdown-wrap {
+    position: relative;
+}
 
 /* ── Botón de filtro ── */
 .fa-filter-btn {
@@ -120,7 +98,10 @@
     transition: border-color .12s, color .12s, background .12s;
 }
 
-.fa-filter-btn:hover { border-color: var(--accent); color: var(--ink); }
+.fa-filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+}
 
 .fa-filter-btn--active {
     border-color: var(--accent);
@@ -160,7 +141,9 @@
     transition: color .1s;
 }
 
-.fa-clear-all:hover { color: var(--danger); }
+.fa-clear-all:hover {
+    color: var(--danger);
+}
 
 /* ── Panel desplegable ── */
 .fa-panel {
@@ -178,8 +161,15 @@
 }
 
 @keyframes fa-panel-in {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .fa-panel-empty {
@@ -201,11 +191,17 @@
     transition: background .08s;
 }
 
-.fa-option:hover { background: var(--surface-2); }
+.fa-option:hover {
+    background: var(--surface-2);
+}
 
-.fa-option--active { background: var(--accent-dim); }
+.fa-option--active {
+    background: var(--accent-dim);
+}
 
-.fa-option--active:hover { background: var(--accent-dim); }
+.fa-option--active:hover {
+    background: var(--accent-dim);
+}
 
 .fa-option-check {
     flex-shrink: 0;
@@ -233,7 +229,10 @@
 }
 
 /* ── Lista scrolleable del panel ── */
-.fa-panel-list { max-height: 220px; overflow-y: auto; }
+.fa-panel-list {
+    max-height: 220px;
+    overflow-y: auto;
+}
 
 /* ── Búsqueda interna del panel ── */
 .fa-panel-search-wrap {
@@ -246,7 +245,10 @@
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-.fa-panel-search-wrap > svg { flex-shrink: 0; color: var(--ink-3); }
+.fa-panel-search-wrap>svg {
+    flex-shrink: 0;
+    color: var(--ink-3);
+}
 
 .fa-panel-search {
     flex: 1;
@@ -260,4 +262,6 @@
     min-width: 0;
 }
 
-.fa-panel-search::placeholder { color: var(--ink-3); }
+.fa-panel-search::placeholder {
+    color: var(--ink-3);
+}

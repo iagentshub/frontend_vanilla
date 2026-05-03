@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/assets/components/agent-card/agent-card.css" />
     <link rel="stylesheet" href="/assets/components/filter_agents/filter_agents.css" />
     <link rel="stylesheet" href="/assets/components/dialog_chat/dialog_chat.css" />
+    <link rel="stylesheet" href="/assets/components/agent-catalog/agent-catalog.css" />
     <!-- Página -->
     <link rel="stylesheet" href="/agents/agents.css" />
 </head>
@@ -31,9 +32,17 @@
             <div class="page-header">
                 <div>
                     <h1 class="page-title" data-i18n="agents.page.title">Agentes</h1>
-                    <p class="page-subtitle" data-i18n="agents.page.subtitle">Gestiona y chatea con tus agentes de IA</p>
+                    <p class="page-subtitle" data-i18n="agents.page.subtitle">Gestiona y chatea con tus agentes de IA
+                    </p>
                 </div>
                 <div class="page-actions">
+                    <button class="btn btn-ghost" id="btn-catalog">
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                            <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                        </svg>
+                        <span data-i18n="agents.catalog.open_btn">Catálogo</span>
+                    </button>
                     <button class="btn btn-primary" id="btn-new-agent">
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                             <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.8"
@@ -66,7 +75,8 @@
                     <div class="form-row-2">
                         <div class="field">
                             <label data-i18n="agents.modal.field_name">Nombre *</label>
-                            <input id="agent-name" class="input" data-i18n-placeholder="agents.modal.placeholder_name" placeholder="Mi agente" required />
+                            <input id="agent-name" class="input" data-i18n-placeholder="agents.modal.placeholder_name"
+                                placeholder="Mi agente" required />
                         </div>
                         <div class="field">
                             <label data-i18n="agents.modal.field_connection">Conexion IA</label>
@@ -90,11 +100,13 @@
                     </div>
                     <div class="field">
                         <label data-i18n="agents.modal.field_description">Descripcion</label>
-                        <input id="agent-desc" class="input" data-i18n-placeholder="agents.modal.placeholder_desc" placeholder="Para que sirve este agente" />
+                        <input id="agent-desc" class="input" data-i18n-placeholder="agents.modal.placeholder_desc"
+                            placeholder="Para que sirve este agente" />
                     </div>
                     <div class="field">
                         <label data-i18n="agents.modal.field_prompt">System prompt</label>
-                        <textarea id="agent-prompt" class="textarea" data-i18n-placeholder="agents.modal.placeholder_prompt" placeholder="Eres un asistente..."
+                        <textarea id="agent-prompt" class="textarea"
+                            data-i18n-placeholder="agents.modal.placeholder_prompt" placeholder="Eres un asistente..."
                             style="min-height:100px"></textarea>
                     </div>
                     <div class="field">
@@ -108,8 +120,25 @@
                         <label data-i18n="agents.modal.field_skills">Skills asignadas</label>
                         <div class="skill-picker" id="skill-picker">
                             <div class="skill-picker-chips" id="skill-selected-chips"></div>
-                            <div class="skill-cat-tabs" id="skill-cat-tabs"></div>
-                            <div class="skill-picker-grid" id="skill-modules"></div>
+                            <div class="skill-picker-tabs">
+                                <button type="button" class="spt-tab active" data-tab="search">🔍 Buscar</button>
+                                <button type="button" class="spt-tab" data-tab="browse">◈ Explorar</button>
+                            </div>
+                            <div class="skill-picker-panel" id="skill-panel-search">
+                                <div class="skill-search-wrap">
+                                    <input type="text" id="skill-search-input" class="skill-search-input"
+                                        autocomplete="off" placeholder="Buscar skill..." />
+                                    <div id="skill-search-dropdown" class="skill-search-dropdown" hidden></div>
+                                </div>
+                            </div>
+                            <div class="skill-picker-panel" id="skill-panel-browse" hidden>
+                                <div class="skill-cat-nav">
+                                    <button type="button" class="skill-cat-arrow" id="skill-cat-prev">&#8249;</button>
+                                    <div class="skill-cat-tabs" id="skill-cat-tabs"></div>
+                                    <button type="button" class="skill-cat-arrow" id="skill-cat-next">&#8250;</button>
+                                </div>
+                                <div class="skill-picker-grid" id="skill-modules"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="field field-memory">
@@ -123,13 +152,16 @@
                         <div id="memory-file-field" style="display:none;margin-top:8px">
                             <label data-i18n="agents.modal.field_memory_file">Archivo de memoria</label>
                             <select id="agent-memory-file" class="select"></select>
-                            <span class="input-hint" data-i18n="agents.modal.memory_hint">Usa el archivo del agente por defecto o elige otro</span>
+                            <span class="input-hint" data-i18n="agents.modal.memory_hint">Usa el archivo del agente por
+                                defecto o elige otro</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" id="agent-modal-cancel" data-i18n="common.actions.cancel">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="agent-save-btn" data-i18n="agents.modal.save_btn">Guardar agente</button>
+                    <button type="button" class="btn btn-ghost" id="agent-modal-cancel"
+                        data-i18n="common.actions.cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="agent-save-btn"
+                        data-i18n="agents.modal.save_btn">Guardar agente</button>
                 </div>
             </form>
         </div>
@@ -148,9 +180,34 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p style="font-size:13px;color:var(--ink-2);margin-bottom:4px" data-i18n="agents.export.choose_format">Elige el formato:</p>
+                <p style="font-size:13px;color:var(--ink-2);margin-bottom:4px" data-i18n="agents.export.choose_format">
+                    Elige el formato:</p>
                 <div id="export-options" class="export-options"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Catálogo de agentes públicos -->
+    <div id="agent-catalog-bg" class="modal-bg" style="display:none">
+        <div class="ac-box">
+            <div class="ac-header">
+                <div class="ac-search-wrap">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                        <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                    <input id="ac-search" class="ac-search-input"
+                        data-i18n-placeholder="agents.catalog.search_placeholder" placeholder="Buscar agentes…"
+                        autocomplete="off" />
+                </div>
+                <button id="ac-close" class="modal-close" type="button">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <div id="ac-grid" class="ac-grid"></div>
         </div>
     </div>
 
@@ -167,6 +224,7 @@
     <script src="/assets/components/agent-card/agent-card.js"></script>
     <script src="/assets/components/filter_agents/filter_agents.js"></script>
     <script src="/assets/components/dialog_chat/dialog_chat.js"></script>
+    <script src="/assets/components/agent-catalog/agent-catalog.js"></script>
     <!-- Página (orden importante: state → skill-picker → modal → export → init) -->
     <script src="/agents/agents-state.js"></script>
     <script src="/agents/agents-skill-picker.js"></script>

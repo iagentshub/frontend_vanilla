@@ -13,7 +13,9 @@
     "no_description": "Sin descripcion",
     "no_ai": "Sin IA",
     "use_your_ai": "USA TU IA",
-    "chat": "Chat"
+    "chat": "Chat",
+    "chat_no_conn": "Configura una conexión para este agente",
+    "chat_conn_error": "La conexión no está disponible"
   },
   "filter": {
     "search_placeholder": "Buscar por nombre o descripción...",
@@ -74,5 +76,13 @@
   "chat": {
     "placeholder": "Escribe un mensaje…",
     "close": "Cerrar"
+  },
+  "catalog": {
+    "open_btn": "Catálogo",
+    "title": "Catálogo de agentes",
+    "search_placeholder": "Buscar agentes…",
+    "empty": "No hay agentes públicos disponibles",
+    "empty_search": "Ningún agente coincide con la búsqueda",
+    "fork_btn": "Personalizar"
   }
 }

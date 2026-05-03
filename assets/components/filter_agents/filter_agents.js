@@ -7,73 +7,65 @@ var FilterAgents = (function () {
     var _onChange = null;
     var _openPanel = null;
     var _panelSearch = { skills: '', conn: '' };
+    var _initialScope = null;
 
-    var _SVG_SEARCH  = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+    var _SVG_SEARCH = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     var _SVG_CHEVRON = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    var _SVG_CLEAR   = '<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-    var _SVG_CHECK   = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var _SVG_CLEAR = '<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+    var _SVG_CHECK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
     function _scopeTabs() {
         return [
-            { val: null,      label: t('agents.scope.all') },
+            { val: null, label: t('agents.scope.all') },
             { val: 'private', label: t('agents.scope.private') },
-            { val: 'public',  label: t('agents.scope.public') },
+            { val: 'public', label: t('agents.scope.public') },
         ];
     }
 
     function _render(mountEl) {
         var srch = document.getElementById('fa-search');
         var hadFocus = srch && document.activeElement === srch;
-        var cursor   = hadFocus ? srch.selectionStart : null;
+        var cursor = hadFocus ? srch.selectionStart : null;
 
-        var hasSk  = _state.skillIds.length > 0;
+        var hasSk = _state.skillIds.length > 0;
         var hasConn = _state.connIds.length > 0;
-        var hasMem  = _state.memory !== null;
-        var hasAny  = _state.query || hasSk || hasConn || hasMem || _state.scope !== null;
-
-        var scopeTabs = _scopeTabs().map(function (tab) {
-            var active = _state.scope === tab.val;
-            return '<button type="button" class="fa-scope-tab' + (active ? ' fa-scope-tab--active' : '') + '" data-scope="' + (tab.val || '') + '">' +
-                esc(tab.label) +
-                '</button>';
-        }).join('');
+        var hasMem = _state.memory !== null;
+        var hasAny = _state.query || hasSk || hasConn || hasMem;
 
         mountEl.innerHTML =
             '<div class="fa-bar" id="fa-bar">' +
-              '<div class="fa-search-wrap">' +
-                _SVG_SEARCH +
-                '<input id="fa-search" class="fa-search-input" placeholder="' + t('agents.filter.search_placeholder') + '" value="' + esc(_state.query) + '" autocomplete="off"/>' +
-                (_state.query ? '<button type="button" class="fa-search-clear" id="fa-search-clear" aria-label="' + t('search.clear_aria') + '">' + _SVG_CLEAR + '</button>' : '') +
-              '</div>' +
+            '<div class="fa-search-wrap">' +
+            _SVG_SEARCH +
+            '<input id="fa-search" class="fa-search-input" placeholder="' + t('agents.filter.search_placeholder') + '" value="' + esc(_state.query) + '" autocomplete="off"/>' +
+            (_state.query ? '<button type="button" class="fa-search-clear" id="fa-search-clear" aria-label="' + t('search.clear_aria') + '">' + _SVG_CLEAR + '</button>' : '') +
+            '</div>' +
 
-              '<div class="fa-scope-tabs">' + scopeTabs + '</div>' +
+            '<div class="fa-filter-group">' +
 
-              '<div class="fa-filter-group">' +
+            '<div class="fa-dropdown-wrap" id="fa-wrap-skills">' +
+            '<button type="button" class="fa-filter-btn' + (hasSk ? ' fa-filter-btn--active' : '') + '" id="fa-btn-skills">' +
+            t('agents.filter.skills_label') + (hasSk ? '<span class="fa-filter-count">' + _state.skillIds.length + '</span>' : '') + _SVG_CHEVRON +
+            '</button>' +
+            (_openPanel === 'skills' ? _renderSkillsPanel() : '') +
+            '</div>' +
 
-              '<div class="fa-dropdown-wrap" id="fa-wrap-skills">' +
-                '<button type="button" class="fa-filter-btn' + (hasSk ? ' fa-filter-btn--active' : '') + '" id="fa-btn-skills">' +
-                  t('agents.filter.skills_label') + (hasSk ? '<span class="fa-filter-count">' + _state.skillIds.length + '</span>' : '') + _SVG_CHEVRON +
-                '</button>' +
-                (_openPanel === 'skills' ? _renderSkillsPanel() : '') +
-              '</div>' +
+            '<div class="fa-dropdown-wrap" id="fa-wrap-conn">' +
+            '<button type="button" class="fa-filter-btn' + (hasConn ? ' fa-filter-btn--active' : '') + '" id="fa-btn-conn">' +
+            t('agents.filter.connection_label') + (hasConn ? '<span class="fa-filter-count">' + _state.connIds.length + '</span>' : '') + _SVG_CHEVRON +
+            '</button>' +
+            (_openPanel === 'conn' ? _renderConnPanel() : '') +
+            '</div>' +
 
-              '<div class="fa-dropdown-wrap" id="fa-wrap-conn">' +
-                '<button type="button" class="fa-filter-btn' + (hasConn ? ' fa-filter-btn--active' : '') + '" id="fa-btn-conn">' +
-                  t('agents.filter.connection_label') + (hasConn ? '<span class="fa-filter-count">' + _state.connIds.length + '</span>' : '') + _SVG_CHEVRON +
-                '</button>' +
-                (_openPanel === 'conn' ? _renderConnPanel() : '') +
-              '</div>' +
+            '<div class="fa-dropdown-wrap" id="fa-wrap-memory">' +
+            '<button type="button" class="fa-filter-btn' + (hasMem ? ' fa-filter-btn--active' : '') + '" id="fa-btn-memory">' +
+            t('agents.filter.memory_label') + (hasMem ? '<span class="fa-filter-count">1</span>' : '') + _SVG_CHEVRON +
+            '</button>' +
+            (_openPanel === 'memory' ? _renderMemoryPanel() : '') +
+            '</div>' +
 
-              '<div class="fa-dropdown-wrap" id="fa-wrap-memory">' +
-                '<button type="button" class="fa-filter-btn' + (hasMem ? ' fa-filter-btn--active' : '') + '" id="fa-btn-memory">' +
-                  t('agents.filter.memory_label') + (hasMem ? '<span class="fa-filter-count">1</span>' : '') + _SVG_CHEVRON +
-                '</button>' +
-                (_openPanel === 'memory' ? _renderMemoryPanel() : '') +
-              '</div>' +
+            '</div>' +
 
-              '</div>' +
-
-              (hasAny ? '<button type="button" class="fa-clear-all" id="fa-clear-all">' + t('actions.clear_filters') + '</button>' : '') +
+            (hasAny ? '<button type="button" class="fa-clear-all" id="fa-clear-all">' + t('actions.clear_filters') + '</button>' : '') +
             '</div>';
 
         _bindEvents(mountEl);
@@ -82,7 +74,7 @@ var FilterAgents = (function () {
             var ni = document.getElementById('fa-search');
             if (ni) {
                 ni.focus();
-                if (cursor !== null) try { ni.setSelectionRange(cursor, cursor); } catch (e) {}
+                if (cursor !== null) try { ni.setSelectionRange(cursor, cursor); } catch (e) { }
             }
         }
     }
@@ -137,7 +129,7 @@ var FilterAgents = (function () {
 
     function _renderMemoryPanel() {
         var opts = [
-            { val: 'true',  label: t('agents.filter.memory_active') },
+            { val: 'true', label: t('agents.filter.memory_active') },
             { val: 'false', label: t('agents.filter.memory_none') },
         ];
         return '<div class="fa-panel fa-panel--memory" id="fa-panel-memory">' +
@@ -256,7 +248,7 @@ var FilterAgents = (function () {
         var clearAll = document.getElementById('fa-clear-all');
         if (clearAll) {
             clearAll.addEventListener('click', function () {
-                _state = { query: '', skillIds: [], connIds: [], memory: null, scope: null };
+                _state = { query: '', skillIds: [], connIds: [], memory: null, scope: _initialScope };
                 _panelSearch = { skills: '', conn: '' };
                 _openPanel = null;
                 _notifyAndRender(mountEl, null);
@@ -296,7 +288,8 @@ var FilterAgents = (function () {
             _data.skills = opts.skills || [];
             _data.connections = opts.connections || [];
             _onChange = opts.onChange || null;
-            _state = { query: '', skillIds: [], connIds: [], memory: null, scope: null };
+            _initialScope = opts.initialScope || null;
+            _state = { query: '', skillIds: [], connIds: [], memory: null, scope: _initialScope };
             _openPanel = null;
             _render(mountEl);
             return mountEl;
@@ -315,7 +308,7 @@ var FilterAgents = (function () {
             };
         },
         reset: function (mountEl) {
-            _state = { query: '', skillIds: [], connIds: [], memory: null, scope: null };
+            _state = { query: '', skillIds: [], connIds: [], memory: null, scope: _initialScope };
             _panelSearch = { skills: '', conn: '' };
             _openPanel = null;
             var el = typeof mountEl === 'string' ? document.querySelector(mountEl) : mountEl;

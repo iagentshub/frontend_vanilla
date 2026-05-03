@@ -5,8 +5,10 @@ let _agents = [];
 let _connections = [];
 let _skills = [];
 let _memories = [];
+let _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
 
 async function _loadAll() {
+    _connStatus = {};
     [_agents, _connections, _skills, _memories] = await Promise.all([
         api.get('/api/agents'),
         api.get('/api/connections'),
@@ -14,8 +16,20 @@ async function _loadAll() {
         api.get('/api/memory').catch(() => []),
     ]);
     FilterAgents.setData(_skills, _connections);
+    AgentCatalog.setAgents(_agents.filter(a => (a.scope || 'private') === 'public'));
     _applyFilter();
     _syncConnectionSelect();
+    _testUsedConnections();
+}
+
+async function _testUsedConnections() {
+    const usedIds = [...new Set(_agents.map(a => a.connection_id).filter(Boolean))];
+    if (!usedIds.length) return;
+    try {
+        const results = await api.post('/api/connections/test-all', { ids: usedIds });
+        results.forEach(r => { _connStatus[r.id] = r.ok; });
+        _applyFilter();
+    } catch (_) { }
 }
 
 function _applyFilter() {
@@ -40,6 +54,7 @@ function _applyFilter() {
     if (f.memory === true) list = list.filter(a => a.use_memory);
     if (f.memory === false) list = list.filter(a => !a.use_memory);
     if (f.scope) list = list.filter(a => (a.scope || 'private') === f.scope);
+    else list = list.filter(a => (a.scope || 'private') === 'private');
 
-    AgentCard.renderGrid(list, _connections, _skills, document.getElementById('agents-grid'));
+    AgentCard.renderGrid(list, _connections, _skills, document.getElementById('agents-grid'), _connStatus);
 }

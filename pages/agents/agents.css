@@ -121,7 +121,7 @@
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
     background: var(--surface);
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Chips seleccionadas */
@@ -133,7 +133,9 @@
     border-bottom: 1px solid var(--line);
 }
 
-.skill-picker-chips:empty { display: none; }
+.skill-picker-chips:empty {
+    display: none;
+}
 
 .skill-chip-selected {
     display: inline-flex;
@@ -143,7 +145,7 @@
     border-radius: 20px;
     background: var(--accent-dim);
     color: var(--accent);
-    border: 1px solid rgba(204,32,32,.3);
+    border: 1px solid rgba(204, 32, 32, .3);
     font-size: 12.5px;
     font-weight: 600;
 }
@@ -161,19 +163,85 @@
     align-items: center;
 }
 
-.skill-chip-remove:hover { opacity: 1; }
+.skill-chip-remove:hover {
+    opacity: 1;
+}
+
+/* Pestañas del picker */
+.skill-picker-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.spt-tab {
+    flex: 1;
+    padding: 7px 12px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--ink-3);
+    font-size: 12.5px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: color .12s, border-color .12s;
+}
+
+.spt-tab:hover {
+    color: var(--ink);
+}
+
+.spt-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+}
+
+.skill-picker-panel {}
 
 /* Tabs de categoría */
+.skill-cat-nav {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+}
+
+.skill-cat-arrow {
+    flex-shrink: 0;
+    width: 28px;
+    height: 100%;
+    min-height: 36px;
+    border: none;
+    background: none;
+    color: var(--ink-3);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .12s;
+    padding: 0;
+}
+
+.skill-cat-arrow:hover {
+    color: var(--accent);
+}
+
 .skill-cat-tabs {
+    flex: 1;
+    min-width: 0;
     display: flex;
     gap: 4px;
-    padding: 8px 10px;
+    padding: 8px 4px;
     overflow-x: auto;
-    border-bottom: 1px solid var(--line);
     scrollbar-width: none;
 }
 
-.skill-cat-tabs::-webkit-scrollbar { display: none; }
+.skill-cat-tabs::-webkit-scrollbar {
+    display: none;
+}
 
 .skill-cat-tab {
     flex-shrink: 0;
@@ -245,12 +313,82 @@
     background: var(--surface-3);
 }
 
-.sgc-icon { font-size: 14px; line-height: 1; }
-.sgc-name { }
+.sgc-icon {
+    font-size: 14px;
+    line-height: 1;
+}
 
 .skill-grid-empty {
     width: 100%;
     padding: 16px;
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: center;
+}
+
+/* Buscador de skills */
+.skill-search-wrap {
+    padding: 8px 10px;
+}
+
+.skill-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 13px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color .12s;
+}
+
+.skill-search-input:focus {
+    border-color: var(--accent);
+}
+
+.skill-search-dropdown {
+    margin-top: 4px;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.skill-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    color: var(--ink-2);
+    font-size: 13px;
+    font-family: var(--font);
+    cursor: pointer;
+    text-align: left;
+    transition: background .1s, color .1s;
+}
+
+.skill-dropdown-item:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+}
+
+.sdi-icon {
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.skill-dropdown-empty {
+    padding: 12px;
     font-size: 12px;
     color: var(--ink-3);
     text-align: center;
@@ -278,7 +416,9 @@
     user-select: none;
 }
 
-.scope-radio input { display: none; }
+.scope-radio input {
+    display: none;
+}
 
 .scope-radio:has(input:checked) {
     border-color: var(--accent);

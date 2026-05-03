@@ -3,14 +3,15 @@
 
 function _openAgentModal(agent) {
     agent = agent || null;
-    document.getElementById('agent-modal-title').textContent = agent ? t('agents.modal.title_edit') : t('agents.modal.title_new');
-    document.getElementById('agent-id').value = agent ? (agent.id || '') : '';
+    const isEdit = !!(agent && agent.id);
+    document.getElementById('agent-modal-title').textContent = isEdit ? t('agents.modal.title_edit') : t('agents.modal.title_new');
+    document.getElementById('agent-id').value = isEdit ? agent.id : '';
     document.getElementById('agent-name').value = agent ? (agent.name || '') : '';
     const scopeField = document.getElementById('agent-scope-field');
-    const scopeVal = agent ? (agent.scope || 'private') : 'private';
+    const scopeVal = 'private';
     const scopeRadio = document.querySelector('input[name="agent-scope"][value="' + scopeVal + '"]');
     if (scopeRadio) scopeRadio.checked = true;
-    if (scopeField) scopeField.style.display = agent ? 'none' : '';
+    if (scopeField) scopeField.style.display = isEdit ? 'none' : '';
     document.getElementById('agent-desc').value = agent ? (agent.description || '') : '';
     document.getElementById('agent-prompt').value = agent ? (agent.system_prompt || '') : '';
     _syncConnectionSelect();
@@ -57,6 +58,7 @@ function _syncMemoryFields(agent) {
 }
 
 function _bindAgentModal() {
+    _bindSkillSearch();
     document.getElementById('agent-modal-close').addEventListener('click', _closeAgentModal);
     document.getElementById('agent-modal-cancel').addEventListener('click', _closeAgentModal);
     document.getElementById('agent-temp').addEventListener('input', e => {

@@ -48,8 +48,10 @@ function bindEvents() {
         if (action === 'test') {
             testConnections([id]);
         } else if (action === 'edit') {
-            var c = _connections.find(function (x) { return x.id === id; });
-            if (c) openModal(c);
+            try {
+                var c = await api.get('/api/connections/' + encodeURIComponent(id));
+                openModal(c);
+            } catch (e) { toast(e.message, 'error'); }
         } else if (action === 'delete') {
             if (!confirm(t('connections.confirm_delete'))) return;
             try {
