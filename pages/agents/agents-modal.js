@@ -7,20 +7,34 @@ function _openAgentModal(agent) {
     document.getElementById('agent-modal-title').textContent = isEdit ? t('agents.modal.title_edit') : t('agents.modal.title_new');
     document.getElementById('agent-id').value = isEdit ? agent.id : '';
     document.getElementById('agent-name').value = agent ? (agent.name || '') : '';
+    document.getElementById('agent-desc').value = agent ? (agent.description || '') : '';
+    document.getElementById('agent-prompt').value = agent ? (agent.system_prompt || '') : '';
+
     const scopeField = document.getElementById('agent-scope-field');
     const scopeVal = 'private';
     const scopeRadio = document.querySelector('input[name="agent-scope"][value="' + scopeVal + '"]');
     if (scopeRadio) scopeRadio.checked = true;
     if (scopeField) scopeField.style.display = isEdit ? 'none' : '';
-    document.getElementById('agent-desc').value = agent ? (agent.description || '') : '';
-    document.getElementById('agent-prompt').value = agent ? (agent.system_prompt || '') : '';
+
+    // Agent type selector
+    const agentTypeEl = document.getElementById('agent-type');
+    if (agentTypeEl) agentTypeEl.value = agent ? (agent.agent_type || 'generic') : 'generic';
+    _syncPlatformFields(agent ? (agent.agent_type || 'generic') : 'generic', agent);
+
     _syncConnectionSelect();
     document.getElementById('agent-connection').value = agent ? (agent.connection_id || '') : '';
+
     const sl = document.getElementById('agent-temp');
     sl.value = agent && agent.temperature != null ? agent.temperature : 0.7;
     document.getElementById('agent-temp-val').textContent = parseFloat(sl.value).toFixed(2);
+
     _initSkillPicker(agent ? (agent.skills || []) : []);
     _syncMemoryFields(agent);
+
+    // Open advanced section if editing a typed agent or if any advanced fields are set
+    const advanced = document.getElementById('agent-advanced');
+    if (advanced && isEdit) advanced.open = true;
+
     document.getElementById('agent-modal').style.display = 'flex';
     setTimeout(() => document.getElementById('agent-name').focus(), 60);
 }
@@ -57,6 +71,72 @@ function _syncMemoryFields(agent) {
     if (currentFile) sel.value = currentFile;
 }
 
+function _syncPlatformFields(agentType, agent) {
+    const sections = { claude: 'platform-claude', openai: 'platform-openai', github: 'platform-github' };
+    Object.entries(sections).forEach(([type, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = agentType === type ? '' : 'none';
+    });
+
+    // Show warning when agent type is specific (not generic)
+    const warning = document.getElementById('agent-type-warning');
+    if (warning) warning.style.display = agentType !== 'generic' ? '' : 'none';
+
+    if (agentType === 'claude' && agent) {
+        const thinking = document.getElementById('claude-extended-thinking');
+        if (thinking) thinking.checked = !!(agent.extended_thinking);
+        const cache = document.getElementById('claude-cache-control');
+        if (cache) cache.checked = !!(agent.cache_control);
+        const budget = document.getElementById('claude-thinking-budget');
+        if (budget) budget.value = agent.thinking_budget_tokens || 10000;
+        const budgetField = document.getElementById('claude-thinking-budget-field');
+        if (budgetField) budgetField.style.display = agent.extended_thinking ? '' : 'none';
+    } else if (agentType === 'openai' && agent) {
+        const fmt = document.getElementById('openai-response-format');
+        if (fmt) fmt.value = agent.response_format || 'text';
+        const tc = document.getElementById('openai-tool-choice');
+        if (tc) tc.value = agent.tool_choice || 'auto';
+        const freq = document.getElementById('openai-freq-penalty');
+        if (freq) freq.value = agent.frequency_penalty || 0;
+        const pres = document.getElementById('openai-pres-penalty');
+        if (pres) pres.value = agent.presence_penalty || 0;
+    } else if (agentType === 'github' && agent) {
+        const topic = document.getElementById('github-topic');
+        if (topic) topic.value = agent.copilot_topic || '';
+        const repoCtx = document.getElementById('github-repo-context');
+        if (repoCtx) repoCtx.checked = !!(agent.include_repo_context);
+    }
+}
+
+function _buildPlatformPayload(agentType) {
+    if (agentType === 'claude') {
+        const thinking = document.getElementById('claude-extended-thinking');
+        const extThinking = !!(thinking && thinking.checked);
+        return {
+            extended_thinking: extThinking,
+            thinking_budget_tokens: extThinking
+                ? parseInt(document.getElementById('claude-thinking-budget').value || '10000', 10)
+                : 10000,
+            cache_control: !!(document.getElementById('claude-cache-control') && document.getElementById('claude-cache-control').checked),
+        };
+    }
+    if (agentType === 'openai') {
+        return {
+            response_format: document.getElementById('openai-response-format').value || 'text',
+            tool_choice: document.getElementById('openai-tool-choice').value || 'auto',
+            frequency_penalty: parseFloat(document.getElementById('openai-freq-penalty').value || '0'),
+            presence_penalty: parseFloat(document.getElementById('openai-pres-penalty').value || '0'),
+        };
+    }
+    if (agentType === 'github') {
+        return {
+            copilot_topic: (document.getElementById('github-topic').value || '').trim(),
+            include_repo_context: !!(document.getElementById('github-repo-context') && document.getElementById('github-repo-context').checked),
+        };
+    }
+    return {};
+}
+
 function _bindAgentModal() {
     _bindSkillSearch();
     document.getElementById('agent-modal-close').addEventListener('click', _closeAgentModal);
@@ -67,6 +147,22 @@ function _bindAgentModal() {
     document.getElementById('agent-use-memory').addEventListener('change', e => {
         document.getElementById('memory-file-field').style.display = e.target.checked ? '' : 'none';
     });
+
+    // Agent type change → show/hide platform sections
+    const agentTypeEl = document.getElementById('agent-type');
+    if (agentTypeEl) {
+        agentTypeEl.addEventListener('change', e => _syncPlatformFields(e.target.value, null));
+    }
+
+    // Extended thinking toggle → show/hide budget field
+    const extThinkingEl = document.getElementById('claude-extended-thinking');
+    if (extThinkingEl) {
+        extThinkingEl.addEventListener('change', e => {
+            const f = document.getElementById('claude-thinking-budget-field');
+            if (f) f.style.display = e.target.checked ? '' : 'none';
+        });
+    }
+
     document.getElementById('agent-form').addEventListener('submit', async e => {
         e.preventDefault();
         const btn = document.getElementById('agent-save-btn');
@@ -74,10 +170,13 @@ function _bindAgentModal() {
         const useMemory = document.getElementById('agent-use-memory').checked;
         const memFile = document.getElementById('agent-memory-file').value || null;
         const scopeChecked = document.querySelector('input[name="agent-scope"]:checked');
+        const agentType = (document.getElementById('agent-type') || {}).value || 'generic';
+
         const payload = {
             id: document.getElementById('agent-id').value || undefined,
             name: document.getElementById('agent-name').value.trim(),
             description: document.getElementById('agent-desc').value.trim(),
+            agent_type: agentType,
             connection_id: document.getElementById('agent-connection').value || null,
             system_prompt: document.getElementById('agent-prompt').value.trim(),
             temperature: parseFloat(document.getElementById('agent-temp').value),
@@ -85,6 +184,7 @@ function _bindAgentModal() {
             use_memory: useMemory,
             memory_file: useMemory ? memFile : null,
             scope: scopeChecked ? scopeChecked.value : 'private',
+            ..._buildPlatformPayload(agentType),
         };
         try {
             await api.post('/api/agents', payload);

@@ -485,3 +485,98 @@
 .toggle-checkbox:checked+.toggle-track::after {
     left: 17px;
 }
+/* ── Advanced section (collapsible details) ── */
+.advanced-section {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.advanced-summary {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-2);
+    transition: background 0.13s, color 0.13s;
+}
+
+.advanced-summary:hover {
+    background: var(--surface-3);
+    color: var(--ink);
+}
+
+.advanced-summary::-webkit-details-marker { display: none; }
+
+.advanced-summary::before {
+    content: '▶';
+    font-size: 9px;
+    color: var(--ink-3);
+    transition: transform .18s;
+}
+
+details[open] > .advanced-summary::before {
+    transform: rotate(90deg);
+}
+
+.advanced-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid var(--line);
+}
+
+/* ── Platform-specific sections ── */
+.platform-section {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 14px;
+    background: var(--surface-2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.platform-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-3);
+}
+
+/* ── Field hint icon (ⓘ) ── */
+.field-hint-icon {
+    font-style: normal;
+    font-size: 11px;
+    color: var(--ink-3);
+    cursor: help;
+    user-select: none;
+}
+
+/* ── Portability warning ── */
+.agent-export-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 12px;
+    background: rgba(251, 191, 36, 0.07);
+    border: 1px solid rgba(251, 191, 36, 0.22);
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--warning);
+    line-height: 1.5;
+}
+
+.agent-export-warning svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    opacity: 0.85;
+}
