@@ -6,7 +6,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>iAgents Hub · Perfil</title>
-    <!-- CSS globales -->
     <link rel="stylesheet" href="/assets/css/variables.css" />
     <link rel="stylesheet" href="/assets/themes/themes.css" />
     <link rel="stylesheet" href="/assets/css/base.css" />
@@ -14,9 +13,7 @@
     <link rel="stylesheet" href="/assets/css/layout.css" />
     <link rel="stylesheet" href="/assets/css/modals.css" />
     <link rel="stylesheet" href="/assets/css/animations.css" />
-    <!-- Componentes -->
     <link rel="stylesheet" href="/assets/components/main_nav/main_nav.css" />
-    <!-- Página -->
     <link rel="stylesheet" href="/profile/profile.css" />
 </head>
 
@@ -28,58 +25,114 @@
             <div class="page-header">
                 <div>
                     <h1 class="page-title" data-i18n="profile.page.title">Perfil</h1>
-                    <p class="page-subtitle" data-i18n="profile.page.subtitle">Configuracion de tu cuenta</p>
+                    <p class="page-subtitle" data-i18n="profile.page.subtitle">Configuración de tu cuenta</p>
                 </div>
             </div>
 
-            <div class="profile-card">
-                <div class="profile-avatar-row">
-                    <div class="profile-avatar" id="profile-avatar">A</div>
-                    <div>
-                        <div class="profile-username" id="profile-username">…</div>
-                        <div class="profile-role" id="profile-role">…</div>
+            <div class="profile-panel">
+                <!-- Nav lateral -->
+                <nav class="profile-nav">
+                    <div class="profile-nav-user">
+                        <div class="profile-avatar" id="profile-avatar">A</div>
+                        <div class="profile-nav-user-info">
+                            <div class="profile-username" id="profile-username">…</div>
+                            <div class="profile-nav-badges">
+                                <span class="profile-role-badge" id="profile-role">…</span>
+                                <span class="profile-auth-badge" id="profile-auth-method" style="display:none"></span>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="profile-nav-items">
+                        <button class="profile-nav-item active" data-section="section-account">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M2.5 13.5c0-3 2.5-4.5 5.5-4.5s5.5 1.5 5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                            <span data-i18n="profile.nav.account">Mi cuenta</span>
+                        </button>
+                        <button class="profile-nav-item" data-section="section-providers" id="nav-providers">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+                                <circle cx="12" cy="4" r="2" stroke="currentColor" stroke-width="1.4"/>
+                                <circle cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M6 7.5l4-2.5M6 8.5l4 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            <span data-i18n="profile.nav.providers">Proveedores</span>
+                        </button>
+                        <button class="profile-nav-item" data-section="section-preferences">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                                <path d="M8 2v2M8 12v2M2 8h2M12 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            <span data-i18n="profile.nav.preferences">Preferencias</span>
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- Contenido de secciones -->
+                <div class="profile-sections">
+
+                    <!-- Mi cuenta -->
+                    <div id="section-account" class="profile-section">
+                        <div class="section-title" data-i18n="profile.nav.account">Mi cuenta</div>
+
+                        <div class="profile-info-block">
+                            <div class="profile-info-row">
+                                <span class="profile-info-label" data-i18n="profile.field_username">Usuario</span>
+                                <span class="profile-info-value" id="profile-username-detail">…</span>
+                            </div>
+                            <div class="profile-info-row">
+                                <span class="profile-info-label" data-i18n="profile.field_role">Rol</span>
+                                <span class="profile-info-value" id="profile-role-detail">…</span>
+                            </div>
+                            <div class="profile-info-row">
+                                <span class="profile-info-label" data-i18n="profile.field_auth">Acceso</span>
+                                <span class="profile-info-value" id="profile-auth-detail">…</span>
+                            </div>
+                        </div>
+
+                        <div id="password-card">
+                            <div class="section-subtitle" data-i18n="profile.password_title">Cambiar contraseña</div>
+                            <form id="password-form" novalidate>
+                                <div class="field">
+                                    <label data-i18n="profile.password.field_current">Contraseña actual</label>
+                                    <input id="pw-current" class="input" type="password" autocomplete="current-password" placeholder="••••••••" />
+                                </div>
+                                <div class="field">
+                                    <label data-i18n="profile.password.field_new">Nueva contraseña</label>
+                                    <input id="pw-new" class="input" type="password" autocomplete="new-password" placeholder="••••••••" />
+                                </div>
+                                <div class="field">
+                                    <label data-i18n="profile.password.field_confirm">Confirmar contraseña</label>
+                                    <input id="pw-confirm" class="input" type="password" autocomplete="new-password" placeholder="••••••••" />
+                                </div>
+                                <div class="profile-form-footer">
+                                    <button type="submit" class="btn btn-primary" id="pw-save-btn" data-i18n="profile.password.save_btn">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Proveedores -->
+                    <div id="section-providers" class="profile-section" hidden>
+                        <div class="section-title" data-i18n="profile.nav.providers">Proveedores</div>
+                        <p class="section-desc" data-i18n="profile.accounts.subtitle"></p>
+                        <div id="accounts-list" class="accounts-list"></div>
+                    </div>
+
+                    <!-- Preferencias -->
+                    <div id="section-preferences" class="profile-section" hidden>
+                        <div class="section-title" data-i18n="profile.nav.preferences">Preferencias</div>
+
+                        <div class="section-subtitle" data-i18n="profile.theme_title">Tema</div>
+                        <div class="theme-picker" id="theme-picker"></div>
+
+                        <div class="section-subtitle" style="margin-top:28px" data-i18n="profile.lang_title">Idioma</div>
+                        <div class="lang-picker" id="lang-picker"></div>
+                    </div>
+
                 </div>
-            </div>
-
-            <div class="profile-card" id="accounts-card">
-                <div class="profile-card-title" data-i18n="profile.accounts.title">Conectar cuentas</div>
-                <p class="profile-card-subtitle" data-i18n="profile.accounts.subtitle"></p>
-                <div id="accounts-list" class="accounts-list"></div>
-            </div>
-
-            <div class="profile-card" id="theme-picker-card">
-                <div class="profile-card-title" data-i18n="profile.theme_title">Tema</div>
-                <div class="theme-picker" id="theme-picker"></div>
-            </div>
-
-            <div class="profile-card" id="lang-picker-card">
-                <div class="profile-card-title" data-i18n="profile.lang_title">Idioma / Language</div>
-                <div class="lang-picker" id="lang-picker"></div>
-            </div>
-
-            <div class="profile-card" id="password-card">
-                <div class="profile-card-title" data-i18n="profile.password_title">Cambiar contraseña</div>
-                <form id="password-form" novalidate>
-                    <div class="field">
-                        <label data-i18n="profile.password.field_current">Contraseña actual</label>
-                        <input id="pw-current" class="input" type="password" autocomplete="current-password"
-                            placeholder="••••••••" />
-                    </div>
-                    <div class="field">
-                        <label data-i18n="profile.password.field_new">Nueva contraseña</label>
-                        <input id="pw-new" class="input" type="password" autocomplete="new-password"
-                            placeholder="••••••••" />
-                    </div>
-                    <div class="field">
-                        <label data-i18n="profile.password.field_confirm">Confirmar contraseña</label>
-                        <input id="pw-confirm" class="input" type="password" autocomplete="new-password"
-                            placeholder="••••••••" />
-                    </div>
-                    <div class="profile-form-footer">
-                        <button type="submit" class="btn btn-primary" id="pw-save-btn" data-i18n="profile.password.save_btn">Guardar cambios</button>
-                    </div>
-                </form>
             </div>
         </main>
     </div>
@@ -117,7 +170,6 @@
         </div>
     </div>
 
-    <!-- JS globales -->
     <script src="/assets/js/i18n.js"></script>
     <script src="/assets/js/config.js"></script>
     <script src="/assets/js/theme.js"></script>
@@ -125,9 +177,7 @@
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/utils.js"></script>
-    <!-- Componentes -->
     <script src="/assets/components/main_nav/main_nav.js"></script>
-    <!-- Página -->
     <script src="/profile/profile.js"></script>
     <script src="/profile/profile-accounts.js"></script>
 </body>

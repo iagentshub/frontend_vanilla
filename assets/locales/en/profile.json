@@ -3,11 +3,25 @@
     "title": "Profile",
     "subtitle": "Your account settings"
   },
+  "nav": {
+    "account": "My account",
+    "providers": "Providers",
+    "preferences": "Preferences"
+  },
+  "auth_method": {
+    "internal": "Internal",
+    "google": "Google",
+    "apple": "Apple",
+    "guest": "Guest"
+  },
   "roles": {
     "admin": "Administrator",
     "standard": "User",
     "guest": "Guest"
   },
+  "field_username": "Username",
+  "field_role": "Role",
+  "field_auth": "Access",
   "theme_title": "Theme",
   "lang_title": "Language",
   "password_title": "Change password",

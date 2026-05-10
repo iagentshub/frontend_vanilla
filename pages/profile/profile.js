@@ -2,10 +2,7 @@
 'use strict';
 
 var _currentRole = 'standard';
-
-function _getRoleLabel(role) {
-    return t('profile.roles.' + role) || role;
-}
+var _authMethod = 'internal';
 
 var _LANGS = [
     { id: 'es', label: 'Español', flag: '🇪🇸' },
@@ -18,7 +15,8 @@ async function init() {
     await loadUser();
     await renderThemePicker();
     renderLangPicker();
-    bindEvents();
+    bindPasswordForm();
+    bindNavItems();
 }
 
 async function loadUser() {
@@ -27,27 +25,62 @@ async function loadUser() {
         var d = await r.json();
         var u = d.username || '';
         _currentRole = d.role || 'standard';
+        _authMethod = d.auth_method || 'internal';
 
         var elName = document.getElementById('profile-username');
         var elRole = document.getElementById('profile-role');
+        var elAuth = document.getElementById('profile-auth-method');
         var elAvatar = document.getElementById('profile-avatar');
         if (elName) elName.textContent = u;
-        if (elRole) elRole.textContent = _getRoleLabel(_currentRole);
         if (elAvatar) elAvatar.textContent = u.charAt(0).toUpperCase() || '?';
 
-        // Ocultar cambio de contraseña para invitados
-        if (_currentRole === 'guest') {
-            var pwCard = document.getElementById('password-card');
-            if (pwCard) pwCard.style.display = 'none';
+        var roleLabel = t('profile.roles.' + _currentRole) || _currentRole;
+        if (elRole) elRole.textContent = roleLabel;
+
+        var authLabel = t('profile.auth_method.' + _authMethod) || _authMethod;
+        if (elAuth) {
+            elAuth.textContent = authLabel;
+            elAuth.style.display = _authMethod !== 'internal' ? '' : 'none';
         }
+
+        var elUserDet = document.getElementById('profile-username-detail');
+        var elRoleDet = document.getElementById('profile-role-detail');
+        var elAuthDet = document.getElementById('profile-auth-detail');
+        if (elUserDet) elUserDet.textContent = u;
+        if (elRoleDet) elRoleDet.textContent = roleLabel;
+        if (elAuthDet) elAuthDet.textContent = authLabel;
+
+        _initNav(_authMethod);
     } catch (e) { }
+}
+
+function _initNav(authMethod) {
+    // Hide password form for non-internal accounts (oauth or guest)
+    var pwCard = document.getElementById('password-card');
+    if (pwCard) pwCard.style.display = authMethod === 'internal' ? '' : 'none';
+}
+
+function _switchSection(targetId) {
+    document.querySelectorAll('.profile-section').forEach(function (sec) {
+        sec.hidden = sec.id !== targetId;
+    });
+    document.querySelectorAll('.profile-nav-item').forEach(function (btn) {
+        btn.classList.toggle('active', btn.dataset.section === targetId);
+    });
+}
+
+function bindNavItems() {
+    document.querySelectorAll('.profile-nav-item[data-section]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            _switchSection(btn.dataset.section);
+        });
+    });
 }
 
 async function renderThemePicker() {
     var container = document.getElementById('theme-picker');
     if (!container || !window.THEMES) return;
 
-    // Cargar tema desde servidor solo si no es invitado
     if (_currentRole !== 'guest') {
         try {
             var r = await fetch('/api/settings');
@@ -60,11 +93,11 @@ async function renderThemePicker() {
 
     var current = window.getTheme();
 
-    container.innerHTML = window.THEMES.map(function (t) {
-        var active = current === t.id;
-        return '<div class="theme-swatch' + (active ? ' theme-swatch--active' : '') + '" data-theme-pick="' + t.id + '">' +
-            '<div class="theme-swatch-preview" style="--swatch-bg:' + t.bg + ';--swatch-accent:' + t.accent + '"></div>' +
-            '<span class="theme-swatch-name">' + t.name + '</span>' +
+    container.innerHTML = window.THEMES.map(function (th) {
+        var active = current === th.id;
+        return '<div class="theme-swatch' + (active ? ' theme-swatch--active' : '') + '" data-theme-pick="' + th.id + '">' +
+            '<div class="theme-swatch-preview" style="--swatch-bg:' + th.bg + ';--swatch-accent:' + th.accent + '"></div>' +
+            '<span class="theme-swatch-name">' + th.name + '</span>' +
             '</div>';
     }).join('');
 
@@ -75,7 +108,6 @@ async function renderThemePicker() {
             container.querySelectorAll('.theme-swatch').forEach(function (s) {
                 s.classList.toggle('theme-swatch--active', s.dataset.themePick === themeId);
             });
-            // Solo persistir en servidor si no es invitado
             if (_currentRole !== 'guest') {
                 try {
                     await fetch('/api/settings', {
@@ -93,10 +125,8 @@ function renderLangPicker() {
     var container = document.getElementById('lang-picker');
     if (!container || !window.i18n) return;
 
-    var current = window.i18n.getLang();
-
     function _render() {
-        current = window.i18n.getLang();
+        var current = window.i18n.getLang();
         container.innerHTML = _LANGS.map(function (l) {
             var active = current === l.id;
             return '<button type="button" class="lang-option' + (active ? ' lang-option--active' : '') + '" data-lang="' + l.id + '">' +
@@ -118,7 +148,7 @@ function renderLangPicker() {
     _render();
 }
 
-function bindEvents() {
+function bindPasswordForm() {
     var form = document.getElementById('password-form');
     if (!form) return;
     form.addEventListener('submit', async function (e) {
