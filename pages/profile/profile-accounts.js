@@ -6,6 +6,8 @@ var _PROVIDER_LABELS = {
     openai: 'OpenAI',
     github: 'GitHub Copilot',
     ollama: 'Ollama',
+    nvidia: 'NVIDIA NIM',
+    google: 'Google Gemini',
 };
 
 var _PROVIDER_COLORS = {
@@ -13,10 +15,12 @@ var _PROVIDER_COLORS = {
     openai: '#10a37f',
     github: '#6e40c9',
     ollama: '#5a5a5a',
+    nvidia: '#76b900',
+    google: '#4285f4',
 };
 
 function _initials(provider) {
-    return { anthropic: 'An', openai: 'Ai', github: 'GH', ollama: 'Ol' }[provider] || provider.slice(0, 2).toUpperCase();
+    return { anthropic: 'An', openai: 'Ai', github: 'GH', ollama: 'Ol', nvidia: 'NV', google: 'Go' }[provider] || provider.slice(0, 2).toUpperCase();
 }
 
 function _relativeTime(isoStr) {
@@ -43,6 +47,10 @@ function _openAccountModal(provider) {
     document.getElementById('account-host').value = '';
     document.getElementById('account-field-host').style.display = needsHost ? '' : 'none';
     document.getElementById('account-field-apikey').style.display = needsHost ? 'none' : '';
+
+    var placeholders = { anthropic: 'sk-ant-…', openai: 'sk-…', github: 'ghp_…', nvidia: 'nvapi-…', google: 'AIza…' };
+    var apiKeyInput = document.getElementById('account-api-key');
+    if (apiKeyInput) apiKeyInput.placeholder = placeholders[provider] || '••••••••';
     _clearTestResult();
 
     var saveBtn = document.getElementById('account-modal-save');
