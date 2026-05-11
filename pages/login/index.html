@@ -551,6 +551,8 @@
         var _API = window.API_BASE || '';
 
         function _renderButtons() {
+            document.getElementById('btn-google-mount').innerHTML = '';
+            document.getElementById('btn-guest-mount').innerHTML = '';
             renderGoogleLoginButton('btn-google-mount', _API);
             renderGuestLoginButton('btn-guest-mount', _API);
         }
