@@ -169,6 +169,12 @@
             letter-spacing: -0.02em;
         }
 
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .topbar-badge {
             display: inline-flex;
             align-items: center;
@@ -181,6 +187,29 @@
             color: var(--red);
             letter-spacing: 0.06em;
             text-transform: uppercase;
+        }
+
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            background: none;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            font-family: inherit;
+        }
+
+        .lang-btn:hover {
+            border-color: rgba(255, 255, 255, 0.28);
+            color: rgba(255, 255, 255, 0.75);
         }
 
         .badge-dot {
@@ -399,6 +428,10 @@
             }
         }
 
+        @media (max-width: 600px) {
+            .topbar-badge { display: none; }
+        }
+
         @media (max-width: 900px) {
             .shell {
                 padding: 0 24px;
@@ -440,18 +473,27 @@
             <div class="logo-mark">
                 <span class="logo-iagents">iAgents</span><span class="logo-hub">Hub</span>
             </div>
-            <div class="topbar-badge">
-                <div class="badge-dot"></div>
-                Plataforma de agentes IA
+            <div class="topbar-right">
+                <div class="topbar-badge">
+                    <div class="badge-dot"></div>
+                    <span data-i18n="auth.badge">Plataforma de agentes IA</span>
+                </div>
+                <button class="lang-btn" id="login-lang-btn" aria-label="Switch language">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/>
+                        <path d="M8 2c-1.5 2-2.5 3.8-2.5 6s1 4 2.5 6M8 2c1.5 2 2.5 3.8 2.5 6S9.5 14 8 14M2 8h12" stroke="currentColor" stroke-width="1.2"/>
+                    </svg>
+                    <span id="login-lang-label">ES</span>
+                </button>
             </div>
         </div>
 
         <div class="main">
             <div class="brand">
                 <h1 class="brand-headline">
-                    Toda tu IA<br>en <span class="accent">un solo lugar</span>
+                    <span data-i18n="auth.headline_1">Toda tu IA</span><br><span data-i18n="auth.headline_pre">en</span> <span class="accent" data-i18n="auth.headline_accent">un solo lugar</span>
                 </h1>
-                <p class="brand-sub">
+                <p class="brand-sub" data-i18n="auth.sub">
                     Crea, configura y chatea con agentes de inteligencia artificial
                     conectados a cualquier proveedor del mercado.
                 </p>
@@ -459,20 +501,20 @@
                 <div class="stats-row">
                     <div class="stat">
                         <div class="stat-num">4<span>+</span></div>
-                        <div class="stat-label">Proveedores</div>
+                        <div class="stat-label" data-i18n="auth.stat_providers">Proveedores</div>
                     </div>
                     <div class="stat">
                         <div class="stat-num"><span>&#8734;</span></div>
-                        <div class="stat-label">Agentes</div>
+                        <div class="stat-label" data-i18n="auth.stat_agents">Agentes</div>
                     </div>
                     <div class="stat">
                         <div class="stat-num">100<span>%</span></div>
-                        <div class="stat-label">Privado</div>
+                        <div class="stat-label" data-i18n="auth.stat_private">Privado</div>
                     </div>
                 </div>
 
                 <div class="providers">
-                    <span class="providers-label">Compatible con</span>
+                    <span class="providers-label" data-i18n="auth.compat">Compatible con</span>
                     <span class="pill">OpenAI</span>
                     <span class="pill">Claude</span>
                     <span class="pill">Gemini</span>
@@ -487,13 +529,13 @@
                     </div>
                 </div>
 
-                <div class="card-title">Bienvenido</div>
-                <div class="card-sub">Accede a tu espacio de agentes</div>
+                <div class="card-title" data-i18n="auth.card_title">Bienvenido</div>
+                <div class="card-sub" data-i18n="auth.card_sub">Accede a tu espacio de agentes</div>
 
                 <div id="btn-google-mount"></div>
 
                 <div class="divider">
-                    <span class="divider-text">o</span>
+                    <span class="divider-text" data-i18n="auth.divider">o</span>
                 </div>
 
                 <div id="btn-guest-mount"></div>
@@ -508,9 +550,40 @@
         'use strict';
         var _API = window.API_BASE || '';
 
-        i18n.ready(function () {
+        function _renderButtons() {
             renderGoogleLoginButton('btn-google-mount', _API);
             renderGuestLoginButton('btn-guest-mount', _API);
+        }
+
+        // ── Botón de idioma ──────────────────────────────────────────────────
+        var _langBtn = document.getElementById('login-lang-btn');
+        var _langLabel = document.getElementById('login-lang-label');
+
+        function _syncLangBtn() {
+            if (_langLabel && window.i18n) {
+                _langLabel.textContent = window.i18n.getLang().toUpperCase();
+            }
+        }
+
+        _langBtn.addEventListener('click', function () {
+            var curr = window.i18n ? window.i18n.getLang() : 'es';
+            var next = curr === 'es' ? 'en' : 'es';
+            if (window.i18n) {
+                window.i18n.setLang(next).then(function () {
+                    _syncLangBtn();
+                    _renderButtons();
+                });
+            }
+        });
+
+        // ── Inicialización ───────────────────────────────────────────────────
+        i18n.ready(function () {
+            _syncLangBtn();
+            _renderButtons();
+        });
+
+        i18n.onLangChange(function () {
+            _syncLangBtn();
         });
 
         fetch(_API + '/api/auth/me').then(function (r) {
