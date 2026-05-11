@@ -22,6 +22,8 @@
     "field_api_key": "API Key",
     "api_key_hint": "Leave empty to keep unchanged.",
     "field_host": "Ollama Host",
+    "field_url": "URL",
+    "hint_url": "Change it if you use a corporate proxy or a custom endpoint.",
     "field_model": "Default model",
     "placeholder_name": "My OpenAI",
     "placeholder_host": "http://localhost:11434",

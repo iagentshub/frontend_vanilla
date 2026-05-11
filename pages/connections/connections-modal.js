@@ -10,6 +10,8 @@ function openModal(conn) {
     document.getElementById('conn-api-key').value = (conn && conn.api_key) ? conn.api_key : '';
     document.getElementById('conn-host').value = (conn && conn.host) ? conn.host : '';
     document.getElementById('conn-model').value = (conn && conn.model) ? conn.model : '';
+    var urlField = Providers.fields(defaultType).find(function (f) { return f.key === 'url'; });
+    document.getElementById('conn-url').value = (conn && conn.url) ? conn.url : (urlField ? urlField.default : '');
     toggleTypeFields(defaultType);
     document.getElementById('conn-modal').style.display = 'flex';
     setTimeout(function () { document.getElementById('conn-name').focus(); }, 80);
@@ -23,8 +25,14 @@ function toggleTypeFields(type) {
     var fields = Providers.fields(type);
     var hasHost = fields.some(function (f) { return f.key === 'host'; });
     var hasApiKey = fields.some(function (f) { return f.type === 'password'; });
+    var hasUrl = fields.some(function (f) { return f.key === 'url'; });
+    var urlField = fields.find(function (f) { return f.key === 'url'; });
     document.getElementById('field-api-key').style.display = hasApiKey ? '' : 'none';
     document.getElementById('field-host').style.display = hasHost ? '' : 'none';
+    document.getElementById('field-url').style.display = hasUrl ? '' : 'none';
+    if (hasUrl && urlField && !document.getElementById('conn-url').value) {
+        document.getElementById('conn-url').value = urlField.default || '';
+    }
 }
 
 function buildProviderSelect() {

@@ -87,6 +87,11 @@
                         <label data-i18n="connections.modal.field_host">Host Ollama</label>
                         <input id="conn-host" class="input" data-i18n-placeholder="connections.modal.placeholder_host" placeholder="http://localhost:11434" />
                     </div>
+                    <div class="field" id="field-url" style="display:none">
+                        <label data-i18n="connections.modal.field_url">URL</label>
+                        <input id="conn-url" class="input" placeholder="https://api.openai.com/v1/chat/completions" />
+                        <span class="input-hint" data-i18n="connections.modal.hint_url">Cámbiala si usas un proxy corporativo.</span>
+                    </div>
                     <div class="field">
                         <label data-i18n="connections.modal.field_model">Modelo por defecto</label>
                         <input id="conn-model" class="input" data-i18n-placeholder="connections.modal.placeholder_model" placeholder="gpt-4o / claude-sonnet-4-5 / llama3.2" />
