@@ -15,7 +15,7 @@ async function _loadKnowledgeItems() {
 
 function _initKnowledgePicker(selectedIds) {
     _selectedKnowledge = Array.isArray(selectedIds) ? selectedIds.slice() : [];
-    _renderKnowledgePicker();
+    _updateKnowledgeChars();
 }
 
 function _renderKnowledgePicker() {

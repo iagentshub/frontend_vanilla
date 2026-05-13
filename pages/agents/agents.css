@@ -372,6 +372,11 @@
     line-height: 1;
 }
 
+.skill-grid-chip-know {
+    opacity: .85;
+    font-style: italic;
+}
+
 .skill-grid-empty {
     width: 100%;
     padding: 16px;
@@ -446,6 +451,59 @@
     font-size: 12px;
     color: var(--ink-3);
     text-align: center;
+}
+
+/* Badge de tipo en cada item del dropdown */
+.sdi-type {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+/* Pills de filtro por tipo */
+.ktype-filter {
+    display: flex;
+    gap: 4px;
+    padding: 7px 10px 6px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+}
+
+.ktype-pill {
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: none;
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background .1s, color .1s, border-color .1s;
+    line-height: 1.6;
+}
+
+.ktype-pill:hover {
+    color: var(--ink);
+    border-color: var(--ink-3);
+}
+
+.ktype-pill.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(79, 70, 229, .3);
+    font-weight: 600;
+}
+
+/* Chip de conocimiento (URL / doc) */
+.skill-chip-know {
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-color: var(--line-strong);
 }
 
 /* ── Scope radio group ──────────────────────────────────────── */

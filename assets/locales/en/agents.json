@@ -133,7 +133,13 @@
   "skill_picker": {
     "all": "All",
     "other": "Other",
-    "no_skills": "No skills in this category"
+    "no_skills": "No skills in this category",
+    "type_all": "All",
+    "type_skill": "Skills",
+    "type_url": "Web",
+    "type_doc": "Docs",
+    "cat_webs": "Webs",
+    "cat_docs": "Documents"
   },
   "chat": {
     "placeholder": "Type a message…",
