@@ -14,7 +14,7 @@ async function init() {
     renderNav('nav-root', 'profile');
     await loadUser();
     await renderThemePicker();
-    renderLangPicker();
+    await renderLangPicker();
     bindPasswordForm();
     bindNavItems();
 }
@@ -121,9 +121,18 @@ async function renderThemePicker() {
     });
 }
 
-function renderLangPicker() {
+async function renderLangPicker() {
     var container = document.getElementById('lang-picker');
     if (!container || !window.i18n) return;
+
+    if (_currentRole !== 'guest') {
+        try {
+            var s = await fetch('/api/settings').then(function (r) { return r.ok ? r.json() : {}; });
+            if (s.language && s.language !== window.i18n.getLang()) window.i18n.setLang(s.language);
+        } catch (e) {}
+    }
+
+    window.i18n.onLangChange(function () { _render(); });
 
     function _render() {
         var current = window.i18n.getLang();
@@ -137,10 +146,20 @@ function renderLangPicker() {
         }).join('');
 
         container.querySelectorAll('[data-lang]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', async function () {
                 var lang = btn.dataset.lang;
                 if (lang === window.i18n.getLang()) return;
-                window.i18n.setLang(lang).then(function () { _render(); });
+                window.i18n.setLang(lang);
+                _render();
+                if (_currentRole !== 'guest') {
+                    try {
+                        await fetch('/api/settings', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ language: lang }),
+                        });
+                    } catch (e) {}
+                }
             });
         });
     }

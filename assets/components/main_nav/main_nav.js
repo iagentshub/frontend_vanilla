@@ -1,6 +1,8 @@
 // main_nav.js — Barra de navegación lateral
 'use strict';
 
+var _navUserRole = 'standard';
+
 var NAV_ICONS = {
     dashboard: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" stroke="currentColor" stroke-width="1.4"/></svg>',
     agents: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="7" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="11" r="1.2" fill="currentColor"/></svg>',
@@ -65,6 +67,7 @@ function renderNav(mountId, activePage) {
 
         fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) {
             var u = d.username || '';
+            _navUserRole = d.role || 'standard';
             var el = document.getElementById('nav-username');
             var av = document.getElementById('nav-avatar');
             if (el) el.textContent = u;
@@ -95,6 +98,13 @@ function renderNav(mountId, activePage) {
                 var curr = window.i18n ? window.i18n.getLang() : 'es';
                 var next = curr === 'es' ? 'en' : 'es';
                 if (window.i18n) window.i18n.setLang(next);
+                if (_navUserRole !== 'guest') {
+                    fetch('/api/settings', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ language: next }),
+                    }).catch(function () {});
+                }
             });
         }
     }

@@ -10,9 +10,15 @@ window.requireAuth = async function () {
         var r = await fetch((window.API_BASE || '') + '/api/auth/me');
         if (!r.ok) { window.location.replace('/login/'); return; }
         var d = await r.json();
-        // Solo sincronizar tema desde servidor para usuarios no invitados
-        if (d.role !== 'guest' && window._syncThemeFromServer) {
-            window._syncThemeFromServer();
+        if (d.role !== 'guest') {
+            fetch((window.API_BASE || '') + '/api/settings')
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (s) {
+                    if (!s) return;
+                    if (s.theme && window.setTheme && s.theme !== window.getTheme()) window.setTheme(s.theme);
+                    if (s.language && window.i18n && s.language !== window.i18n.getLang()) window.i18n.setLang(s.language);
+                })
+                .catch(function () {});
         }
         document.body.style.visibility = '';
     } catch (e) {
