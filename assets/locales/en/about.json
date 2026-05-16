@@ -29,6 +29,12 @@
     "body": "iAgents Hub is an open source project. Contributions are welcome.",
     "label": "View on GitHub"
   },
+  "contact": {
+    "title": "Contact",
+    "body": "Questions, suggestions, or want to collaborate?",
+    "btn": "Get in touch",
+    "soon": "Coming soon"
+  },
   "license": {
     "title": "License",
     "body": "MIT License — free to use, modify and distribute."
