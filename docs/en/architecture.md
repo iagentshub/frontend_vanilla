@@ -32,3 +32,15 @@ Agent responses are streamed in real time as the AI model generates them.
 **Independent pages** — each section of the interface is a self-contained HTML file. Common utilities are shared across pages.
 
 **No frameworks** — the interface is built with standard web technologies, without third-party runtime dependencies.
+
+---
+
+## Responsive design
+
+The interface adapts automatically to any screen size. The primary breakpoint is `768px`.
+
+**Mobile navigation** — on small screens the side menu is hidden and can be opened with a floating hamburger button. The `main_nav.js` component injects the button and close overlay directly into the document; no changes to each page's HTML are required.
+
+**Bottom-sheet modals** — on mobile, dialogs slide up from the bottom of the screen, following the standard mobile application pattern.
+
+**Compact layout** — content padding and grids adjust automatically to make the best use of space on narrow screens.

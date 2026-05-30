@@ -58,7 +58,7 @@
     "multimodal_body": "Modelos capaces de procesar no solo texto, sino también imágenes, audio o vídeo. Varios LLMs disponibles en iAgents Hub ya son multimodales (GPT-4o, Claude 3), lo que permite, por ejemplo, analizar capturas de pantalla o describir documentos escaneados."
   },
   "getting_started": {
-    "intro": "iAgents Hub es una plataforma self-hosted de agentes IA. Sigue estos tres pasos para empezar:",
+    "intro": "iAgents Hub es una plataforma self-hosted de agentes IA, accesible desde cualquier dispositivo — la interfaz es responsive y se adapta a móvil y escritorio. Sigue estos tres pasos para empezar:",
     "accounts_title": "Tipos de cuenta",
     "accounts_registered_title": "Cuenta registrada",
     "accounts_registered_body": "Acceso completo y permanente: agentes, historial de conversaciones, memoria, skills y configuración se conservan entre sesiones.",
@@ -67,7 +67,7 @@
     "step1_title": "1. Vincula un proveedor",
     "step1_body": "Ve a Perfil → Proveedores. Introduce tu API key de Anthropic, OpenAI, Google u otro proveedor soportado. Pulsa «Testear» para verificar la conexión y «Sincronizar» para importar los modelos disponibles.",
     "step2_title": "2. Crea un agente",
-    "step2_body": "Ve a Agentes y pulsa «Nuevo agente». Elige el tipo de agente, el modelo (de los importados en el paso anterior), y escribe las instrucciones del sistema. Puedes añadir skills, memoria y base de conocimiento.",
+    "step2_body": "Ve a Agentes y pulsa «Nuevo». Desde ahí puedes crear un agente desde cero, cargarlo desde un archivo (.md o .json) o elegirlo del catálogo. Elige el tipo de agente, el modelo y escribe las instrucciones del sistema. Puedes añadir skills, memoria y base de conocimiento.",
     "step3_title": "3. Chatea",
     "step3_body": "En la lista de agentes, pulsa sobre un agente y selecciona «Nuevo chat». El historial de tus conversaciones se guarda automáticamente."
   },
@@ -76,11 +76,13 @@
     "test_title": "Prueba con cualquier LLM",
     "test_body": "Conecta cualquier proveedor y cambia el modelo del agente con un clic. Así puedes comparar respuestas entre Claude, GPT-4o u otros sin reconfigurar nada.",
     "export_title": "Configura una vez, despliega en cualquier plataforma",
-    "export_body": "El system prompt, las skills y el contexto se definen una sola vez en iAgents Hub. El objetivo es poder exportar el agente al formato nativo de cada plataforma de destino sin reconfigurar nada.",
+    "export_body": "El system prompt, las skills y el contexto se definen una sola vez en iAgents Hub. Exporta el agente al formato nativo de cada plataforma —Claude Code, OpenAI Assistants o GitHub Copilot—, o importa agentes existentes con una vista previa del contenido antes de confirmar.",
     "config_title": "Qué define un agente",
-    "config_body": "Nombre, instrucciones del sistema (system prompt), modelo y conexión activa, skills habilitadas, memoria persistente y base de conocimiento.",
+    "config_body": "Nombre, instrucciones del sistema (system prompt), modelo y conexión activa, skills habilitadas, memoria persistente, base de conocimiento y rutinas programadas.",
     "memory_title": "Memoria",
-    "memory_body": "Si la memoria está activada, el agente recuerda el contexto de conversaciones anteriores. Puedes ver y editar los recuerdos desde la sección Memoria."
+    "memory_body": "Si la memoria está activada, el agente recuerda el contexto de conversaciones anteriores. Puedes ver y editar los recuerdos desde la sección Memoria.",
+    "routines_title": "Rutinas",
+    "routines_body": "Automatiza tareas que el agente debe ejecutar de forma periódica. Define un nombre, una instrucción y un disparador —manual, webhook o expresión cron para ejecución programada— sin necesidad de una conversación activa."
   },
   "connections": {
     "intro": "Una conexión es el acceso a un LLM concreto de un proveedor, listo para asignarse a un agente.",

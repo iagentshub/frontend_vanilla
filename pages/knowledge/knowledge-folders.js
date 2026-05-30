@@ -58,7 +58,11 @@ function KnowledgeFolders(section, onSelect) {
         var itemId = window._kDrag.id;
         var req = section === 'skill'
             ? api.patch('/api/skills/private/' + encodeURIComponent(itemId) + '/folder', { folder_id: targetFolderId })
-            : api.patch('/api/knowledge/' + encodeURIComponent(itemId), { folder_id: targetFolderId });
+            : section === 'agents'
+                ? api.patch('/api/agents/' + encodeURIComponent(itemId) + '/folder', { folder_id: targetFolderId || null })
+                : section === 'memory'
+                    ? api.patch('/api/memory/' + encodeURIComponent(itemId), { folder_id: targetFolderId || null })
+                    : api.patch('/api/knowledge/' + encodeURIComponent(itemId), { folder_id: targetFolderId });
         req.then(function () { if (onSelect) onSelect(_activeId); })
            .catch(function (e) { if (typeof toast === 'function') toast(e.message, 'error'); });
     }

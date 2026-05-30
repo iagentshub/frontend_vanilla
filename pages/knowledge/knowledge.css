@@ -253,27 +253,6 @@
     cursor: help;
 }
 
-.knowledge-del-btn {
-    flex-shrink: 0;
-    border: none;
-    background: transparent;
-    color: var(--ink-3);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-    padding: 2px 4px;
-    border-radius: 4px;
-    opacity: 0;
-    transition: opacity 0.1s, color 0.1s;
-}
-
-.knowledge-card:hover .knowledge-del-btn {
-    opacity: 1;
-}
-
-.knowledge-del-btn:hover {
-    color: var(--danger);
-}
 
 .knowledge-card-source {
     font-size: 11px;
@@ -644,6 +623,11 @@ a.knowledge-card-source:hover {
 .knowledge-action-btn--share:hover {
     color: #6366f1;
     background: rgba(99, 102, 241, 0.08);
+}
+
+.knowledge-action-btn--danger:hover {
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 7%, transparent);
 }
 
 .knowledge-shared-badge {

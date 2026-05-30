@@ -36,8 +36,8 @@ function renderTeams(teams) {
             '<div class="admin-actions-menu" data-team-id="' + esc(t.id) + '">' +
             '<button class="btn-actions" data-team-id="' + esc(t.id) + '">⋮</button>' +
             '<div class="actions-dropdown" style="display:none">' +
-            '<button class="action-item" data-action="view" data-team-id="' + esc(t.id) + '" data-team-name="' + esc(t.name) + '">Ver detalle</button>' +
-            '<button class="action-item action-item--danger" data-action="delete" data-team-id="' + esc(t.id) + '" data-team-name="' + esc(t.name) + '">Eliminar</button>' +
+            '<button class="action-item" data-action="view" data-team-id="' + esc(t.id) + '" data-team-name="' + esc(t.name) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Ver detalle</button>' +
+            '<button class="action-item action-item--danger" data-action="delete" data-team-id="' + esc(t.id) + '" data-team-name="' + esc(t.name) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Eliminar</button>' +
             '</div>' +
             '</div>';
 

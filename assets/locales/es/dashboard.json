@@ -2,9 +2,12 @@
   "page": {
     "title": "Dashboard",
     "subtitle": "Visión general de tu plataforma",
+    "new_btn": "Nuevo",
     "new_agent_btn": "Nuevo agente",
+    "new_agent_sub": "Crear o importar un agente",
     "catalog_btn": "Catálogo",
-    "new_conn_btn": "Nueva conexión"
+    "new_conn_btn": "Nueva conexión",
+    "new_conn_sub": "Añadir proveedor de IA"
   },
   "stats": {
     "agents": "Agentes",

@@ -120,10 +120,11 @@ function _buildSection(s) {
             '</div>';
     } else if (k === 'agents') {
         body = '<p class="docs-intro">' + t('docs.agents.intro') + '</p>' +
-            _item(t('docs.agents.test_title'),    t('docs.agents.test_body')) +
-            _item(t('docs.agents.export_title'),  t('docs.agents.export_body')) +
-            _item(t('docs.agents.config_title'),  t('docs.agents.config_body')) +
-            _item(t('docs.agents.memory_title'),  t('docs.agents.memory_body'));
+            _item(t('docs.agents.test_title'),     t('docs.agents.test_body')) +
+            _item(t('docs.agents.export_title'),   t('docs.agents.export_body')) +
+            _item(t('docs.agents.config_title'),   t('docs.agents.config_body')) +
+            _item(t('docs.agents.memory_title'),   t('docs.agents.memory_body')) +
+            _item(t('docs.agents.routines_title'), t('docs.agents.routines_body'));
     } else if (k === 'connections') {
         body = '<p class="docs-intro">' + t('docs.connections.intro') + '</p>' +
             _item(t('docs.connections.vs_accounts_title'), t('docs.connections.vs_accounts_body')) +

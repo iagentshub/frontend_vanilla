@@ -34,12 +34,6 @@ async function init() {
         _render(agents, connections, skills, memories, knowledge);
     }
 
-    document.getElementById('btn-dash-new-agent').addEventListener('click', function () {
-        window.location.href = '/agents';
-    });
-    document.getElementById('btn-dash-new-conn').addEventListener('click', function () {
-        window.location.href = '/connections';
-    });
 }
 
 function _render(agents, connections, skills, memories, knowledge) {

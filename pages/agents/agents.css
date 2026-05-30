@@ -1,3 +1,32 @@
+/* ── Folder sidebar layout ── */
+.af-layout {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.af-folder-panel {
+    width: 168px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--line);
+    padding-right: 12px;
+}
+
+.af-content {
+    flex: 1;
+    min-width: 0;
+    padding-left: 20px;
+}
+
+@media (max-width: 768px) {
+    .af-folder-panel { display: none; }
+    .af-content { padding-left: 0; }
+}
+
+/* drag-and-drop visual feedback for agent cards */
+.agent-card[draggable="true"] { cursor: grab; }
+.agent-card.kd-dragging { opacity: 0.35; cursor: grabbing; }
+
 /* ── Knowledge picker in agent modal ── */
 .agent-knowledge-picker {
     border: 1px solid var(--line);
@@ -115,6 +144,10 @@
     gap: 12px;
 }
 
+@media (max-width: 768px) {
+    .form-row-2 { grid-template-columns: 1fr; }
+}
+
 /* ── Panel shared ── */
 .panel-divider {
     height: 1px;
@@ -130,45 +163,6 @@
     letter-spacing: 0.06em;
 }
 
-/* ── Export options ── */
-.export-options {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.export-opt {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 14px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background: var(--surface);
-    cursor: pointer;
-    transition: border-color 0.13s, background 0.13s;
-}
-
-.export-opt:hover {
-    border-color: var(--accent);
-    background: var(--accent-dim);
-}
-
-.export-opt-icon {
-    font-size: 18px;
-}
-
-.export-opt-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-}
-
-.export-opt-sub {
-    font-size: 11px;
-    color: var(--ink-3);
-}
 
 /* ── Skill picker por categorías ──────────────────────────────── */
 .skill-picker {
@@ -823,4 +817,437 @@ details[open] > .advanced-summary::before {
     flex-shrink: 0;
     margin-top: 1px;
     opacity: 0.85;
+}
+
+/* ── Load Preview Modal ─────────────────────────────────────────── */
+.lp-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.lp-section {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.lp-section:last-child,
+.lp-section:empty {
+    border-bottom: none;
+    padding: 0;
+}
+
+.lp-format-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.lp-agent-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.lp-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.lp-agent-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.lp-agent-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lp-agent-desc {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.45;
+}
+
+.lp-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+}
+
+.lp-prompt-preview {
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.55;
+}
+
+.lp-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.lp-chip-missing {
+    background: rgba(245, 158, 11, .10);
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, .25);
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 7px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.lp-inline-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lp-memory-on {
+    font-size: 12px;
+    color: var(--success, #059669);
+    font-weight: 500;
+    font-family: var(--font-mono, monospace);
+}
+
+.lp-routine-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 10px;
+}
+
+.lp-routine-row:last-child {
+    border-bottom: none;
+}
+
+.lp-routine-name {
+    font-size: 12.5px;
+    color: var(--ink);
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lp-config-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lp-cfg-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12.5px;
+}
+
+.lp-cfg-label {
+    color: var(--ink-3);
+    min-width: 120px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.lp-cfg-value {
+    color: var(--ink);
+    font-weight: 500;
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+}
+
+.lp-warnings-section {
+    border-radius: var(--radius);
+    background: rgba(245, 158, 11, .06);
+    border: 1px solid rgba(245, 158, 11, .22);
+    padding: 12px 14px;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.lp-warnings-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #b45309;
+    margin-bottom: 4px;
+}
+
+.lp-warning-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12px;
+    color: #b45309;
+    line-height: 1.5;
+}
+
+.lp-warning-item code {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    background: rgba(245, 158, 11, .12);
+    border-radius: 3px;
+    padding: 0 4px;
+}
+
+/* ── Scan modal ── */
+.scan-modal-body {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.scan-folder-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+    flex-shrink: 0;
+}
+
+.scan-folder-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+
+.scan-folder-select {
+    flex: 1;
+    min-width: 0;
+    max-width: 220px;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.scan-folder-input {
+    flex: 1;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 12px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+}
+
+.scan-folder-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.scan-modal-count {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 2px;
+}
+
+.scan-section {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.scan-section:last-child { border-bottom: none; }
+
+.scan-section-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+}
+
+.scan-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.scan-item:last-child { border-bottom: none; }
+
+.scan-item-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.scan-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+.scan-badge {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.scan-badge--claude  { background: rgba(204,119,34,0.12); color: #cc7722; }
+.scan-badge--github  { background: rgba(110,64,201,0.12);  color: #6e40c9; }
+.scan-badge--native  { background: var(--accent-dim);       color: var(--accent); }
+.scan-badge--skill   { background: var(--surface-3);        color: var(--ink-2); border: 1px solid var(--line-strong); }
+
+.scan-empty {
+    padding: 36px 24px;
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: center;
+}
+
+.scan-agent-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.scan-agent-item:last-child { border-bottom: none; }
+
+.scan-agent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.scan-skill-count {
+    font-size: 0.68rem;
+    color: var(--ink-3);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.scan-agent-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-left: 2px;
+}
+
+.scan-skill-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    background: var(--surface-2);
+    color: var(--ink-3);
+    border: 1px solid var(--line-strong);
+}
+
+/* ── Drop overlay ── */
+.agent-drop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: var(--modal-overlay);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    pointer-events: none;
+    animation: fadein 0.1s ease;
+}
+
+.agent-drop-overlay.is-active { display: flex; }
+
+.agent-drop-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+}
+
+.agent-drop-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+}
+
+.agent-drop-sub {
+    font-size: 0.8rem;
+    color: var(--ink-3);
 }

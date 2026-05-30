@@ -2,9 +2,12 @@
   "page": {
     "title": "Dashboard",
     "subtitle": "Overview of your platform",
+    "new_btn": "New",
     "new_agent_btn": "New agent",
+    "new_agent_sub": "Create or import an agent",
     "catalog_btn": "Catalog",
-    "new_conn_btn": "New connection"
+    "new_conn_btn": "New connection",
+    "new_conn_sub": "Add an AI provider"
   },
   "stats": {
     "agents": "Agents",

@@ -41,7 +41,6 @@ function renderNav(mountId, activePage) {
             { href: '/agents', label: t('nav.agents'), page: 'agents' },
             { href: '/knowledge', label: t('nav.knowledge'), page: 'knowledge' },
             { href: '/connections', label: t('nav.connections'), page: 'connections' },
-            { href: '/memory', label: t('nav.memory'), page: 'memory' },
             { href: '/profile', label: t('nav.profile'), page: 'profile' },
         ];
 
@@ -143,6 +142,45 @@ function renderNav(mountId, activePage) {
         window.i18n.onLangChange(function () { _build(); });
     } else {
         _build();
+    }
+
+    // ── Hamburger móvil ───────────────────────────────────────────────────
+    if (!document.getElementById('nav-hamburger')) {
+        var _hamburger = document.createElement('button');
+        _hamburger.id = 'nav-hamburger';
+        _hamburger.className = 'nav-hamburger';
+        _hamburger.setAttribute('aria-label', 'Abrir menú');
+        _hamburger.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none">'
+            + '<path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'
+            + '</svg>';
+        document.body.appendChild(_hamburger);
+
+        var _backdrop = document.createElement('div');
+        _backdrop.id = 'nav-backdrop';
+        _backdrop.className = 'nav-backdrop';
+        document.body.appendChild(_backdrop);
+
+        function _openNav() {
+            var nav = document.querySelector('.main-nav');
+            if (nav) nav.classList.add('nav-open');
+            _backdrop.classList.add('visible');
+            _hamburger.setAttribute('aria-expanded', 'true');
+        }
+        function _closeNav() {
+            var nav = document.querySelector('.main-nav');
+            if (nav) nav.classList.remove('nav-open');
+            _backdrop.classList.remove('visible');
+            _hamburger.setAttribute('aria-expanded', 'false');
+        }
+        function _toggleNav() {
+            var nav = document.querySelector('.main-nav');
+            if (nav && nav.classList.contains('nav-open')) { _closeNav(); } else { _openNav(); }
+        }
+
+        _hamburger.addEventListener('click', _toggleNav);
+        _backdrop.addEventListener('click', _closeNav);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') _closeNav(); });
+        window.addEventListener('resize', function () { if (window.innerWidth > 768) _closeNav(); });
     }
 }
 

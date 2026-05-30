@@ -41,12 +41,12 @@ function renderUsers(users) {
             'data-user=\'' + JSON.stringify({email: u.email || '', role: u.role, is_active: isActive}) + '\'>' +
             '<button class="btn-actions" data-username="' + esc(u.username) + '">⋮</button>' +
             '<div class="actions-dropdown" style="display:none">' +
-            '<button class="action-item" data-action="edit" data-username="' + esc(u.username) + '">Editar</button>' +
+            '<button class="action-item" data-action="edit" data-username="' + esc(u.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Editar</button>' +
             (isActive
-                ? '<button class="action-item" data-action="block" data-username="' + esc(u.username) + '">Bloquear</button>'
-                : '<button class="action-item" data-action="unblock" data-username="' + esc(u.username) + '">Desbloquear</button>') +
-            (!isAdmin ? '<button class="action-item" data-action="make-admin" data-username="' + esc(u.username) + '">Hacer admin</button>' : '') +
-            '<button class="action-item action-item--danger" data-action="delete" data-username="' + esc(u.username) + '">Eliminar</button>' +
+                ? '<button class="action-item" data-action="block" data-username="' + esc(u.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Bloquear</button>'
+                : '<button class="action-item" data-action="unblock" data-username="' + esc(u.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Desbloquear</button>') +
+            (!isAdmin ? '<button class="action-item" data-action="make-admin" data-username="' + esc(u.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.4l-3.7 2.1.7-4.1-3-2.9 4.2-.9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Hacer admin</button>' : '') +
+            '<button class="action-item action-item--danger" data-action="delete" data-username="' + esc(u.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Eliminar</button>' +
             '</div>' +
             '</div>';
 

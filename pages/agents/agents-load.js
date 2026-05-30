@@ -42,6 +42,7 @@ function _parseGithubMdFree(text) {
         system_prompt: body,
         agent_type: 'github',
         copilot_topic: copilotTopic,
+        _source: 'github_copilot_free',
     };
 }
 
@@ -67,6 +68,7 @@ function _parseAndLoadAgent(filename, text) {
                     system_prompt: parsed.body,
                     agent_type: 'github',
                     copilot_topic: parsed.meta.target || '',
+                    _source: 'github_copilot_agent',
                 };
             }
             // Claude Code .md with frontmatter
@@ -76,6 +78,7 @@ function _parseAndLoadAgent(filename, text) {
                 system_prompt: _stripRoutinesGuide(parsed.body),
                 model: parsed.meta.model || '',
                 agent_type: 'claude',
+                _source: 'claude_code',
             };
         }
         return _parseGithubMdFree(text);
@@ -86,6 +89,7 @@ function _parseAndLoadAgent(filename, text) {
     if (data.agent_type) {
         delete data.id;
         data.routines = data.routines || [];
+        data._source = 'native';
         return data;
     }
 
@@ -102,6 +106,7 @@ function _parseAndLoadAgent(filename, text) {
             frequency_penalty: data.frequency_penalty || 0,
             presence_penalty: data.presence_penalty || 0,
             routines: data.routines || [],
+            _source: 'openai_assistant',
         };
     }
 
@@ -117,6 +122,7 @@ function _parseAndLoadAgent(filename, text) {
             thinking_budget_tokens: data.thinking_budget_tokens || 10000,
             cache_control: !!data.cache_control,
             routines: data.routines || [],
+            _source: 'claude_json',
         };
     }
 
@@ -128,5 +134,6 @@ function _parseAndLoadAgent(filename, text) {
         temperature: data.temperature,
         agent_type: 'generic',
         routines: data.routines || [],
+        _source: 'generic_json',
     };
 }

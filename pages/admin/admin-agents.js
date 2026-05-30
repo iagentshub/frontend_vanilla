@@ -70,8 +70,8 @@ function renderAgents(agents) {
             '<div class="admin-actions-menu">' +
             '<button class="btn-actions">⋮</button>' +
             '<div class="actions-dropdown" style="display:none">' +
-            '<button class="action-item" data-action="edit" data-agent-id="' + esc(a.id) + '">Editar</button>' +
-            '<button class="action-item action-item--danger" data-action="delete" data-agent-id="' + esc(a.id) + '" data-scope="private">Eliminar</button>' +
+            '<button class="action-item" data-action="edit" data-agent-id="' + esc(a.id) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Editar</button>' +
+            '<button class="action-item action-item--danger" data-action="delete" data-agent-id="' + esc(a.id) + '" data-scope="private"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Eliminar</button>' +
             '</div>' +
             '</div>';
 

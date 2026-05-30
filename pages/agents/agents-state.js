@@ -6,6 +6,7 @@ let _connections = [];
 let _skills = [];
 let _memories = [];
 let _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
+let _activeFolderId = null; // null = todos
 
 async function _loadAll() {
     _connStatus = {};
@@ -57,5 +58,18 @@ function _applyFilter() {
     if (f.scope) list = list.filter(a => (a.scope || 'private') === f.scope);
     else list = list.filter(a => (a.scope || 'private') === 'private');
 
+    if (_activeFolderId !== null) {
+        list = list.filter(a => (a.folder_id || null) === _activeFolderId);
+    }
+
     AgentCard.renderGrid(list, _connections, _skills, document.getElementById('agents-grid'), _connStatus);
+
+    if (window._folderAgents) {
+        window._folderAgents.updateStats(_agents.filter(a => (a.scope || 'private') === 'private'));
+    }
+}
+
+function _setActiveFolder(folderId) {
+    _activeFolderId = folderId;
+    _applyFilter();
 }

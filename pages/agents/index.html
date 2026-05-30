@@ -20,11 +20,24 @@
     <link rel="stylesheet" href="/assets/components/filter_agents/filter_agents.css" />
     <link rel="stylesheet" href="/assets/components/dialog_chat/dialog_chat.css" />
     <link rel="stylesheet" href="/assets/components/agent-catalog/agent-catalog.css" />
+    <link rel="stylesheet" href="/assets/components/action-menu/action-menu.css" />
     <!-- Página -->
+    <link rel="stylesheet" href="/knowledge/knowledge.css" />
     <link rel="stylesheet" href="/agents/agents.css" />
 </head>
 
 <body>
+    <div id="agent-drop-overlay" class="agent-drop-overlay" aria-hidden="true">
+        <div class="agent-drop-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M12 16V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 20v1a1 1 0 001 1h14a1 1 0 001-1v-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <p class="agent-drop-title" data-i18n="agents.page.drop_title">Suelta para importar</p>
+        <p class="agent-drop-sub" data-i18n="agents.page.drop_sub">Archivos .md / .json o carpetas .claude / .github</p>
+    </div>
+
     <div class="app-shell">
         <div id="nav-root"></div>
 
@@ -36,32 +49,26 @@
                     </p>
                 </div>
                 <div class="page-actions">
-                    <button class="btn btn-ghost" id="btn-catalog">
-                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-                            <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
-                            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                        </svg>
-                        <span data-i18n="agents.catalog.open_btn">Catálogo</span>
-                    </button>
-                    <button class="btn btn-ghost" id="btn-load-agent">
-                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                            <path d="M6.5 8.5V1M3 4L6.5 1 10 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M1 10.5v1a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                        <span data-i18n="agents.page.load_btn">Cargar</span>
-                    </button>
                     <button class="btn btn-primary" id="btn-new-agent">
                         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                             <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.8"
                                 stroke-linecap="round" />
                         </svg>
                         <span data-i18n="agents.page.new_btn">Nuevo</span>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:2px;opacity:.7">
+                            <path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
                 </div>
                 <input type="file" id="agent-file-input" accept=".json,.md" style="display:none">
             </div>
             <div id="filter-agents-root"></div>
-            <div id="agents-grid" class="agents-grid"></div>
+            <div class="af-layout">
+                <div class="af-folder-panel" id="af-folder-panel"></div>
+                <div class="af-content">
+                    <div id="agents-grid" class="agents-grid"></div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -315,6 +322,38 @@
         </div>
     </div>
 
+    <!-- MODAL: Preview de carga de agente -->
+    <div id="load-preview-modal" class="modal-bg" style="display:none">
+        <div class="modal-box" style="width:560px">
+            <div class="modal-header">
+                <span class="modal-title" data-i18n="agents.preview.title">Vista previa de importación</span>
+                <button class="modal-close" id="lp-modal-close" type="button">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="lp-body">
+                <div id="lp-header" class="lp-section"></div>
+                <div id="lp-prompt" class="lp-section"></div>
+                <div id="lp-skills" class="lp-section"></div>
+                <div id="lp-memory" class="lp-section"></div>
+                <div id="lp-routines" class="lp-section"></div>
+                <div id="lp-config" class="lp-section"></div>
+                <div id="lp-warnings-section" class="lp-warnings-section" style="display:none">
+                    <div id="lp-warnings"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" id="lp-btn-cancel"
+                    data-i18n="common.actions.cancel">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="lp-btn-confirm"
+                    data-i18n="agents.preview.confirm_btn">Importar agente</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: Catálogo de agentes públicos -->
     <div id="agent-catalog-bg" class="modal-bg" style="display:none">
         <div class="ac-box">
@@ -354,14 +393,19 @@
     <script src="/assets/components/filter_agents/filter_agents.js"></script>
     <script src="/assets/components/dialog_chat/dialog_chat.js"></script>
     <script src="/assets/components/agent-catalog/agent-catalog.js"></script>
+    <script src="/assets/components/action-menu/action-menu.js"></script>
     <script src="/assets/js/share-teams.js"></script>
+    <script src="/assets/components/folder-move-dialog/folder-move-dialog.js"></script>
     <!-- Página (orden importante: state → skill-picker → modal → export → init) -->
+    <script src="/knowledge/knowledge-folders.js"></script>
     <script src="/agents/agents-state.js"></script>
     <script src="/agents/agents-skill-picker.js"></script>
     <script src="/agents/agents-modal.js"></script>
     <script src="/agents/agents-export.js"></script>
     <script src="/agents/agents-load.js"></script>
+    <script src="/agents/agents-load-preview.js"></script>
     <script src="/agents/agents-routines.js"></script>
+    <script src="/agents/agents-scan.js"></script>
     <script src="/agents/agents.js"></script>
 </body>
 

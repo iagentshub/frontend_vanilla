@@ -1,9 +1,15 @@
 {
   "page": {
     "title": "Skills",
-    "new_btn": "New private skill",
+    "new_btn": "New",
     "load_btn": "Load",
-    "load_error": "Could not read file: {{msg}}"
+    "load_error": "Could not read file: {{msg}}",
+    "new_from_catalog": "From catalog",
+    "new_from_catalog_sub": "Browse public skills",
+    "new_from_file": "Load from file",
+    "new_from_file_sub": "Import a file",
+    "new_from_scratch": "Create from scratch",
+    "new_from_scratch_sub": "Blank skill"
   },
   "categories": {
     "ai": "🤖 AI",
@@ -61,10 +67,27 @@
     "empty_search": "No skills found matching your search."
   },
   "actions": {
-    "view": "View",
     "edit": "Edit",
     "delete": "Delete",
-    "share": "Share"
+    "share": "Share",
+    "export": "Export"
+  },
+  "export": {
+    "title": "Export skill",
+    "choose_format": "Choose format:",
+    "claude_label": "Claude Code / Anthropic",
+    "claude_sub": "Markdown with YAML frontmatter",
+    "claude_path": "📁 .claude/skills/{name}.md",
+    "github_label": "GitHub Copilot",
+    "github_sub": "Markdown instructions file",
+    "github_path": "📁 .github/instructions/{name}.instructions.md",
+    "openai_label": "OpenAI",
+    "openai_sub": "JSON for Assistants API",
+    "openai_path": "📄 {name}.json",
+    "md_label": "Markdown",
+    "md_sub": "Content only, no metadata",
+    "md_path": "📄 {name}.md",
+    "exported": "Exported: {{name}}"
   },
   "knowledge": {
     "page_title": "Knowledge",
@@ -74,7 +97,12 @@
     "add_url_btn": "Add URL",
     "url_placeholder": "https://example.com/page",
     "title_placeholder": "Title (optional)",
+    "upload_btn": "Upload",
     "upload_doc_btn": "Upload document",
+    "upload_doc": "Upload document",
+    "upload_doc_sub": ".txt, .md or .pdf",
+    "upload_folder": "Upload folder",
+    "upload_folder_sub": "All supported files",
     "drop_hint": "Drag a file here or click to select it",
     "formats_hint": "Formats: .txt .md .pdf · Max 10 MB",
     "char_count": "{{n}} characters",

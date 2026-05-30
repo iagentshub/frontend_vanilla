@@ -33,5 +33,12 @@
   "search": {
     "clear_aria": "Clear search"
   },
-  "redirect": "Redirecting to {{target}}…"
+  "redirect": "Redirecting to {{target}}…",
+  "knowledge": {
+    "folder": {
+      "move_to": "Move to folder",
+      "no_folder": "No folder",
+      "loading": "Loading folders…"
+    }
+  }
 }

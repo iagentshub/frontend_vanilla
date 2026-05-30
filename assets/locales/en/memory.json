@@ -4,7 +4,11 @@
     "subtitle": "Persistent context files for your agents",
     "new_btn": "New",
     "load_btn": "Load",
-    "load_error": "Could not read file: {{msg}}"
+    "load_error": "Could not read file: {{msg}}",
+    "new_from_file": "Load from file",
+    "new_from_file_sub": "Import .md or .json",
+    "new_from_scratch": "Create from scratch",
+    "new_from_scratch_sub": "Empty memory file"
   },
   "filter": {
     "search_placeholder": "Search file…"

@@ -104,6 +104,27 @@
     gap: 8px;
 }
 
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .page-content {
+        padding: 60px 16px 24px;
+        gap: 20px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .page-title { font-size: 1.25rem; }
+
+    .page-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
 /* ── Empty state ── */
 .empty-state {
     display: flex;

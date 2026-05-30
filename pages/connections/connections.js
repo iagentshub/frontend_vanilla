@@ -61,6 +61,10 @@ function bindEvents() {
         }
     });
 
+    if (window.i18n) {
+        window.i18n.onLangChange(async function () { await loadConnections(); });
+    }
+
     document.getElementById('conn-form').addEventListener('submit', async function (e) {
         e.preventDefault();
         var type = document.getElementById('conn-type').value;

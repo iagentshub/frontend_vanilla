@@ -33,9 +33,9 @@ function renderMembers(members) {
             '<div class="admin-actions-menu">' +
             '<button class="btn-actions" data-member="' + esc(m.username) + '">⋮</button>' +
             '<div class="actions-dropdown" style="display:none">' +
-            '<button class="action-item" data-action="edit-perms" data-member="' + esc(m.username) + '">' + t('manager.manager.members.edit_perms') + '</button>' +
-            (!isManager ? '<button class="action-item" data-action="make-manager" data-member="' + esc(m.username) + '">' + t('manager.manager.members.make_manager') + '</button>' : '') +
-            '<button class="action-item action-item--danger" data-action="remove" data-member="' + esc(m.username) + '">' + t('manager.manager.members.remove') + '</button>' +
+            '<button class="action-item" data-action="edit-perms" data-member="' + esc(m.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' + t('manager.manager.members.edit_perms') + '</button>' +
+            (!isManager ? '<button class="action-item" data-action="make-manager" data-member="' + esc(m.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.4l-3.7 2.1.7-4.1-3-2.9 4.2-.9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' + t('manager.manager.members.make_manager') + '</button>' : '') +
+            '<button class="action-item action-item--danger" data-action="remove" data-member="' + esc(m.username) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t('manager.manager.members.remove') + '</button>' +
             '</div></div>';
 
         return '<tr>' +

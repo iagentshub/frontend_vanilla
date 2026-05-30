@@ -95,15 +95,15 @@ function renderCard(c) {
         '<div class="conn-card-status"></div>' +
         '</div>' +
         '<footer class="conn-card-footer">' +
-        '<button class="cca-btn cca-btn--test" data-action="test" data-id="' + esc(c.id) + '">' +
-        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' + t('connections.actions.test') + '</button>' +
+        '<button class="cca-btn cca-btn--test" data-action="test" data-id="' + esc(c.id) + '" title="' + t('connections.actions.test') + '">' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2.5l9 5.5-9 5.5V2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>' +
+        '<button class="cca-btn" data-action="edit" data-id="' + esc(c.id) + '" title="' + t('connections.actions.edit') + '">' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>' +
         (!c._shared ? '<button class="cca-btn" data-action="share" data-id="' + esc(c.id) + '" data-name="' + esc(c.name) + '" title="' + (t('teams.teams.sharing.share_with') || 'Compartir') + '">' +
-        '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.8L5.5 7.2M10.5 12.2L5.5 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.8L5.5 7.2M10.5 12.2L5.5 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' +
         '</button>' : '') +
-        '<button class="cca-btn" data-action="edit" data-id="' + esc(c.id) + '">' +
-        '<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t('connections.actions.edit') + '</button>' +
         '<button class="cca-btn cca-btn--delete" data-action="delete" data-id="' + esc(c.id) + '" title="' + t('connections.actions.delete') + '">' +
-        '<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M5 6h10M8 6V4.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V6m1.5 0-.5 10a1.5 1.5 0 0 1-1.5 1.4h-3A1.5 1.5 0 0 1 7 16L6.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
         '</button></footer></article>';
 }
 

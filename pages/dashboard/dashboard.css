@@ -343,7 +343,8 @@
     .dash-recent-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 768px) {
     .dash-stats { grid-template-columns: repeat(2, 1fr); }
+    .dash-columns { flex-direction: column; }
     .dash-recent-grid { grid-template-columns: 1fr; }
 }

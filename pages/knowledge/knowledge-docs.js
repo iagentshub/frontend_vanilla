@@ -7,9 +7,6 @@ var KnowledgeDocs = (function () {
     var _activeFolderId = null;
 
     function init() {
-        document.getElementById('btn-upload-doc').addEventListener('click', function () {
-            document.getElementById('doc-file-input').click();
-        });
         document.getElementById('doc-file-input').addEventListener('change', function (e) {
             var file = e.target.files[0];
             e.target.value = '';
@@ -18,9 +15,6 @@ var KnowledgeDocs = (function () {
 
         var folderInput = document.getElementById('folder-file-input');
         if (folderInput) {
-            document.getElementById('btn-upload-folder').addEventListener('click', function () {
-                folderInput.click();
-            });
             folderInput.addEventListener('change', function (e) {
                 var files = Array.from(e.target.files || []);
                 e.target.value = '';
@@ -68,7 +62,11 @@ var KnowledgeDocs = (function () {
             var delBtn = e.target.closest('[data-del-id]');
             if (delBtn) { _deleteItem(delBtn.dataset.delId); return; }
             var moveBtn = e.target.closest('[data-move-id]');
-            if (moveBtn) _openMoveMenu(moveBtn);
+            if (moveBtn) {
+                var item = _items.find(function (i) { return i.id === moveBtn.dataset.moveId; });
+                FolderMoveDialog.open('document', moveBtn.dataset.moveId, item ? item.folder_id : null, function () { load(); });
+                return;
+            }
         });
     }
 
@@ -113,7 +111,7 @@ var KnowledgeDocs = (function () {
                 '<span class="knowledge-card-title">' + esc(item.title) + '</span>' +
                 warn +
                 shareBtn +
-                '<button class="knowledge-del-btn" data-del-id="' + esc(item.id) + '" title="' + esc(t('common.actions.delete') || 'Eliminar') + '">×</button>' +
+                '<button class="knowledge-action-btn knowledge-action-btn--danger" data-del-id="' + esc(item.id) + '" title="' + esc(t('common.actions.delete') || 'Eliminar') + '"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
                 '</div>' +
                 '<div class="knowledge-card-source">' + esc(item.source) + '</div>' +
                 '<div class="knowledge-card-meta">' + esc(_fmtChars(item.char_count)) +
@@ -317,34 +315,6 @@ var KnowledgeDocs = (function () {
         }
     }
 
-    function _openMoveMenu(btn) {
-        var folders = window._folderDocs ? window._folderDocs.getFolders() : [];
-        if (!folders.length) { toast('Crea primero una carpeta', 'info'); return; }
-        var itemId = btn.dataset.moveId;
-        var options = '<option value="">— Sin carpeta —</option>' +
-            folders.map(function (f) { return '<option value="' + esc(f.id) + '">' + esc(f.name) + '</option>'; }).join('');
-        var sel = document.createElement('select');
-        sel.innerHTML = options;
-        sel.style.cssText = 'position:absolute;z-index:200;background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;font-size:13px;';
-        var rect = btn.getBoundingClientRect();
-        sel.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-        sel.style.left = (rect.left + window.scrollX) + 'px';
-        document.body.appendChild(sel);
-        sel.focus();
-        sel.addEventListener('change', function () {
-            var newFolder = sel.value || null;
-            if (sel.parentNode) sel.remove();
-            api.patch('/api/knowledge/' + itemId, { folder_id: newFolder })
-                .then(function () {
-                    var item = _items.find(function (i) { return i.id === itemId; });
-                    if (item) item.folder_id = newFolder;
-                    _render();
-                    if (window._folderDocs) window._folderDocs.updateStats(_items);
-                })
-                .catch(function (e) { toast(e.message, 'error'); });
-        });
-        sel.addEventListener('blur', function () { if (sel.parentNode) sel.remove(); });
-    }
 
     async function _deleteItem(id) {
         if (!confirm(t('skills.knowledge.confirm_delete') || '¿Eliminar?')) return;
