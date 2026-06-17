@@ -86,12 +86,14 @@
     "memory_default": "Por defecto: {{name}}",
     "save_btn": "Guardar agente",
     "saving": "Guardando...",
+    "btn_next": "Siguiente →",
+    "btn_prev": "← Anterior",
     "placeholder_name": "Mi agente",
     "placeholder_desc": "Para que sirve este agente",
     "placeholder_prompt": "Describe el rol de este agente. Ej: 'Eres un experto en ventas B2B. Responde siempre en español. Sé directo y usa ejemplos concretos.'",
     "field_temp_hint": "Controla la creatividad de las respuestas. Valores bajos (0.1–0.4) dan respuestas más precisas y predecibles; valores altos (0.7–1.0) dan respuestas más variadas y creativas.",
-    "tab_search": "🔍 Buscar",
-    "tab_browse": "◈ Explorar",
+    "tab_search": "Buscar",
+    "tab_browse": "Explorar",
     "skill_search_placeholder": "Buscar skill...",
     "specific_config": "Configuración específica",
     "field_agent_type": "Tipo de agente",
@@ -167,6 +169,9 @@
     "file_location": "Ruta del archivo descargado (editable)",
     "back": "Volver",
     "done": "Listo"
+  },
+  "step": {
+    "counter": "Paso {{current}} de {{total}}"
   },
   "skill_picker": {
     "all": "Todas",

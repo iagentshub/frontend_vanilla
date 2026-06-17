@@ -2,7 +2,18 @@
 'use strict';
 
 function _apiError(status, detail) {
-    var e = new Error(detail || 'Error ' + status);
+    var msg;
+    if (!detail) {
+        msg = 'Error ' + status;
+    } else if (typeof detail === 'string') {
+        msg = detail;
+    } else if (Array.isArray(detail)) {
+        // FastAPI validation errors: [{loc, msg, type}, ...]
+        msg = detail.map(function (e) { return e.msg || JSON.stringify(e); }).join('; ');
+    } else {
+        msg = JSON.stringify(detail);
+    }
+    var e = new Error(msg);
     e.status = status;
     return e;
 }

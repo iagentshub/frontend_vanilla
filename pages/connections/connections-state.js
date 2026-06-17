@@ -139,6 +139,7 @@ async function testConnections(ids) {
             setStatus(r.id, r.ok ? 'ok' : 'error', r.message || (r.ok ? 'OK' : 'Error'), r.detail);
         });
     } catch (e) {
-        ids.forEach(function (id) { setStatus(id, 'error', e.message); });
+        var errMsg = (e && (e.message || e.toString())) || 'Error desconocido';
+        ids.forEach(function (id) { setStatus(id, 'error', errMsg); });
     }
 }
