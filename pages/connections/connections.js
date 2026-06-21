@@ -24,7 +24,7 @@ function bindEvents() {
     });
 
     document.getElementById('conn-type').addEventListener('change', function (e) {
-        toggleTypeFields(e.target.value);
+        buildDynamicFields(e.target.value, null);
     });
 
     document.getElementById('connections-root').addEventListener('click', async function (e) {
@@ -72,16 +72,8 @@ function bindEvents() {
             id: document.getElementById('conn-id').value || undefined,
             name: document.getElementById('conn-name').value.trim(),
             type: type,
-            model: document.getElementById('conn-model').value.trim() || undefined,
         };
-        var fields = Providers.fields(type);
-        fields.forEach(function (f) {
-            if (f.key === 'model') return;   // ya recogido arriba
-            var el = document.getElementById('conn-' + f.key.replace('_', '-'));
-            if (!el) return;
-            var val = el.value.trim();
-            if (val) payload[f.key] = val;
-        });
+        Object.assign(payload, collectDynamicFields());
         try {
             await api.post('/api/connections', payload);
             toast(t('connections.saved'), 'success');

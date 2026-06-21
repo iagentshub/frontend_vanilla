@@ -489,3 +489,101 @@
         padding: 20px 16px;
     }
 }
+
+/* ── Provider groups (sección Proveedores) ─────────── */
+.provider-group {
+    margin-bottom: 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.provider-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+}
+
+.provider-group-icon { font-size: 15px; flex-shrink: 0; }
+
+.provider-group-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+}
+
+.provider-group-count {
+    font-size: 11px;
+    color: var(--ink-3);
+    background: var(--surface-3);
+    border-radius: 10px;
+    padding: 1px 7px;
+}
+
+.provider-add-btn { margin-left: auto; }
+
+.provider-conns { padding: 4px 0; }
+
+.provider-conn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--line);
+}
+.provider-conn-row:last-child { border-bottom: none; }
+
+.provider-conn-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.provider-conn-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.provider-conn-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.provider-conn-tokens {
+    font-size: 10px;
+    color: var(--ink-3);
+    background: var(--surface-3);
+    border-radius: 8px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.provider-conn-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.provider-btn-delete { color: var(--error, #e05); }
+.provider-btn-delete:hover { background: color-mix(in srgb, var(--error, #e05) 10%, transparent); }
+
+.provider-empty {
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--ink-3);
+}

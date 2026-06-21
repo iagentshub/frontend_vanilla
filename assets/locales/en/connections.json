@@ -25,7 +25,7 @@
     "field_url": "URL",
     "hint_url": "Change it if you use a corporate proxy or a custom endpoint.",
     "field_model": "Default model",
-    "placeholder_name": "My OpenAI",
+    "placeholder_name": "Connection name",
     "placeholder_host": "http://localhost:11434",
     "placeholder_model": "gpt-4o / claude-sonnet-4-5 / llama3.2"
   },

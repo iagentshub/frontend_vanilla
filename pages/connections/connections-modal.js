@@ -1,21 +1,107 @@
-// connections-modal.js — modal de crear/editar conexión
+// connections-modal.js — modal de crear/editar conexión (form-builder dinámico)
 'use strict';
+
+// ── Form builder ──────────────────────────────────────────────────────────────
+
+function buildDynamicFields(type, conn) {
+    var container = document.getElementById('conn-dynamic-fields');
+    if (!container) return;
+
+    var fields = Providers.fields(type);
+    var isEdit = !!(conn && conn.id);
+
+    container.innerHTML = fields.map(function (f) {
+        // Saved value from backend (or empty for passwords, or default for new)
+        var savedVal = conn ? (conn[f.key] != null ? String(conn[f.key]) : '') : '';
+        var displayVal = f.type === 'password' ? '' : (savedVal || f.default || '');
+        var hasOldPwd = f.type === 'password' && isEdit;
+
+        var depends = '';
+        if (f.depends_on) {
+            depends = ' data-depends-on="' + esc(f.depends_on) +
+                '" data-depends-value="' + esc(f.depends_value || '') + '"';
+        }
+
+        var hint = '';
+        if (f.type === 'password' && hasOldPwd) {
+            hint = '<span class="input-hint">' + t('connections.modal.api_key_hint') + '</span>';
+        } else if (f.key === 'url' && f.default) {
+            hint = '<span class="input-hint">' + t('connections.modal.hint_url') + '</span>';
+        }
+
+        return '<div class="field"' + depends + '>' +
+            '<label>' + esc(f.label) + (f.required ? ' <span class="field-required">*</span>' : '') + '</label>' +
+            _buildInput(f, displayVal) +
+            hint +
+            '</div>';
+    }).join('');
+
+    _bindDependsOn(container);
+}
+
+function _buildInput(f, val) {
+    if (f.type === 'select') {
+        var opts = (f.options || []).map(function (o) {
+            return '<option value="' + esc(o.value) + '"' +
+                (val === o.value ? ' selected' : '') + '>' + esc(o.label) + '</option>';
+        }).join('');
+        return '<select class="select" data-field-key="' + esc(f.key) + '">' + opts + '</select>';
+    }
+
+    var inputType = f.type === 'password' ? 'password'
+        : f.type === 'number' ? 'number'
+        : 'text';
+
+    return '<input class="input" type="' + inputType + '"' +
+        ' data-field-key="' + esc(f.key) + '"' +
+        (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') +
+        (f.required ? ' required' : '') +
+        ' value="' + esc(val) + '" />';
+}
+
+function _bindDependsOn(container) {
+    container.querySelectorAll('[data-depends-on]').forEach(function (fieldDiv) {
+        var key = fieldDiv.dataset.dependsOn;
+        var expected = fieldDiv.dataset.dependsValue;
+        var trigger = container.querySelector('[data-field-key="' + CSS.escape(key) + '"]');
+        if (!trigger) { fieldDiv.style.display = 'none'; return; }
+        function update() {
+            var actual = trigger.type === 'checkbox' ? String(trigger.checked) : trigger.value;
+            fieldDiv.style.display = actual === expected ? '' : 'none';
+        }
+        trigger.addEventListener('change', update);
+        update();
+    });
+}
+
+// ── Collect values from dynamic form ─────────────────────────────────────────
+
+function collectDynamicFields() {
+    var out = {};
+    var container = document.getElementById('conn-dynamic-fields');
+    if (!container) return out;
+    container.querySelectorAll('[data-field-key]').forEach(function (el) {
+        var key = el.dataset.fieldKey;
+        var val = el.type === 'checkbox' ? el.checked : el.value.trim();
+        if (val !== '' && val !== false && val != null) {
+            out[key] = val;
+        }
+    });
+    return out;
+}
+
+// ── Open / close ──────────────────────────────────────────────────────────────
 
 function openModal(conn) {
     var defaultType = conn && conn.type ? conn.type : Providers.first();
-    document.getElementById('conn-modal-title').textContent = conn ? t('connections.modal.title_edit') : t('connections.modal.title_new');
-    document.getElementById('conn-id').value = (conn && conn.id) ? conn.id : '';
-    document.getElementById('conn-name').value = (conn && conn.name) ? conn.name : '';
+    document.getElementById('conn-modal-title').textContent =
+        conn ? t('connections.modal.title_edit') : t('connections.modal.title_new');
+    document.getElementById('conn-id').value = conn && conn.id ? conn.id : '';
+    document.getElementById('conn-name').value = conn && conn.name ? conn.name : '';
     document.getElementById('conn-type').value = defaultType;
-    document.getElementById('conn-api-key').value = (conn && conn.api_key) ? conn.api_key : '';
-    document.getElementById('conn-host').value = (conn && conn.host) ? conn.host : '';
-    document.getElementById('conn-model').value = (conn && conn.model) ? conn.model : '';
-    // toggleTypeFields primero (pone la URL por defecto del proveedor),
-    // luego sobreescribimos con la URL guardada si existe.
-    toggleTypeFields(defaultType);
-    if (conn && conn.url) {
-        document.getElementById('conn-url').value = conn.url;
-    }
+
+    buildDynamicFields(defaultType, conn);
+
     document.getElementById('conn-modal').style.display = 'flex';
     setTimeout(function () { document.getElementById('conn-name').focus(); }, 80);
 }
@@ -24,21 +110,7 @@ function closeModal() {
     document.getElementById('conn-modal').style.display = 'none';
 }
 
-function toggleTypeFields(type) {
-    var fields = Providers.fields(type);
-    var hasHost = fields.some(function (f) { return f.key === 'host'; });
-    var hasApiKey = fields.some(function (f) { return f.type === 'password'; });
-    var hasUrl = fields.some(function (f) { return f.key === 'url'; });
-    var urlField = fields.find(function (f) { return f.key === 'url'; });
-    document.getElementById('field-api-key').style.display = hasApiKey ? '' : 'none';
-    document.getElementById('field-host').style.display = hasHost ? '' : 'none';
-    document.getElementById('field-url').style.display = hasUrl ? '' : 'none';
-    // Siempre resetear la URL al defecto del proveedor cuando cambia el tipo.
-    // openModal() sobreescribe esto con la URL guardada si existe.
-    var urlInput = document.getElementById('conn-url');
-    urlInput.value = (hasUrl && urlField) ? (urlField.default || '') : '';
-    urlInput.placeholder = (hasUrl && urlField) ? (urlField.default || '') : '';
-}
+// ── Provider select ───────────────────────────────────────────────────────────
 
 function buildProviderSelect() {
     var select = document.getElementById('conn-type');

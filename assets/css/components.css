@@ -356,6 +356,12 @@
     color: var(--ink-3);
 }
 
+.field-required {
+    color: var(--accent);
+    font-weight: 600;
+    font-style: normal;
+}
+
 /* ── Card ── */
 .card {
     background: var(--surface);

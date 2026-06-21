@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/profile/profile.css" />
     <link rel="stylesheet" href="/admin/admin.css" />
     <link rel="stylesheet" href="/manager/manager.css" />
+    <link rel="stylesheet" href="/assets/css/modals.css" />
 </head>
 
 <body>
@@ -175,36 +176,35 @@
         </main>
     </div>
 
-    <!-- Modal vincular cuenta -->
-    <div id="account-modal" class="modal-bg" style="display:none">
+    <!-- Modal conexión (mismo modal que /connections) -->
+    <div id="conn-modal" class="modal-bg" style="display:none">
         <div class="modal-box">
             <div class="modal-header">
-                <span class="modal-title" id="account-modal-title">Vincular cuenta</span>
-                <button class="modal-close" id="account-modal-close" type="button">
+                <span class="modal-title" id="conn-modal-title" data-i18n="connections.modal.title_new">Nueva conexión</span>
+                <button class="modal-close" id="conn-modal-close" type="button">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                     </svg>
                 </button>
             </div>
-            <div class="modal-body">
-                <input type="hidden" id="account-modal-provider" />
-                <div class="field" id="account-field-apikey">
-                    <label data-i18n="profile.accounts.field_api_key">API Key</label>
-                    <input id="account-api-key" class="input" type="password" autocomplete="off" placeholder="sk-…" />
+            <form id="conn-form" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="conn-id" />
+                    <div class="field">
+                        <label data-i18n="connections.modal.field_name">Nombre *</label>
+                        <input id="conn-name" class="input" data-i18n-placeholder="connections.modal.placeholder_name" placeholder="Nombre de la conexión" required />
+                    </div>
+                    <div class="field">
+                        <label data-i18n="connections.modal.field_provider">Proveedor</label>
+                        <select id="conn-type" class="select"></select>
+                    </div>
+                    <div id="conn-dynamic-fields"></div>
                 </div>
-                <div class="field" id="account-field-host" style="display:none">
-                    <label data-i18n="profile.accounts.field_host">Host</label>
-                    <input id="account-host" class="input" type="text" placeholder="http://localhost:11434" />
-                    <span class="input-hint" data-i18n="profile.accounts.host_hint">Si usas Docker, prueba con host.docker.internal en lugar de localhost.</span>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" id="conn-cancel" data-i18n="common.actions.cancel">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.actions.save">Guardar</button>
                 </div>
-                <div id="account-test-result" class="account-test-result" style="display:none"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-ghost" id="account-modal-test" data-i18n="profile.accounts.test_btn">Testear</button>
-                <div style="flex:1"></div>
-                <button type="button" class="btn btn-ghost" id="account-modal-cancel" data-i18n="common.actions.cancel">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="account-modal-save" data-i18n="profile.accounts.save_btn">Vincular</button>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -308,7 +308,9 @@
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/providers.js"></script>
     <script src="/assets/components/main_nav/main_nav.js"></script>
+    <script src="/connections/connections-modal.js"></script>
     <script src="/profile/profile.js"></script>
     <script src="/profile/profile-accounts.js"></script>
     <script src="/assets/js/share-teams.js"></script>

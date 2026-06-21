@@ -74,7 +74,7 @@ function _isCustomUrl(conn) {
 }
 
 function renderCard(c) {
-    var sub = c.model || (c.host ? c.host : '');
+    var sub = c.model || c.host || c.url || '';
     var totalTokens = (c.tokens_in || 0) + (c.tokens_out || 0);
     var tokenBadge = totalTokens
         ? '<span class="conn-token-badge" title="' + _fmtTokens(c.tokens_in || 0) + ' in / ' + _fmtTokens(c.tokens_out || 0) + ' out">' + _fmtTokens(totalTokens) + ' tok</span>'
