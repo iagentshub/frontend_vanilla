@@ -72,6 +72,7 @@ function _initFilters() {
         mountEl: '#filter-agents-root',
         skills: _skills,
         connections: _connections,
+        knowledge: _knowledge,
         initialScope: 'private',
         onChange: function () { _applyFilter(); },
     });

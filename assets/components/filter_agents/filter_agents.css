@@ -265,3 +265,11 @@
 .fa-panel-search::placeholder {
     color: var(--ink-3);
 }
+
+/* ── Icono de tipo en panel de conocimiento ── */
+.fa-option-type {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--ink-3);
+}

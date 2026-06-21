@@ -59,8 +59,11 @@
     "memory_none": "No memory",
     "no_skills": "No skills available",
     "no_connections": "No connections available",
+    "no_knowledge": "No knowledge available",
     "search_skill": "Search skill…",
-    "search_connection": "Search connection…"
+    "search_connection": "Search connection…",
+    "search_knowledge": "Search knowledge…",
+    "knowledge_label": "Knowledge"
   },
   "empty": "No agents yet.<br>Create the first one with <strong>+ New agent</strong>.",
   "confirm_delete": "Delete this agent?",

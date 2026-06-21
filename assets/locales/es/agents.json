@@ -59,8 +59,11 @@
     "memory_none": "Sin memoria",
     "no_skills": "Sin habilidades disponibles",
     "no_connections": "Sin conexiones disponibles",
+    "no_knowledge": "Sin conocimiento disponible",
     "search_skill": "Buscar skill…",
-    "search_connection": "Buscar conexión…"
+    "search_connection": "Buscar conexión…",
+    "search_knowledge": "Buscar conocimiento…",
+    "knowledge_label": "Conocimiento"
   },
   "empty": "No hay agentes todavia.<br>Crea el primero con <strong>+ Nuevo agente</strong>.",
   "confirm_delete": "¿Eliminar este agente?",

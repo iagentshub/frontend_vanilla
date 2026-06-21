@@ -5,18 +5,20 @@ let _agents = [];
 let _connections = [];
 let _skills = [];
 let _memories = [];
+let _knowledge = [];
 let _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
 let _activeFolderId = null; // null = todos
 
 async function _loadAll() {
     _connStatus = {};
-    [_agents, _connections, _skills, _memories] = await Promise.all([
+    [_agents, _connections, _skills, _memories, _knowledge] = await Promise.all([
         api.get('/api/agents'),
         api.get('/api/connections'),
         api.get('/api/skills'),
         api.get('/api/memory').catch(() => []),
+        api.get('/api/knowledge').catch(() => []),
     ]);
-    FilterAgents.setData(_skills, _connections);
+    FilterAgents.setData(_skills, _connections, _knowledge);
     AgentCatalog.setAgents(_agents.filter(a => (a.scope || 'private') === 'public'));
     _applyFilter();
     _syncConnectionSelect();
@@ -52,6 +54,11 @@ function _applyFilter() {
     }
     if (f.connIds.length) {
         list = list.filter(a => f.connIds.includes(a.connection_id));
+    }
+    if (f.knowledgeIds.length) {
+        list = list.filter(a =>
+            f.knowledgeIds.every(kid => (a.knowledge || []).includes(kid))
+        );
     }
     if (f.memory === true) list = list.filter(a => a.use_memory);
     if (f.memory === false) list = list.filter(a => !a.use_memory);
