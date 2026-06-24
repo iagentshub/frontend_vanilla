@@ -9,7 +9,7 @@ var AgentScanner = (function () {
         var p = path.replace(/\\/g, '/');
         if (/(?:^|\/)\.claude\/agents\/[^/]+\.md$/i.test(p))        return 'agent_claude';
         if (/(?:^|\/)\.claude\/agents\/[^/]+\.json$/i.test(p))       return 'agent_json';
-        if (/(?:^|\/)\.claude\/skills\/[^/]+\.md$/i.test(p))         return 'skill';
+        if (/(?:^|\/)\.claude\/skills\/[^/]+\/SKILL\.md$/i.test(p))   return 'skill';
         if (/(?:^|\/)\.github\/[^/]+\.agent\.md$/i.test(p))          return 'agent_github';
         if (/(?:^|\/)\.github\/copilot-instructions\.md$/i.test(p))  return 'agent_github';
         return null;
@@ -101,6 +101,11 @@ var AgentScanner = (function () {
         var nameSet = {};
         (_loadedFolders.agents || []).forEach(function (f) { nameSet[f.name] = true; });
         (_loadedFolders.skill  || []).forEach(function (f) { nameSet[f.name] = true; });
+        // Si el directorio escaneado no existe aún como carpeta, añadirlo para que
+        // aparezca pre-seleccionado en el picker sin necesidad de crearlo antes.
+        if (_selectedFolderName && !nameSet[_selectedFolderName]) {
+            nameSet[_selectedFolderName] = true;
+        }
         var names = Object.keys(nameSet).sort();
 
         var selectHTML = '<select class="scan-folder-select" id="scan-folder-select">'
@@ -173,6 +178,57 @@ var AgentScanner = (function () {
         });
     }
 
+    // ─── Vinculación inteligente agent→skills ─────────────────────────────────
+
+    // Determina qué skills globales (sin id) deben vincularse a un agente concreto.
+    // Estrategias en orden de prioridad:
+    //  1. Referencias de ruta en el cuerpo: `.claude/skills/{slug}`
+    //  2. Campo `skills:` en el frontmatter del agente (nombres o slugs, separados por coma)
+    //  3. Nombre/descripción del agente contiene el slug o nombre de la skill
+    //  4. Fallback: todas las skills globales
+    function _matchGlobalSkills(globalSkills, rawText, parsed) {
+        var refs = [];
+
+        // 1. Rutas explícitas en el cuerpo
+        var pathRe = /\.claude\/skills\/([^\s\/'"`,\)]+)/g;
+        var pm;
+        while ((pm = pathRe.exec(rawText)) !== null) {
+            refs.push(pm[1].toLowerCase());
+        }
+
+        // 2. Campo skills: en el frontmatter ("backend, i18n" o "[backend, i18n]")
+        var skillsMeta = (parsed._skillsMeta || '').replace(/[\[\]]/g, '');
+        skillsMeta.split(',').forEach(function (s) {
+            var t = s.trim().toLowerCase();
+            if (t) refs.push(t);
+        });
+
+        // Resolver referencias contra las skills disponibles
+        if (refs.length > 0) {
+            var matched = globalSkills.filter(function (s) {
+                var slug = (s._fallback || '').toLowerCase();
+                var name = (s.meta.name  || '').toLowerCase();
+                return refs.some(function (r) {
+                    return r === slug || r === name || name.includes(r) || slug.includes(r);
+                });
+            });
+            if (matched.length > 0) return matched;
+        }
+
+        // 3. El nombre o descripción del agente contiene el slug o el nombre de la skill
+        var agentCtx = ((parsed.name || '') + ' ' + (parsed.description || '')).toLowerCase();
+        var nameMatched = globalSkills.filter(function (s) {
+            var slug = (s._fallback || '').toLowerCase();
+            var name = (s.meta.name  || '').toLowerCase();
+            return agentCtx.includes(slug) || agentCtx.includes(name)
+                || name.includes(agentCtx.trim());
+        });
+        if (nameMatched.length > 0) return nameMatched;
+
+        // 4. Fallback: todas las skills globales
+        return globalSkills;
+    }
+
     // ─── Escaneo con vinculación agent→skills ─────────────────────────────────
 
     async function _scanAndLink(rawItems) {
@@ -184,26 +240,42 @@ var AgentScanner = (function () {
             else agentRaw.push({ file: item.file, path: item.path, agentType: type });
         });
 
-        // Leer skills y extraer su id del frontmatter
-        var skillById = {};
-        var allSkills = [];
+        // Leer skills.
+        // - Skills con `id` en el frontmatter (formato legado): se vinculan solo a agentes
+        //   que las referencian por ese ID.
+        // - Skills sin `id` (formato Claude Code SKILL.md): son globales del proyecto y
+        //   se vinculan a todos los agentes del directorio.
+        var skillById    = {};  // id → rec (legado)
+        var globalSkills = [];  // sin id → vinculadas a todos
+        var allSkills    = [];
+
         await Promise.all(skillRaw.map(async function (item) {
             try {
                 var text   = await _readFile(item.file);
                 var parsed = _parseFrontmatter(text);
-                var rec    = { file: item.file, path: item.path, meta: parsed.meta, body: parsed.body };
+                var fb     = item.path.replace(/\\/g, '/').split('/').slice(-2, -1)[0]
+                             || item.file.name.replace(/\.md$/i, '');
+                var rec = { file: item.file, path: item.path, meta: parsed.meta, body: parsed.body, _fallback: fb };
                 allSkills.push(rec);
                 if (parsed.meta.id) skillById[parsed.meta.id] = rec;
+                else                globalSkills.push(rec);
             } catch (_) {}
         }));
 
-        // Leer agentes, parsear nombre y vincular skills
+        // Leer agentes y vincular skills.
         var agents = await Promise.all(agentRaw.map(async function (item) {
             try {
                 var text     = await _readFile(item.file);
                 var parsed   = _parseAndLoadAgent(item.file.name, text);
+                // Extraer campo skills: del frontmatter como texto crudo para la estrategia 2.
+                var fmSkills = text.match(/^skills\s*:\s*(.+)/m);
+                parsed._skillsMeta = fmSkills ? fmSkills[1] : '';
                 var skillIds = Array.isArray(parsed.skills) ? parsed.skills : [];
-                var linked   = skillIds.map(function (id) { return skillById[id]; }).filter(Boolean);
+                // Skills legadas referenciadas por ID + skills globales vinculadas por relevancia.
+                var linked = skillIds.map(function (id) { return skillById[id]; }).filter(Boolean);
+                _matchGlobalSkills(globalSkills, text, parsed).forEach(function (s) {
+                    if (!linked.includes(s)) linked.push(s);
+                });
                 return {
                     file: item.file, path: item.path, agentType: item.agentType,
                     text: text, parsed: parsed,
@@ -218,33 +290,48 @@ var AgentScanner = (function () {
             }
         }));
 
+        // Huérfanas: solo skills legadas no referenciadas por ningún agente.
+        // Las globales nunca son huérfanas (ya están vinculadas a todos).
         var usedIds = {};
         agents.forEach(function (a) { a.skillIds.forEach(function (id) { usedIds[id] = true; }); });
-        var orphanSkills = allSkills.filter(function (s) { return !(s.meta.id && usedIds[s.meta.id]); });
+        var orphanSkills = allSkills.filter(function (s) { return s.meta.id && !usedIds[s.meta.id]; });
 
         return { agents: agents, orphanSkills: orphanSkills };
     }
 
     // ─── Importar un agente directamente a la API ──────────────────────────────
 
+    // Caché para no crear la misma skill más de una vez por sesión de importación.
+    // Se resetea al cerrar el modal (varias importaciones de agentes pueden compartir skills).
+    var _skillCache = {};
+
     async function _importAgent(agent) {
         var agentFolderId = await _resolveFolderId('agents', _selectedFolderName);
         var skillFolderId = await _resolveFolderId('skill',  _selectedFolderName);
 
-        // 1. Crear skills vinculadas y recoger sus IDs reales
+        // 1. Crear skills vinculadas (una sola vez por nombre) y recoger sus IDs reales.
         var skillIds = [];
         for (var i = 0; i < agent.linkedSkills.length; i++) {
-            var s = agent.linkedSkills[i];
+            var s     = agent.linkedSkills[i];
+            var sName = (s.meta.name || s._fallback || s.file.name.replace(/\.md$/i, '')).trim();
+            var cacheKey = sName.toLowerCase();
+            if (_skillCache[cacheKey]) {
+                skillIds.push(_skillCache[cacheKey]);
+                continue;
+            }
             try {
                 var created = await api.post('/api/skills/private', {
-                    name:        (s.meta.name        || s.file.name.replace(/\.md$/i, '')).trim(),
+                    name:        sName,
                     description: (s.meta.description || '').trim(),
-                    icon:        (s.meta.icon        || '🔧').trim(),
+                    icon:        (s.meta.icon        || '').trim(),
                     category:    (s.meta.category    || '').trim(),
                     content:     s.body,
                     folder_id:   skillFolderId || undefined,
                 });
-                if (created && created.id) skillIds.push(created.id);
+                if (created && created.id) {
+                    _skillCache[cacheKey] = created.id;
+                    skillIds.push(created.id);
+                }
             } catch (_) {}
         }
 
@@ -280,6 +367,7 @@ var AgentScanner = (function () {
 
         await api.post('/api/agents', payload);
         if (typeof _loadAll === 'function') _loadAll();
+        if (window._folderAgents) window._folderAgents.load();
         return skillIds.length;
     }
 
@@ -292,6 +380,7 @@ var AgentScanner = (function () {
         if (_modal) { _modal.remove(); _modal = null; }
         _results = null;
         _selectedFolderName = '';
+        _skillCache = {};
     }
 
     function _agentBadge(agentType) {
@@ -337,7 +426,7 @@ var AgentScanner = (function () {
     function _buildSkillItem(skill) {
         var el = document.createElement('div');
         el.className = 'scan-item';
-        var name = skill.meta.name || skill.file.name.replace(/\.md$/i, '');
+        var name = skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '');
         skill.exists = _skillExists(name);
         var btnLabel = skill.exists ? t('agents.scan.replace_btn') : t('agents.scan.create_btn');
         el.innerHTML =
@@ -358,6 +447,9 @@ var AgentScanner = (function () {
 
         // Load existing folders so the picker is populated
         await _fetchFolders();
+
+        // Pre-select the scanned directory name as default folder destination
+        _selectedFolderName = dirName || '';
 
         var total = results.agents.length + results.orphanSkills.length;
 
@@ -442,9 +534,9 @@ var AgentScanner = (function () {
         try {
             var folderId = await _resolveFolderId('skill', _selectedFolderName);
             await api.post('/api/skills/private', {
-                name:        (skill.meta.name        || skill.file.name.replace(/\.md$/i, '')).trim(),
+                name:        (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
                 description: (skill.meta.description || '').trim(),
-                icon:        (skill.meta.icon        || '🔧').trim(),
+                icon:        (skill.meta.icon        || '').trim(),
                 category:    (skill.meta.category    || '').trim(),
                 content:     skill.body,
                 folder_id:   folderId || undefined,
@@ -495,9 +587,9 @@ var AgentScanner = (function () {
             if (skBtn) { skBtn.disabled = true; skBtn.textContent = '…'; }
             try {
                 await api.post('/api/skills/private', {
-                    name:        (skill.meta.name        || skill.file.name.replace(/\.md$/i, '')).trim(),
+                    name:        (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
                     description: (skill.meta.description || '').trim(),
-                    icon:        (skill.meta.icon        || '🔧').trim(),
+                    icon:        (skill.meta.icon        || '').trim(),
                     category:    (skill.meta.category    || '').trim(),
                     content:     skill.body,
                     folder_id:   skillFolderId || undefined,
@@ -514,6 +606,7 @@ var AgentScanner = (function () {
         btn.classList.add('scan-btn--done');
         toast(t('agents.scan.all_done', { agents: String(agentCount), skills: String(skillCount) }), 'ok');
         if (typeof _loadAll === 'function') _loadAll();
+        if (window._folderAgents) window._folderAgents.load();
     }
 
     // ─── Entrada: drag-and-drop de archivos o carpetas ────────────────────────

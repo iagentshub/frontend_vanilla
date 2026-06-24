@@ -6,13 +6,101 @@ const _ARR_UP   = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-
 const _ARR_DOWN = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true"><path d="M4 1v6M1.5 4.5L4 7l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const _ICON_X   = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 
-function _md(text) {
+function _mdInline(text) {
     let s = esc(text);
-    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
-    s = s.replace(/\n/g, '<br>');
     return s;
+}
+
+function _mdTableRow(line) {
+    return line.replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); });
+}
+
+function _md(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let i = 0;
+
+    while (i < lines.length) {
+        const line = lines[i];
+
+        // Fenced code block
+        if (/^```/.test(line)) {
+            const lang = line.slice(3).trim();
+            i++;
+            const codeLines = [];
+            while (i < lines.length && !/^```/.test(lines[i])) { codeLines.push(lines[i]); i++; }
+            if (i < lines.length) i++;
+            const langAttr = lang ? ` class="language-${esc(lang)}"` : '';
+            html += `<pre><code${langAttr}>${esc(codeLines.join('\n'))}</code></pre>`;
+            continue;
+        }
+
+        // Table: current line has pipes, next is separator (only |-: chars)
+        if (/\|/.test(line) && i + 1 < lines.length && /^\|?[\s\-:|]+\|?$/.test(lines[i + 1])) {
+            html += '<table><thead><tr>';
+            _mdTableRow(line).forEach(function (h) { html += `<th>${_mdInline(h)}</th>`; });
+            html += '</tr></thead><tbody>';
+            i += 2;
+            while (i < lines.length && /\|/.test(lines[i]) && lines[i].trim()) {
+                html += '<tr>';
+                _mdTableRow(lines[i]).forEach(function (c) { html += `<td>${_mdInline(c)}</td>`; });
+                html += '</tr>';
+                i++;
+            }
+            html += '</tbody></table>';
+            continue;
+        }
+
+        // Heading (h1–h3)
+        const hm = line.match(/^(#{1,3}) +(.*)/);
+        if (hm) {
+            html += `<h${hm[1].length}>${_mdInline(hm[2])}</h${hm[1].length}>`;
+            i++;
+            continue;
+        }
+
+        // Unordered list
+        if (/^[-*+] /.test(line)) {
+            html += '<ul>';
+            while (i < lines.length && /^[-*+] /.test(lines[i])) {
+                html += `<li>${_mdInline(lines[i].replace(/^[-*+] +/, ''))}</li>`;
+                i++;
+            }
+            html += '</ul>';
+            continue;
+        }
+
+        // Ordered list
+        if (/^\d+\. /.test(line)) {
+            html += '<ol>';
+            while (i < lines.length && /^\d+\. /.test(lines[i])) {
+                html += `<li>${_mdInline(lines[i].replace(/^\d+\. +/, ''))}</li>`;
+                i++;
+            }
+            html += '</ol>';
+            continue;
+        }
+
+        // Empty line — skip
+        if (!line.trim()) { i++; continue; }
+
+        // Paragraph: collect consecutive plain lines
+        const pLines = [];
+        while (
+            i < lines.length && lines[i].trim() &&
+            !/^```/.test(lines[i]) &&
+            !/^#{1,3} /.test(lines[i]) &&
+            !/^[-*+] /.test(lines[i]) &&
+            !/^\d+\. /.test(lines[i]) &&
+            !(/\|/.test(lines[i]) && i + 1 < lines.length && /^\|?[\s\-:|]+\|?$/.test(lines[i + 1]))
+        ) { pLines.push(lines[i]); i++; }
+        if (pLines.length) html += `<p>${pLines.map(_mdInline).join('<br>')}</p>`;
+    }
+
+    return html;
 }
 
 function _fmtTok(n) {

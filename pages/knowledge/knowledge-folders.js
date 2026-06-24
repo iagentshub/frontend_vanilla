@@ -133,8 +133,8 @@ function KnowledgeFolders(section, onSelect) {
                 var folderId = btn.dataset.folderId;
                 var folder = _folders.find(function (f) { return f.id === folderId; });
                 if (!folder) return;
-                if (!confirm('¿Eliminar la carpeta "' + folder.name + '"? Los items se moverán a la raíz.')) return;
-                api.del('/api/knowledge/folders/' + folderId)
+                if (!confirm('¿Eliminar la carpeta "' + folder.name + '" y todo su contenido?')) return;
+                api.del('/api/knowledge/folders/' + folderId + '?cascade=true')
                     .then(function () {
                         _folders = _folders.filter(function (f) { return f.id !== folderId; });
                         if (_activeId === folderId) {
@@ -142,6 +142,8 @@ function KnowledgeFolders(section, onSelect) {
                             if (onSelect) onSelect(null);
                         }
                         _render();
+                        // Refresca la lista de items de la página (agentes, skills, etc.)
+                        if (typeof _loadAll === 'function') _loadAll();
                     })
                     .catch(function (err) {
                         if (typeof toast === 'function') toast(err.message || 'Error al eliminar', 'error');
