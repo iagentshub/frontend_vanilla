@@ -567,6 +567,10 @@ var AgentScanner = (function () {
         var agentBtns = (_modal || document).querySelectorAll('.scan-agent-item .scan-action-btn');
         var skillBtns = (_modal || document).querySelectorAll('.scan-section:last-child .scan-item .scan-action-btn');
 
+        // Snapshot del caché antes del loop para contar skills nuevas sin duplicar
+        // las que ya existían por importaciones individuales previas.
+        var cacheAtStart = Object.keys(_skillCache).length;
+
         for (var i = 0; i < _results.agents.length; i++) {
             var agent = _results.agents[i];
             if (!agent.parsed) continue;
@@ -580,6 +584,9 @@ var AgentScanner = (function () {
                 if (agBtn) { agBtn.disabled = false; agBtn.textContent = agent.exists ? t('agents.scan.replace_btn') : t('agents.scan.import_btn'); }
             }
         }
+
+        // Skills únicas creadas por los agentes (deduplica shared skills vía _skillCache)
+        skillCount = Object.keys(_skillCache).length - cacheAtStart;
 
         for (var j = 0; j < _results.orphanSkills.length; j++) {
             var skill = _results.orphanSkills[j];

@@ -46,6 +46,8 @@
   "timeout_10": "10 minutos",
   "send_enter_title": "Enviar con Enter",
   "send_enter_desc": "Shift+Enter para nueva línea.",
+  "page_size_title": "Items por página",
+  "page_size_desc": "Número de agentes, skills y documentos visibles antes del botón «Ver más».",
   "password_title": "Cambiar contraseña",
   "accounts": {
     "title": "Conectar cuentas",

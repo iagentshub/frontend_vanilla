@@ -3,6 +3,8 @@
 
 var _privateSkills = [];
 var _activeTab = 'skills';
+var _skillsPage = 1;
+var _lastSkillsFiltered = [];
 
 var _folderSkills  = null;
 var _folderUrls    = null;
@@ -154,12 +156,22 @@ async function loadSkills(folderId) {
     _privateSkills = results[0];
     SkillCatalog.setSkills(results[1]);
 
-    var skills = folderId
+    _lastSkillsFiltered = folderId
         ? _privateSkills.filter(function (s) { return s.folder_id === folderId; })
         : _privateSkills;
-    SkillCard.renderAll(skills, document.getElementById('skills-grid'), { showMove: true });
+    _skillsPage = 1;
+    _renderSkillsPage();
 
     if (_folderSkills) _folderSkills.updateStats(_privateSkills);
+}
+
+function _renderSkillsPage() {
+    var grid = document.getElementById('skills-grid');
+    if (!grid) return;
+    var ps = getPageSize();
+    var shown = _skillsPage * ps;
+    SkillCard.renderAll(_lastSkillsFiltered.slice(0, shown), grid, { showMove: true });
+    renderLoadMore(grid, _lastSkillsFiltered.length, shown, function () { _skillsPage++; _renderSkillsPage(); });
 }
 
 async function viewSkill(scope, id) {

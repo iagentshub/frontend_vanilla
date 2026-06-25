@@ -474,3 +474,16 @@
 }
 .fmd-item--selected .fmd-item-dot { background: var(--accent); border-color: var(--accent); }
 .fmd-item-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Load-more row ─────────────────────────────────── */
+.load-more-row {
+    display: flex;
+    justify-content: center;
+    padding: 14px 0 6px;
+}
+.load-more-btn {
+    min-width: 120px;
+    color: var(--ink-2);
+    border-color: var(--line-strong);
+}
+.load-more-btn:hover { color: var(--ink); }

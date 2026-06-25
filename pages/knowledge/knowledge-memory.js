@@ -5,6 +5,7 @@ var KnowledgeMemory = (function () {
     var _memories = [];
     var _activeFolderId = null;
     var _editingFile = null;
+    var _page = 1;
 
     var _SVG_FILE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
         + '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'
@@ -87,8 +88,9 @@ var KnowledgeMemory = (function () {
     }
 
     async function load(folderId) {
-        if (folderId !== undefined) _activeFolderId = folderId;
+        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         _memories = await api.get('/api/memory').catch(function () { return []; });
+        _page = 1;
         _render();
         if (window._folderMemory) window._folderMemory.updateStats(_memories);
     }
@@ -104,9 +106,13 @@ var KnowledgeMemory = (function () {
         var visible = _visibleMemories();
         if (!visible.length) {
             grid.innerHTML = '<div class="mem-empty">' + esc(t('memory.empty') || 'Sin archivos de memoria.') + '</div>';
+            var old = grid.nextElementSibling;
+            if (old && old.classList.contains('load-more-row')) old.remove();
             return;
         }
-        grid.innerHTML = visible.map(function (m) {
+        var ps = getPageSize();
+        var slice = visible.slice(0, _page * ps);
+        grid.innerHTML = slice.map(function (m) {
             var sizeLabel = m.size != null
                 ? (m.size < 1024 ? m.size + ' B' : (m.size / 1024).toFixed(1) + ' KB')
                 : '';
@@ -127,6 +133,7 @@ var KnowledgeMemory = (function () {
                 '</footer>' +
                 '</article>';
         }).join('');
+        renderLoadMore(grid, visible.length, _page * ps, function () { _page++; _render(); });
     }
 
     function _openModal(mem) {

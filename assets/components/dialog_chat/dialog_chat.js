@@ -5,6 +5,114 @@ const _USER_AVATAR = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none
 const _ARR_UP   = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true"><path d="M4 7V1M1.5 3.5L4 1l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const _ARR_DOWN = '<svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true"><path d="M4 1v6M1.5 4.5L4 7l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const _ICON_X   = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const _COPY_ICON  = '<svg width="12" height="12" viewBox="0 0 14 15" fill="none" aria-hidden="true"><rect x="4.5" y="1" width="8.5" height="10.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="3.5" width="8.5" height="10.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg> Copy';
+const _CHECK_ICON = '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7.5l3.5 3.5 6.5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+
+// ── Syntax highlighter ───────────────────────────────────────────────────────
+
+function _hlRules(lang) {
+    var L = (lang || '').toLowerCase();
+
+    var STR_PY   = /"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g;
+    var STR_JS   = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/g;
+    var STR_DQSQ = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g;
+    var CMT_HASH  = /#[^\n]*/g;
+    var CMT_SLASH = /\/\/[^\n]*|\/\*[\s\S]*?\*\//g;
+    var CMT_SQL   = /--[^\n]*|\/\*[\s\S]*?\*\//g;
+    var CMT_HTML  = /<!--[\s\S]*?-->/g;
+    var NUM_BASIC = /\b\d+(?:\.\d+)?\b/g;
+    var NUM_HEX   = /\b0x[\da-fA-F]+|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/g;
+
+    if (L === 'python' || L === 'py') return [
+        ['hl-cmt', CMT_HASH],
+        ['hl-str', STR_PY],
+        ['hl-kw',  /\b(False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b/g],
+        ['hl-fn',  /\b([A-Za-z_]\w*)\s*(?=\()/g],
+        ['hl-num', NUM_HEX],
+    ];
+    if (L === 'javascript' || L === 'js' || L === 'jsx') return [
+        ['hl-cmt', CMT_SLASH],
+        ['hl-str', STR_JS],
+        ['hl-kw',  /\b(async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|from|function|if|import|in|instanceof|let|new|null|of|return|static|super|switch|this|throw|true|false|try|typeof|undefined|var|void|while|with|yield)\b/g],
+        ['hl-fn',  /\b([A-Za-z_$][\w$]*)\s*(?=\()/g],
+        ['hl-num', NUM_HEX],
+    ];
+    if (L === 'typescript' || L === 'ts' || L === 'tsx') return [
+        ['hl-cmt', CMT_SLASH],
+        ['hl-str', STR_JS],
+        ['hl-kw',  /\b(abstract|any|as|async|await|boolean|break|case|catch|class|const|continue|declare|default|delete|do|else|enum|export|extends|false|finally|for|from|function|if|implements|import|in|instanceof|interface|keyof|let|namespace|never|new|null|number|of|override|private|protected|public|readonly|return|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|unknown|var|void|while|with|yield)\b/g],
+        ['hl-fn',  /\b([A-Za-z_$][\w$]*)\s*(?=\()/g],
+        ['hl-num', NUM_HEX],
+    ];
+    if (L === 'bash' || L === 'sh' || L === 'shell' || L === 'zsh') return [
+        ['hl-cmt', CMT_HASH],
+        ['hl-str', STR_DQSQ],
+        ['hl-kw',  /\b(case|do|done|elif|else|esac|fi|for|function|if|in|return|select|then|until|while)\b/g],
+        ['hl-fn',  /\$\{?[\w]+\}?/g],
+        ['hl-num', NUM_BASIC],
+    ];
+    if (L === 'json') return [
+        ['hl-fn',  /"(?:[^"\\]|\\.)*"(?=\s*:)/g],
+        ['hl-str', STR_DQSQ],
+        ['hl-kw',  /\b(true|false|null)\b/g],
+        ['hl-num', /-?\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/g],
+    ];
+    if (L === 'html' || L === 'xml') return [
+        ['hl-cmt', CMT_HTML],
+        ['hl-fn',  /<\/?[A-Za-z][\w:-]*/g],
+        ['hl-str', STR_DQSQ],
+        ['hl-kw',  />/g],
+    ];
+    if (L === 'css' || L === 'scss' || L === 'less') return [
+        ['hl-cmt', /\/\*[\s\S]*?\*\//g],
+        ['hl-fn',  /[.#][\w-]+|@[\w-]+/g],
+        ['hl-str', STR_DQSQ],
+        ['hl-kw',  /\b[\w-]+(?=\s*:)/g],
+        ['hl-num', /#[\da-fA-F]{3,8}\b|\b\d+(?:\.\d+)?[\w]*/g],
+    ];
+    if (L === 'sql') return [
+        ['hl-cmt', CMT_SQL],
+        ['hl-kw',  /\b(ADD|ALL|ALTER|AND|AS|ASC|BETWEEN|BY|CASE|COLUMN|COUNT|CREATE|CROSS|DATABASE|DEFAULT|DELETE|DESC|DISTINCT|DROP|ELSE|END|EXISTS|FOREIGN|FROM|FULL|GROUP|HAVING|IN|INDEX|INNER|INSERT|INTO|IS|JOIN|LEFT|LIKE|LIMIT|NOT|NULL|OF|OFFSET|ON|OR|ORDER|OUTER|PRIMARY|REFERENCES|RIGHT|SELECT|SET|TABLE|THEN|TOP|TRUNCATE|UNION|UNIQUE|UPDATE|VALUES|VIEW|WHEN|WHERE|WITH)\b/gi],
+        ['hl-str', STR_DQSQ],
+        ['hl-num', NUM_BASIC],
+    ];
+    return [];
+}
+
+function _hl(code, lang) {
+    var rules = _hlRules(lang);
+    if (!rules.length) return esc(code);
+
+    var out = '';
+    var pos = 0;
+
+    while (pos < code.length) {
+        var bestIdx   = code.length;
+        var bestMatch = null;
+        var bestCls   = '';
+
+        for (var ri = 0; ri < rules.length; ri++) {
+            var re = rules[ri][1];
+            re.lastIndex = pos;
+            var m = re.exec(code);
+            if (m && m.index < bestIdx) {
+                bestIdx   = m.index;
+                bestMatch = m;
+                bestCls   = rules[ri][0];
+                if (bestIdx === pos) break; // can't beat current position
+            }
+        }
+
+        if (!bestMatch) { out += esc(code.slice(pos)); break; }
+        if (bestIdx > pos) out += esc(code.slice(pos, bestIdx));
+        out += '<span class="' + bestCls + '">' + esc(bestMatch[0]) + '</span>';
+        pos = bestIdx + bestMatch[0].length || bestIdx + 1; // guard zero-length
+    }
+
+    return out;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function _mdInline(text) {
     let s = esc(text);
@@ -33,8 +141,17 @@ function _md(text) {
             const codeLines = [];
             while (i < lines.length && !/^```/.test(lines[i])) { codeLines.push(lines[i]); i++; }
             if (i < lines.length) i++;
-            const langAttr = lang ? ` class="language-${esc(lang)}"` : '';
-            html += `<pre><code${langAttr}>${esc(codeLines.join('\n'))}</code></pre>`;
+            const codeText   = codeLines.join('\n');
+            const langLabel  = lang ? esc(lang) : '';
+            const codeHtml   = _hl(codeText, lang);
+            const langClass  = langLabel ? ' class="language-' + langLabel + '"' : '';
+            html += '<div class="code-block">'
+                  + '<div class="code-block-hd">'
+                  + '<span class="code-block-lang">' + langLabel + '</span>'
+                  + '<button class="code-block-copy" type="button">' + _COPY_ICON + '</button>'
+                  + '</div>'
+                  + '<pre><code' + langClass + '>' + codeHtml + '</code></pre>'
+                  + '</div>';
             continue;
         }
 
@@ -122,6 +239,7 @@ class AgentChatDialog {
         this._el = null;
         this._convId = null;
         this._convList = [];
+        this._convPage = 1;
         this._isGuest = false;
     }
 
@@ -191,6 +309,7 @@ class AgentChatDialog {
         this._el = el;
         this._bindClose();
         this._bindSend();
+        this._bindCopyButtons();
         this._autoResizeInput();
         this._renderMessages();
         document.getElementById('ga-chat-input').focus();
@@ -206,6 +325,7 @@ class AgentChatDialog {
             const list = await r.json();
             if (list.length > 0) {
                 this._convList = list;
+                this._convPage = 1;
                 const target = this._convId && list.find(c => c.id === this._convId)
                     ? this._convId : list[0].id;
                 await this._loadConversation(target);
@@ -287,7 +407,10 @@ class AgentChatDialog {
         const el = document.getElementById('ga-chat-history');
         if (!el) return;
         const newLabel = t('agents.chat.new_conversation') || 'Nueva conversación';
-        const items = this._convList.map(c => {
+        const ps = getPageSize();
+        const visible = this._convList.slice(0, this._convPage * ps);
+        const hasMore = this._convList.length > visible.length;
+        const items = visible.map(c => {
             const title = c.title || newLabel;
             const active = c.id === this._convId ? ' active' : '';
             return `<li class="chat-history-item${active}" data-conv-id="${esc(c.id)}">
@@ -295,6 +418,9 @@ class AgentChatDialog {
                 <button class="history-del-btn" data-del-id="${esc(c.id)}" title="${t('common.actions.delete') || 'Borrar'}">${_ICON_X}</button>
             </li>`;
         }).join('');
+        const moreBtn = hasMore
+            ? `<button class="history-load-more-btn" id="ga-hist-more">Ver ${this._convList.length - visible.length} más</button>`
+            : '';
         el.innerHTML = `
             <button class="history-new-btn" id="ga-history-new">
                 <svg width="11" height="11" viewBox="0 0 13 13" fill="none">
@@ -302,8 +428,13 @@ class AgentChatDialog {
                 </svg>
                 ${esc(newLabel)}
             </button>
-            <ul class="chat-history-list">${items}</ul>`;
+            <ul class="chat-history-list">${items}</ul>
+            ${moreBtn}`;
         document.getElementById('ga-history-new')?.addEventListener('click', () => this._newConversation());
+        document.getElementById('ga-hist-more')?.addEventListener('click', () => {
+            this._convPage++;
+            this._renderSidebar();
+        });
         el.querySelectorAll('.chat-history-item').forEach(li => {
             const convId = li.dataset.convId;
             li.addEventListener('click', e => {
@@ -316,6 +447,34 @@ class AgentChatDialog {
                 e.stopPropagation();
                 this._deleteConversation(btn.dataset.delId);
             });
+        });
+    }
+
+    // ── Copy buttons (delegated) ──────────────────────────────────────────────
+
+    _bindCopyButtons() {
+        const cont = document.getElementById('ga-chat-msgs');
+        if (!cont) return;
+        cont.addEventListener('click', (e) => {
+            const btn = e.target.closest('.code-block-copy');
+            if (!btn) return;
+            const code = btn.closest('.code-block')?.querySelector('code')?.textContent ?? '';
+            const orig = btn.innerHTML;
+            const apply = () => {
+                btn.innerHTML = _CHECK_ICON;
+                btn.classList.add('code-block-copy--ok');
+                setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('code-block-copy--ok'); }, 1500);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(apply).catch(() => {});
+            } else {
+                const ta = Object.assign(document.createElement('textarea'), { value: code });
+                ta.style.cssText = 'position:fixed;opacity:0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); apply(); } catch (_) {}
+                ta.remove();
+            }
         });
     }
 

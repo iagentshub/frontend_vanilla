@@ -263,6 +263,15 @@ function renderPreferences() {
             localStorage.setItem('ga-send-on-enter', sendEnterEl.checked ? 'true' : 'false');
         });
     }
+
+    var pageSizeEl = document.getElementById('pref-page-size');
+    if (pageSizeEl) {
+        var stored = localStorage.getItem('ga-page-size') || '24';
+        pageSizeEl.value = stored;
+        pageSizeEl.addEventListener('change', function () {
+            localStorage.setItem('ga-page-size', pageSizeEl.value);
+        });
+    }
 }
 
 function bindPasswordForm() {

@@ -5,6 +5,7 @@ var KnowledgeUrls = (function () {
     var _items = [];
     var _loaded = false;
     var _activeFolderId = null;
+    var _page = 1;
 
     function init() {
         document.getElementById('btn-add-url').addEventListener('click', _openModal);
@@ -29,13 +30,14 @@ var KnowledgeUrls = (function () {
     }
 
     async function load(folderId) {
-        if (folderId !== undefined) _activeFolderId = folderId;
+        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         try {
             _items = await api.get('/api/knowledge?type=url');
             _loaded = true;
         } catch (e) {
             _items = [];
         }
+        _page = 1;
         _render();
         if (window._folderUrls) window._folderUrls.updateStats(_items);
     }
@@ -51,9 +53,13 @@ var KnowledgeUrls = (function () {
         var visible = _visibleItems();
         if (!visible.length) {
             grid.innerHTML = '<p class="knowledge-empty">' + (t('skills.knowledge.empty_urls') || 'Sin URLs todavía.') + '</p>';
+            var old = grid.nextElementSibling;
+            if (old && old.classList.contains('load-more-row')) old.remove();
             return;
         }
-        grid.innerHTML = visible.map(function (item) {
+        var ps = getPageSize();
+        var slice = visible.slice(0, _page * ps);
+        grid.innerHTML = slice.map(function (item) {
             var warn = item.char_count > 8000
                 ? '<span class="knowledge-warn" title="' + esc(t('skills.knowledge.char_warning') || 'Texto largo') + '">⚠</span>'
                 : '';
@@ -75,6 +81,7 @@ var KnowledgeUrls = (function () {
                 '</div>' +
                 '</div>';
         }).join('');
+        renderLoadMore(grid, visible.length, _page * ps, function () { _page++; _render(); });
     }
 
     function _openModal() {
@@ -102,7 +109,7 @@ var KnowledgeUrls = (function () {
                 folder_id: _activeFolderId || undefined,
             });
             _items.unshift(item);
-            _render();
+            _page = 1; _render();
             if (window._folderUrls) window._folderUrls.updateStats(_items);
             _closeModal();
             toast(item.title, 'success');
@@ -120,7 +127,7 @@ var KnowledgeUrls = (function () {
         try {
             await api.del('/api/knowledge/' + encodeURIComponent(id));
             _items = _items.filter(function (i) { return i.id !== id; });
-            _render();
+            _page = 1; _render();
             if (window._folderUrls) window._folderUrls.updateStats(_items);
             toast(t('skills.knowledge.deleted') || 'Eliminado', 'info');
         } catch (e) { toast(e.message, 'error'); }

@@ -5,6 +5,7 @@ var KnowledgeDocs = (function () {
     var _items = [];
     var _loaded = false;
     var _activeFolderId = null;
+    var _page = 1;
 
     function init() {
         document.getElementById('doc-file-input').addEventListener('change', function (e) {
@@ -71,15 +72,15 @@ var KnowledgeDocs = (function () {
     }
 
     async function load(folderId) {
-        if (folderId !== undefined) _activeFolderId = folderId;
+        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         try {
             _items = await api.get('/api/knowledge?type=document');
             _loaded = true;
         } catch (e) {
             _items = [];
         }
+        _page = 1;
         _render();
-        // update folder stats via parent
         if (window._folderDocs) window._folderDocs.updateStats(_items);
     }
 
@@ -94,9 +95,13 @@ var KnowledgeDocs = (function () {
         var visible = _visibleItems();
         if (!visible.length) {
             grid.innerHTML = '<p class="knowledge-empty">' + (t('skills.knowledge.empty_docs') || 'Sin documentos todavía.') + '</p>';
+            var old = grid.nextElementSibling;
+            if (old && old.classList.contains('load-more-row')) old.remove();
             return;
         }
-        grid.innerHTML = visible.map(function (item) {
+        var ps = getPageSize();
+        var slice = visible.slice(0, _page * ps);
+        grid.innerHTML = slice.map(function (item) {
             var icon = item.source.toLowerCase().endsWith('.pdf') ? '📄' : '📝';
             var warn = item.char_count > 8000
                 ? '<span class="knowledge-warn" title="' + esc(t('skills.knowledge.char_warning') || 'Texto largo') + '">⚠</span>'
@@ -119,6 +124,7 @@ var KnowledgeDocs = (function () {
                 '</div>' +
                 '</div>';
         }).join('');
+        renderLoadMore(grid, visible.length, _page * ps, function () { _page++; _render(); });
     }
 
     async function _upload(file, folderId) {
@@ -151,7 +157,7 @@ var KnowledgeDocs = (function () {
             if (!item) { toast((t('skills.knowledge.formats_hint') || 'Formatos: .txt .md .pdf'), 'error'); return; }
             _items.unshift(item);
             _loaded = true;
-            _render();
+            _page = 1; _render();
             if (window._folderDocs) window._folderDocs.updateStats(_items);
             toast(item.title, 'success');
         } catch (e) {
@@ -294,7 +300,7 @@ var KnowledgeDocs = (function () {
                     window._folderDocs.updateStats(_items);
                 });
             }
-            _render();
+            _page = 1; _render();
             progress.finish();
 
             if (done === 0) {
@@ -321,7 +327,7 @@ var KnowledgeDocs = (function () {
         try {
             await api.del('/api/knowledge/' + encodeURIComponent(id));
             _items = _items.filter(function (i) { return i.id !== id; });
-            _render();
+            _page = 1; _render();
             if (window._folderDocs) window._folderDocs.updateStats(_items);
             toast(t('skills.knowledge.deleted') || 'Eliminado', 'info');
         } catch (e) { toast(e.message, 'error'); }

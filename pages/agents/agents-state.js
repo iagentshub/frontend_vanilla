@@ -8,6 +8,8 @@ let _memories = [];
 let _knowledge = [];
 let _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
 let _activeFolderId = null; // null = todos
+let _agentPage = 1;
+let _filteredAgents = [];
 
 async function _loadAll() {
     _connStatus = {};
@@ -32,7 +34,7 @@ async function _testUsedConnections() {
     try {
         const results = await api.post('/api/connections/test-all', { ids: usedIds });
         results.forEach(r => { _connStatus[r.id] = r.ok; });
-        _applyFilter();
+        _renderAgentPage(); // refresca indicadores sin resetear la página
     } catch (_) { }
 }
 
@@ -69,11 +71,21 @@ function _applyFilter() {
         list = list.filter(a => (a.folder_id || null) === _activeFolderId);
     }
 
-    AgentCard.renderGrid(list, _connections, _skills, document.getElementById('agents-grid'), _connStatus);
+    _filteredAgents = list;
+    _agentPage = 1;
+    _renderAgentPage();
 
     if (window._folderAgents) {
         window._folderAgents.updateStats(_agents.filter(a => (a.scope || 'private') === 'private'));
     }
+}
+
+function _renderAgentPage() {
+    const ps = getPageSize();
+    const shown = _agentPage * ps;
+    const grid = document.getElementById('agents-grid');
+    AgentCard.renderGrid(_filteredAgents.slice(0, shown), _connections, _skills, grid, _connStatus);
+    renderLoadMore(grid, _filteredAgents.length, shown, function () { _agentPage++; _renderAgentPage(); });
 }
 
 function _setActiveFolder(folderId) {
