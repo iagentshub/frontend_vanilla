@@ -30,6 +30,37 @@
 
     function _render(data, cfg, el) {
         var keys = (cfg.items && cfg.items.length) ? cfg.items : Object.keys(_ITEMS);
+        var size = cfg.size || 'large';
+
+        if (size === 'small') {
+            // Compact vertical list: big number + label, no icons
+            el.innerHTML = '<div class="w-summary-list">' +
+                keys.map(function (key) {
+                    var meta = _ITEMS[key];
+                    var val  = _DATA_FN[key] ? _DATA_FN[key](data) : 0;
+                    return '<a class="w-summary-row" href="' + (meta ? meta.href : '#') + '">' +
+                        '<span class="w-summary-row-val">' + val + '</span>' +
+                        '<span class="w-summary-row-lbl">' + esc(meta ? meta.label : key) + '</span>' +
+                        '</a>';
+                }).join('') + '</div>';
+            return;
+        }
+
+        if (size === 'medium') {
+            // Cards without icons, compact padding
+            el.innerHTML = '<div class="dash-stats">' +
+                keys.map(function (key) {
+                    var meta = _ITEMS[key];
+                    var val  = _DATA_FN[key] ? _DATA_FN[key](data) : 0;
+                    return '<a class="dash-stat-card dash-stat-card--compact" href="' + (meta ? meta.href : '#') + '">' +
+                        '<div class="dash-stat-value">' + val + '</div>' +
+                        '<div class="dash-stat-label">' + esc(meta ? meta.label : key) + '</div>' +
+                        '</a>';
+                }).join('') + '</div>';
+            return;
+        }
+
+        // large: full cards with icon
         el.innerHTML = '<div class="dash-stats">' +
             keys.map(function (key) {
                 var meta = _ITEMS[key];
@@ -40,16 +71,15 @@
                     '<div class="dash-stat-value">' + val + '</div>' +
                     '<div class="dash-stat-label">' + esc(meta ? meta.label : key) + '</div>' +
                     '</div></a>';
-            }).join('') +
-            '</div>';
+            }).join('') + '</div>';
     }
 
     window._WIDGET_REGISTRY = window._WIDGET_REGISTRY || {};
     window._WIDGET_REGISTRY['summary'] = {
         title: 'Resumen',
-        cols: 2,
+        cols: 4,
         preview: _PREVIEW,
-        defaultConfig: { items: ['agents', 'connections', 'skills', 'memory', 'knowledge'] },
+        defaultConfig: { size: 'large', items: ['agents', 'connections', 'skills', 'memory', 'knowledge'] },
         render: _render,
     };
 }());

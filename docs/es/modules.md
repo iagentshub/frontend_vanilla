@@ -32,12 +32,13 @@ Los scripts se cargan con etiquetas `<script>` en un orden específico. Las util
 |---|---|
 | Login | `pages/login/login.js` — envía credenciales a `POST /api/auth/login`, gestiona errores, toggle de contraseña, acceso invitado y redirección si ya hay sesión activa |
 | Registro | `pages/register/register.js` — formulario en dos pasos; paso 1 valida email/contraseña, paso 2 envía perfil opcional a `POST /api/auth/register` |
+| Dashboard | `dashboard/dashboard.js` (orquestador: layout, modo edición, drag-and-drop, flip de config, persistencia) + un módulo por widget en `dashboard/widgets/{id}/widget.js`: `summary`, `token-usage`, `activity`, `conn-status`, `recent`. Los widgets se registran en `window._WIDGET_REGISTRY` y se cargan con `<script>` antes que el orquestador. |
 | Agentes | `agents/agents-state.js`, `agents/agents-modal.js`, `agents/agents-skill-picker.js`, `agents/agents-export.js`, `agents/agents-load.js`, `agents/agents-routines.js`, `agents/agents-catalog.js`, `agents/agents.js` |
 | Conexiones | `connections/connections-state.js`, `connections/connections-modal.js`, `connections/connections.js` — providers cargados dinámicamente vía `Providers` |
 | Memoria | `memory/memory-render.js`, `memory/memory-modal.js`, `memory/memory-load.js`, `memory/memory.js` |
 | Conocimiento | `knowledge/skills-load.js`, `knowledge/knowledge.js`, `knowledge/knowledge-urls.js`, `knowledge/knowledge-docs.js` |
-| Perfil | `profile/profile.js`, `profile/profile-teams.js` — gestión de grupos (crear, miembros, invitaciones, compartición) |
-| Admin | `admin/admin-stats.js`, `admin/admin-users.js`, `admin/admin-teams.js`, `admin/admin-agents.js`, `admin/admin-connections.js`, `admin/admin-knowledge.js`, `admin/admin-logs.js` |
+| Perfil | `profile/profile.js`, `profile/profile-workspaces.js` (gestión de grupos dentro del modal de workspace), `profile/profile-accounts.js` |
+| Admin | `admin/admin-stats.js`, `admin/admin-users.js`, `admin/admin-teams.js`, `admin/admin-agents.js`, `admin/admin-connections.js`, `admin/admin-knowledge.js`, `admin/admin-logs.js`, `admin/admin-workspaces.js` |
 
 ---
 

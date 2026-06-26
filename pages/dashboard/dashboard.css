@@ -1,9 +1,8 @@
 /* ── Dashboard grid ──────────────────────────────────────────────────────────── */
 .dash-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    align-items: start;
 }
 
 .dash-panel {
@@ -17,9 +16,12 @@
     min-width: 0;
 }
 
-.dash-panel--full {
-    grid-column: 1 / -1;
-}
+.dash-panel-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+/* small = 25%, medium = 50%, full/large = 100% */
+.dash-panel--small  { grid-column: span 1; }
+.dash-panel--medium { grid-column: span 2; }
+.dash-panel--full   { grid-column: span 4; }
 
 /* ── Edit mode ───────────────────────────────────────────────────────────────── */
 .dash-panel--edit {
@@ -241,18 +243,62 @@
     padding: 8px 0;
 }
 
+/* ── Widget pagination ───────────────────────────────────────────────────────── */
+.w-widget-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+}
+
+.w-pager {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+}
+
+.w-pager-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 120ms, color 120ms;
+}
+.w-pager-btn:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.w-pager-btn[disabled] { opacity: 0.3; cursor: default; }
+
+.w-pager-label {
+    font-size: 0.72rem;
+    color: var(--ink-3);
+    min-width: 36px;
+    text-align: center;
+    white-space: nowrap;
+}
+
 /* ── Stat cards ──────────────────────────────────────────────────────────────── */
 .dash-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
 .dash-stat-card {
+    flex: 1 1 120px;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 14px 12px;
     border-radius: var(--radius);
     border: 1px solid var(--line);
     background: var(--surface-2);
@@ -260,6 +306,7 @@
     text-decoration: none;
     color: inherit;
     transition: box-shadow 140ms, border-color 140ms, transform 140ms;
+    min-width: 0;
 }
 
 .dash-stat-card:hover {
@@ -270,9 +317,9 @@
 
 .dash-stat-icon {
     flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 9px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     background: var(--accent-dim);
     display: flex;
     align-items: center;
@@ -283,18 +330,108 @@
 .dash-stat-body { min-width: 0; }
 
 .dash-stat-value {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--ink);
     line-height: 1;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dash-stat-label {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     color: var(--ink-3);
-    margin-top: 3px;
+    margin-top: 2px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Widget size picker ──────────────────────────────────────────────────────── */
+.wcfg-sizes { display:flex; gap:8px; }
+
+.wcfg-size-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+.wcfg-size-card input[type="radio"] { display: none; }
+
+.wcfg-size-visual {
+    width: 100%;
+    height: 28px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface-3);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.12s;
+}
+.wcfg-size-visual::after {
+    content: '';
+    position: absolute;
+    left: 3px; top: 3px; bottom: 3px;
+    background: var(--ink-3);
+    opacity: 0.28;
+    border-radius: 2px;
+    transition: background 0.12s, opacity 0.12s;
+}
+.wcfg-size-visual--s::after { width: 22%; }
+.wcfg-size-visual--m::after { width: 48%; }
+.wcfg-size-visual--l::after { right: 3px; }
+
+.wcfg-size-card input:checked + .wcfg-size-visual {
+    border-color: var(--accent);
+}
+.wcfg-size-card input:checked + .wcfg-size-visual::after {
+    background: var(--accent);
+    opacity: 0.75;
+}
+.wcfg-size-name {
+    font-size: 0.69rem;
+    color: var(--ink-3);
+    font-weight: 500;
+}
+.wcfg-size-card:has(input:checked) .wcfg-size-name {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ── Option pills (replaces radio buttons) ───────────────────────────────────── */
+.wcfg-pills { display:flex; gap:6px; flex-wrap:wrap; }
+
+.wcfg-pill { flex:1; cursor:pointer; }
+.wcfg-pill input[type="radio"] { display:none; }
+
+.wcfg-pill-label {
+    display: block;
+    text-align: center;
+    padding: 5px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    background: var(--surface-2);
+    white-space: nowrap;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
+    user-select: none;
+}
+.wcfg-pill:hover .wcfg-pill-label {
+    border-color: var(--line-strong);
+    color: var(--ink);
+}
+.wcfg-pill input:checked + .wcfg-pill-label {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+    font-weight: 600;
 }
 
 /* ── Token bars ──────────────────────────────────────────────────────────────── */
@@ -685,9 +822,17 @@
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-    .dash-grid        { grid-template-columns: 1fr; }
-    .dash-panel--full { grid-column: 1; }
-    .w-donut-wrap     { flex-direction: column; align-items: flex-start; }
+    .dash-grid          { grid-template-columns: 1fr 1fr; }
+    .dash-panel--medium { grid-column: span 2; }
+    .dash-panel--full   { grid-column: span 2; }
+    .w-donut-wrap       { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 600px) {
+    .dash-grid          { grid-template-columns: 1fr; }
+    .dash-panel--small,
+    .dash-panel--medium,
+    .dash-panel--full   { grid-column: span 1; }
 }
 
 @media (max-width: 480px) {

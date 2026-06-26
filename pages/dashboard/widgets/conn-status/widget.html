@@ -2,11 +2,48 @@
     <div class="wcfg-title">Estado de conexiones</div>
 
     <div class="wcfg-field">
-        <span class="wcfg-label">Conexiones</span>
-        <div class="wcfg-opts">
-            <label class="wcfg-opt"><input type="radio" name="scope" value="all"> Todas</label>
-            <label class="wcfg-opt"><input type="radio" name="scope" value="personal"> Solo personales</label>
+        <span class="wcfg-label">Tamano</span>
+        <div class="wcfg-sizes">
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="small">
+                <span class="wcfg-size-visual wcfg-size-visual--s"></span>
+                <span class="wcfg-size-name">Pequeno</span>
+            </label>
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="medium">
+                <span class="wcfg-size-visual wcfg-size-visual--m"></span>
+                <span class="wcfg-size-name">Mediano</span>
+            </label>
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="large">
+                <span class="wcfg-size-visual wcfg-size-visual--l"></span>
+                <span class="wcfg-size-name">Grande</span>
+            </label>
         </div>
+    </div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Conexiones</span>
+        <div class="wcfg-pills">
+            <label class="wcfg-pill">
+                <input type="radio" name="scope" value="all">
+                <span class="wcfg-pill-label">Todas</span>
+            </label>
+            <label class="wcfg-pill">
+                <input type="radio" name="scope" value="personal">
+                <span class="wcfg-pill-label">Personales</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Por pagina (Grande)</span>
+        <select name="pageSize" class="select select--sm">
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+        </select>
     </div>
 
     <div class="wcfg-actions">

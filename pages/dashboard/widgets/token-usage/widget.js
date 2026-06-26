@@ -94,55 +94,110 @@
             .slice(0, cfg.limit||5);
     }
 
+    function _renderBars(items, grand, withSpark, spark) {
+        var mx = items[0] ? items[0].total : 1;
+        return (withSpark && spark ? '<div class="w-token-spark">'+spark+'</div>' : '') +
+            '<div class="w-token-list">' + items.map(function(c){
+                var pct = mx>0 ? Math.round((c.total/mx)*100) : 0;
+                var sub = c.sub ? '<span class="w-token-sub">'+esc(c.sub)+'</span>' : '';
+                return '<div class="w-token-row">'+
+                    '<div class="w-token-row-head">'+
+                    '<span class="w-token-name-wrap"><span class="w-token-name">'+esc(c.name)+'</span>'+sub+'</span>'+
+                    '<span class="w-token-amount">'+_fmt(c.total)+'</span>'+
+                    '</div>'+
+                    '<div class="w-token-track"><div class="w-token-fill" style="width:'+pct+'%"></div></div>'+
+                    '</div>';
+            }).join('') + '</div>';
+    }
+
+    function _renderDonut(items, grand, withLegend, rich) {
+        var segs = items.map(function(c,i){ return { value:c.total, color:_PALETTE[i%_PALETTE.length], name:c.name, sub:c.sub||'' }; });
+        var legendHtml = '';
+        if (withLegend) {
+            if (rich) {
+                legendHtml = '<div class="w-donut-legend w-donut-legend--rich">' + segs.map(function(s){
+                    var pct = grand > 0 ? Math.round((s.value/grand)*100) : 0;
+                    var sub = s.sub ? '<span class="w-donut-legend-sub">'+esc(s.sub)+'</span>' : '';
+                    return '<div class="w-donut-legend-item">'+
+                        '<span class="w-donut-dot" style="background:'+s.color+'"></span>'+
+                        '<div class="w-donut-legend-info">'+
+                        '<div class="w-donut-legend-head">'+
+                        '<span class="w-donut-legend-name">'+esc(s.name)+'</span>'+
+                        sub+
+                        '<span class="w-donut-legend-pct">'+pct+'%</span>'+
+                        '<span class="w-donut-legend-val">'+_fmt(s.value)+'</span>'+
+                        '</div>'+
+                        '<div class="w-donut-legend-track"><div class="w-donut-legend-fill" style="width:'+pct+'%;background:'+s.color+'"></div></div>'+
+                        '</div>'+
+                        '</div>';
+                }).join('') + '</div>';
+            } else {
+                legendHtml = '<div class="w-donut-legend">' + segs.map(function(s){
+                    return '<div class="w-donut-legend-item">'+
+                        '<span class="w-donut-dot" style="background:'+s.color+'"></span>'+
+                        '<span class="w-donut-legend-name">'+esc(s.name)+'</span>'+
+                        '<span class="w-donut-legend-val">'+_fmt(s.value)+'</span>'+
+                        '</div>';
+                }).join('') + '</div>';
+            }
+        }
+        return '<div class="w-donut-wrap">'+_donutSVG(segs, grand)+legendHtml+'</div>';
+    }
+
     function _render(data, cfg, el) {
-        var withUsage = (cfg.groupBy === 'agent') ? _byAgent(data, cfg) : _byConnection(data, cfg);
-        var grand = withUsage.reduce(function(s,c){ return s+c.total; },0);
+        var size    = cfg.size || 'medium';
+        var vizType = cfg.vizType || 'bars';
+        var all     = (cfg.groupBy === 'agent') ? _byAgent(data, cfg) : _byConnection(data, cfg);
+        var grand   = all.reduce(function(s,c){ return s+c.total; }, 0);
+        var spark   = (data.tokenDaily && data.tokenDaily.length) ? _sparkSVG(data.tokenDaily) : '';
 
         var totalRow = '<div class="w-token-total-row">'+
             '<span class="w-token-total-value">'+_fmt(grand)+'</span>'+
             '<span class="w-token-total-label">tokens</span>'+
             '</div>';
 
-        var spark = (data.tokenDaily && data.tokenDaily.length)
-            ? '<div class="w-token-spark">'+_sparkSVG(data.tokenDaily)+'</div>' : '';
+        // items visible por tamano
+        var limit = size === 'small' ? 3 : size === 'medium' ? 3 : (parseInt(cfg.limit,10)||5);
+        var items = all.slice(0, limit);
 
-        if (!withUsage.length) {
-            el.innerHTML = totalRow + spark + '<div class="dash-empty">Sin actividad de tokens</div>';
+        if (size === 'small') {
+            // Total + viz compacta sin leyenda
+            if (!items.length) {
+                el.innerHTML = totalRow + (spark ? '<div class="w-token-spark">'+spark+'</div>' : '');
+                return;
+            }
+            el.innerHTML = totalRow + (vizType === 'donut'
+                ? _renderDonut(items, grand, false)
+                : (spark ? '<div class="w-token-spark">'+spark+'</div>' : ''));
             return;
         }
 
-        if ((cfg.vizType||'bars') === 'donut') {
-            var segs = withUsage.map(function(c,i){ return { value:c.total, color:_PALETTE[i%_PALETTE.length], name:c.name }; });
-            var legend = '<div class="w-donut-legend">' +
-                segs.map(function(s){ return '<div class="w-donut-legend-item">'+
-                    '<span class="w-donut-dot" style="background:'+s.color+'"></span>'+
-                    '<span class="w-donut-legend-name">'+s.name+'</span>'+
-                    '<span class="w-donut-legend-val">'+_fmt(s.value)+'</span>'+
-                    '</div>'; }).join('') + '</div>';
-            el.innerHTML = totalRow + '<div class="w-donut-wrap">'+_donutSVG(segs,grand)+legend+'</div>';
-        } else {
-            var mx = withUsage[0].total;
-            el.innerHTML = totalRow + spark +
-                '<div class="w-token-list">' + withUsage.map(function(c){
-                    var pct = mx>0 ? Math.round((c.total/mx)*100) : 0;
-                    var sub = c.sub ? '<span class="w-token-sub">'+esc(c.sub)+'</span>' : '';
-                    return '<div class="w-token-row">'+
-                        '<div class="w-token-row-head">'+
-                        '<span class="w-token-name-wrap"><span class="w-token-name">'+esc(c.name)+'</span>'+sub+'</span>'+
-                        '<span class="w-token-amount">'+_fmt(c.total)+'</span>'+
-                        '</div>'+
-                        '<div class="w-token-track"><div class="w-token-fill" style="width:'+pct+'%"></div></div>'+
-                        '</div>';
-                }).join('') + '</div>';
+        if (!all.length) {
+            el.innerHTML = totalRow + (spark ? '<div class="w-token-spark">'+spark+'</div>' : '') +
+                '<div class="dash-empty">Sin actividad de tokens</div>';
+            return;
         }
+
+        if (size === 'medium') {
+            // Top 3, viz elegida, sin sparkline
+            el.innerHTML = totalRow + (vizType === 'donut'
+                ? _renderDonut(items, grand, true)
+                : _renderBars(items, grand, false, ''));
+            return;
+        }
+
+        // large: viz completa con sparkline en barras, leyenda rica en donut
+        el.innerHTML = totalRow + (vizType === 'donut'
+            ? _renderDonut(items, grand, true, true)
+            : _renderBars(items, grand, true, spark));
     }
 
     window._WIDGET_REGISTRY = window._WIDGET_REGISTRY || {};
     window._WIDGET_REGISTRY['token-usage'] = {
         title: 'Uso de tokens',
-        cols: 1,
+        cols: 2,
         preview: _PREVIEW,
-        defaultConfig: { vizType: 'bars', groupBy: 'connection', scope: 'all', limit: 5 },
+        defaultConfig: { size: 'medium', vizType: 'bars', groupBy: 'connection', scope: 'all', limit: 5 },
         render: _render,
     };
 }());

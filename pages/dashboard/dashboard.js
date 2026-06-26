@@ -82,9 +82,7 @@ function _renderGrid() {
 
     grid.innerHTML = validLayout.map(function (wid) {
         var w   = _WIDGETS[wid];
-        var cls = 'dash-panel' +
-            (w.cols === 2 ? ' dash-panel--full' : '') +
-            (_editMode ? ' dash-panel--edit' : '');
+        var cls = 'dash-panel ' + _panelSizeClass(wid) + (_editMode ? ' dash-panel--edit' : '');
 
         var editBar = _editMode
             ? '<div class="dash-editbar" data-no-drag="1">' +
@@ -157,7 +155,7 @@ function _fillSidebar() {
         return '<div class="des-item" data-des-add="' + esc(wid) + '">' +
                '<div class="des-item-header">' +
                '<span class="des-item-title">' + esc(w.title) + '</span>' +
-               '<span class="des-item-size">' + (w.cols === 2 ? 'Ancho completo' : 'Media anchura') + '</span>' +
+               '<span class="des-item-size">' + (w.cols >= 4 ? 'Grande' : w.cols === 1 ? 'Pequeno' : 'Mediano') + '</span>' +
                '</div>' +
                (w.preview ? '<div class="des-item-preview">' + w.preview + '</div>' : '') +
                '</div>';
@@ -286,6 +284,15 @@ function _readForm(container) {
     return cfg;
 }
 
+function _panelSizeClass(wid) {
+    var size = _config[wid] && _config[wid].size;
+    var cols = size === 'small' ? 1
+             : size === 'medium' ? 2
+             : size === 'large'  ? 4
+             : (_WIDGETS[wid] && _WIDGETS[wid].cols) || 4;
+    return cols >= 4 ? 'dash-panel--full' : cols === 1 ? 'dash-panel--small' : 'dash-panel--medium';
+}
+
 function _bindFormActions(panelEl, wid) {
     var saveBtn   = panelEl.querySelector('[data-wcfg-save]');
     var cancelBtn = panelEl.querySelector('[data-wcfg-cancel]');
@@ -294,6 +301,8 @@ function _bindFormActions(panelEl, wid) {
         saveBtn.addEventListener('click', function () {
             var values = _readForm(panelEl);
             _config[wid] = Object.assign({}, _WIDGETS[wid] && _WIDGETS[wid].defaultConfig || {}, _config[wid] || {}, values);
+            panelEl.classList.remove('dash-panel--small', 'dash-panel--medium', 'dash-panel--full');
+            panelEl.classList.add(_panelSizeClass(wid));
             _flipBack(panelEl, wid);
             _saveConfig();
         });
