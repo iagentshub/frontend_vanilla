@@ -141,10 +141,10 @@
         }
 
         function _fetchAndDraw() {
-            api.post('/api/connections/test-all', {})
+            var ids = conns.map(function (c) { return c.id; });
+            api.post('/api/connections/test-all', { ids: ids })
                 .then(function (res) {
                     var list = Array.isArray(res) ? res : [];
-                    var ids  = conns.map(function (c) { return c.id; });
                     _cache[key] = list.filter(function (r) { return ids.indexOf(r.id) !== -1; });
                     _draw(_cache[key]);
                 })
