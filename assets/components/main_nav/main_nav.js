@@ -19,6 +19,7 @@ var NAV_ICONS = {
     mail: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M1 7l7 4.5L15 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     team: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13v-.5A3.5 3.5 0 0 1 5 9a3.5 3.5 0 0 1 3.5 3.5V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 9.2A3.5 3.5 0 0 1 14.5 12.5V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     explore: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 5.5l-2 4.5-4.5 2 2-4.5 4.5-2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/></svg>',
+    feed: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
 };
 
 function _renderLangSwitcher() {
@@ -84,6 +85,9 @@ function renderNav(mountId, activePage) {
             '<div class="nav-footer">' +
             '<div class="nav-footer-actions">' +
             _renderLangSwitcher() +
+            '<button class="nav-icon-btn" id="nav-feed-btn" title="Feed" aria-label="Feed">' +
+            NAV_ICONS.feed +
+            '</button>' +
             '<a href="/docs" class="nav-icon-btn' + (activePage === 'docs' ? ' active' : '') + '" title="' + t('nav.docs') + '" aria-label="' + t('nav.docs') + '">' +
             NAV_ICONS.docs +
             '</a>' +
@@ -228,6 +232,26 @@ function renderNav(mountId, activePage) {
             await fetch('/api/auth/logout', { method: 'POST' });
             window.location.replace('/login');
         });
+
+        // ── Feed widget button ───────────────────────────────────────────────
+        var feedBtn = document.getElementById('nav-feed-btn');
+        if (feedBtn) {
+            feedBtn.addEventListener('click', function () {
+                if (window.FeedWidget) {
+                    window.FeedWidget.toggle();
+                    return;
+                }
+                // Lazy-load widget on first click
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '/assets/components/feed_widget/feed_widget.css';
+                document.head.appendChild(link);
+                var s = document.createElement('script');
+                s.src = '/assets/components/feed_widget/feed_widget.js';
+                s.onload = function () { window.FeedWidget.open(); };
+                document.head.appendChild(s);
+            });
+        }
 
         // ── Close button inside nav (móvil) ─────────────────────────────────
         var _navCloseBtn = document.getElementById('nav-close-btn');

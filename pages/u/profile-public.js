@@ -109,6 +109,9 @@
             cvSection.hidden = false;
         }
 
+        // Follow button + stats
+        _loadFollowStatus(username);
+
         // Resources tabs
         _loadResources(username);
 
@@ -117,8 +120,56 @@
         document.getElementById('pub-content').hidden = false;
     }
 
+    var _profileUsername = '';
+    var _isFollowing     = false;
+
+    function _loadFollowStatus(username) {
+        var btn     = document.getElementById('pub-follow-btn');
+        var stats   = document.getElementById('pub-stats');
+        var label   = document.getElementById('pub-follow-label');
+        var fcEl    = document.getElementById('pub-followers-count');
+        var fgEl    = document.getElementById('pub-following-count');
+
+        fetch('/api/auth/me', { credentials: 'include' })
+            .then(function (r) { return r.json(); })
+            .then(function (me) {
+                var isSelf = me.username === username;
+                if (!isSelf && btn) btn.hidden = false;
+                if (stats) stats.hidden = false;
+            }).catch(function () {});
+
+        fetch('/api/users/' + encodeURIComponent(username) + '/follow-status', { credentials: 'include' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (!data) return;
+                _isFollowing = !!data.following;
+                if (label) label.textContent = _isFollowing
+                    ? (window.t ? t('social.follow.btn_unfollow') : 'Dejar de seguir')
+                    : (window.t ? t('social.follow.btn_follow')   : 'Seguir');
+                if (btn) btn.classList.toggle('btn-primary', !_isFollowing);
+                if (fcEl) fcEl.textContent = data.followers_count || 0;
+                if (fgEl) fgEl.textContent = data.following_count || 0;
+            }).catch(function () {});
+    }
+
+    function _bindFollow(username) {
+        var btn = document.getElementById('pub-follow-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            var method = _isFollowing ? 'DELETE' : 'POST';
+            fetch('/api/users/' + encodeURIComponent(username) + '/follow', {
+                method: method,
+                credentials: 'include',
+            })
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(function () { _loadFollowStatus(username); })
+            .catch(function () {})
+            .finally(function () { btn.disabled = false; });
+        });
+    }
+
     var _RESOURCE_TYPES = ['agent', 'skill', 'knowledge'];
-    var _TYPE_ICONS = { agent: '🤖', skill: '⚡', knowledge: '📚' };
     var _AVATAR_COLORS = ['#4f46e5','#0891b2','#059669','#d97706','#7c3aed','#db2777','#0f766e'];
 
     function _avatarColor(name) {
@@ -134,7 +185,7 @@
         return items.map(function (r) {
             return '<div class="pub-resource-card">' +
                 '<div class="pub-resource-avatar" style="background:' + _avatarColor(r.name) + '">' +
-                (_TYPE_ICONS[r.resource_type] || '📦') + '</div>' +
+                (r.name || '?').charAt(0).toUpperCase() + '</div>' +
                 '<div class="pub-resource-info">' +
                 '<span class="pub-resource-name">' + _esc(r.name) + '</span>' +
                 '<span class="pub-resource-cat">' + _esc(r.category || '') + '</span>' +
@@ -204,6 +255,8 @@
         var parts = window.location.pathname.split('/').filter(Boolean);
         var username = parts[1] || '';
         if (!username) { _showError('Usuario no especificado.'); return; }
+        _profileUsername = username;
+        _bindFollow(username);
 
         fetch('/api/users/' + encodeURIComponent(username), { credentials: 'include' })
             .then(function (r) {

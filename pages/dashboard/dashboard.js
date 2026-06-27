@@ -133,6 +133,7 @@ function _setEditMode(on) {
     if (nav)       { nav.style.display       = on ? 'none' : '';  nav.setAttribute('aria-hidden', on ? 'true' : 'false'); }
     if (sidebar)   { sidebar.style.display   = on ? 'flex' : 'none'; sidebar.setAttribute('aria-hidden', on ? 'false' : 'true'); }
     if (headerBtn) { headerBtn.style.display = on ? 'none' : ''; }
+    document.body.classList.toggle('dash-editing', on);
 
     if (on) _fillSidebar();
     _renderGrid();

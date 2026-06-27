@@ -2,7 +2,6 @@
     'use strict';
 
     var _AVATAR_COLORS = ['#4f46e5','#0891b2','#059669','#d97706','#7c3aed','#db2777','#0f766e'];
-    var _TYPE_ICONS    = { agent: '🤖', skill: '⚡', knowledge: '📚' };
     var _TYPE_LABELS   = { agent: 'Agente', skill: 'Skill', knowledge: 'Knowledge' };
 
     var _offset    = 0;
@@ -37,16 +36,16 @@
     }
 
     function _renderCard(r) {
-        var key   = r.resource_type + ':' + r.resource_id;
-        var color = _avatarColor(r.name);
-        var icon  = _TYPE_ICONS[r.resource_type] || '📦';
+        var key     = r.resource_type + ':' + r.resource_id;
+        var color   = _avatarColor(r.name);
+        var initial = (r.name || '?').charAt(0).toUpperCase();
         var starred = !!_starred[key];
         var forkBadge = r.fork_of_id
             ? '<span class="explore-card-fork-badge">fork</span>'
             : (r.linked_to_id ? '<span class="explore-card-fork-badge">linked</span>' : '');
         return '<div class="explore-card" data-id="' + esc(r.resource_id) + '" data-type="' + esc(r.resource_type) + '" data-owner="' + esc(r.owner) + '">' +
             '<div class="explore-card-top">' +
-            '<div class="explore-card-avatar" style="background:' + color + '">' + icon + '</div>' +
+            '<div class="explore-card-avatar" style="background:' + color + '">' + initial + '</div>' +
             '<div class="explore-card-info">' +
             '<div class="explore-card-name" title="' + esc(r.name) + '">' + esc(r.name) + '</div>' +
             '<div class="explore-card-meta">' +

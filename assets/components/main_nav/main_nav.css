@@ -229,7 +229,7 @@
 /* ── Lang + icon actions ── */
 .nav-footer-actions {
     display: grid;
-    grid-template-columns: 1fr 28px 28px;
+    grid-template-columns: 1fr 28px 28px 28px;
     gap: 2px;
     margin-bottom: 4px;
 }

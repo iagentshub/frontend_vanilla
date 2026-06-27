@@ -1,0 +1,71 @@
+<div class="wcfg-body">
+    <div class="wcfg-title">Feed</div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Tamaño</span>
+        <div class="wcfg-sizes">
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="small">
+                <span class="wcfg-size-visual wcfg-size-visual--s"></span>
+                <span class="wcfg-size-name">Pequeño</span>
+            </label>
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="medium">
+                <span class="wcfg-size-visual wcfg-size-visual--m"></span>
+                <span class="wcfg-size-name">Mediano</span>
+            </label>
+            <label class="wcfg-size-card">
+                <input type="radio" name="size" value="large">
+                <span class="wcfg-size-visual wcfg-size-visual--l"></span>
+                <span class="wcfg-size-name">Grande</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Tipos de recurso</span>
+        <div class="wfeed-cfg-type-grid">
+            <label class="wfeed-cfg-type-opt">
+                <input type="checkbox" name="types" value="agent">
+                <span>Agentes</span>
+            </label>
+            <label class="wfeed-cfg-type-opt">
+                <input type="checkbox" name="types" value="skill">
+                <span>Skills</span>
+            </label>
+            <label class="wfeed-cfg-type-opt">
+                <input type="checkbox" name="types" value="knowledge">
+                <span>Knowledge</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Cantidad de items</span>
+        <select name="limit" class="select select--sm">
+            <option value="4">4 items</option>
+            <option value="8">8 items</option>
+            <option value="15">15 items</option>
+            <option value="25">25 items</option>
+        </select>
+    </div>
+
+    <div class="wcfg-field">
+        <span class="wcfg-label">Vista</span>
+        <div class="wcfg-radio-row">
+            <label class="wcfg-radio-opt">
+                <input type="radio" name="density" value="normal">
+                <span>Normal — con descripción</span>
+            </label>
+            <label class="wcfg-radio-opt">
+                <input type="radio" name="density" value="compact">
+                <span>Compacta — solo nombre y autor</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="wcfg-actions">
+        <button class="btn btn-ghost btn-sm" data-wcfg-cancel>Cancelar</button>
+        <button class="btn btn-primary btn-sm" data-wcfg-save>Guardar</button>
+    </div>
+</div>

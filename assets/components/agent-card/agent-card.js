@@ -38,7 +38,9 @@ var AgentCard = {
             ? '<span class="agent-scope-badge agent-scope-badge--public">' + t('agents.scope.badge_public') + '</span>'
             : (agent._shared ? '<span class="agent-scope-badge agent-scope-badge--shared">' + (t('teams.teams.sharing.shared_badge') || 'Compartido') + '</span>' : '');
         var socialBadge = agent._social_public
-            ? '<span class="agent-scope-badge agent-scope-badge--social" title="' + esc(agent._social_category || '') + '">🌐</span>'
+            ? '<span class="agent-scope-badge agent-scope-badge--social" title="' + esc(agent._social_category || '') + '">' +
+              '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
+              '</span>'
             : '';
 
         var totalTokens = (agent.tokens_in || 0) + (agent.tokens_out || 0);

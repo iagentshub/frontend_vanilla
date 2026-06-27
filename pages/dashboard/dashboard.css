@@ -828,6 +828,52 @@
     .w-donut-wrap       { flex-direction: column; align-items: flex-start; }
 }
 
+@media (max-width: 768px) {
+    /* Header compacto: título y botón en fila, subtítulo oculto */
+    .dash-page-header {
+        flex-direction: row !important;
+        align-items: center;
+        gap: 12px;
+    }
+    .dash-page-header .page-subtitle { display: none; }
+    .dash-page-header .page-title    { font-size: 1.1rem; }
+
+    /* Edit sidebar → bottom sheet fijo */
+    .dash-edit-sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        width: 100%;
+        min-height: unset;
+        height: auto;
+        max-height: 52vh;
+        border-right: none;
+        border-top: 1px solid var(--line-strong);
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -8px 32px rgba(0,0,0,.22);
+        z-index: 650;
+        overflow-y: auto;
+    }
+    /* Header del bottom sheet: pegado arriba, hint oculto */
+    .des-header {
+        position: sticky;
+        top: 0;
+        background: var(--nav-bg);
+        z-index: 1;
+        padding: 14px 16px 12px;
+        border-radius: 16px 16px 0 0;
+    }
+    .des-hint { display: none; }
+
+    /* Margen inferior para que el grid no quede tapado por el bottom sheet */
+    body.dash-editing .page-content { padding-bottom: 54vh; }
+
+    /* Ocultar el hamburger durante la edición (el sheet tiene su propio "Listo") */
+    body.dash-editing #nav-hamburger { display: none !important; }
+}
+
 @media (max-width: 600px) {
     .dash-grid          { grid-template-columns: 1fr; }
     .dash-panel--small,
