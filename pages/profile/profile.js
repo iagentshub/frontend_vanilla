@@ -32,9 +32,9 @@ async function loadUser() {
         var elName = document.getElementById('profile-username');
         var elRole = document.getElementById('profile-role');
         var elAuth = document.getElementById('profile-auth-method');
-        var elAvatar = document.getElementById('profile-avatar');
         if (elName) elName.textContent = u;
-        if (elAvatar) elAvatar.textContent = u.charAt(0).toUpperCase() || '?';
+        _setAvatarLetter(u);
+        _loadAvatar(u);
 
         var roleLabel = t('profile.roles.' + _currentRole) || _currentRole;
         if (elRole) elRole.textContent = roleLabel;
@@ -53,6 +53,7 @@ async function loadUser() {
         if (elAuthDet) elAuthDet.textContent = authLabel;
 
         _initNav(_authMethod);
+        if (typeof window.initAvatarCrop === 'function') window.initAvatarCrop(u);
     } catch (e) { }
 }
 
@@ -300,6 +301,39 @@ function bindPasswordForm() {
             btn.disabled = false; btn.textContent = t('profile.password.save_btn');
         }
     });
+}
+
+function _setAvatarLetter(username) {
+    var el = document.getElementById('profile-avatar-letter');
+    if (el) el.textContent = (username || '?').charAt(0).toUpperCase();
+}
+
+function _setAvatarImg(url) {
+    var wrap = document.getElementById('profile-avatar');
+    if (!wrap) return;
+    var existing = wrap.querySelector('img');
+    if (existing) existing.remove();
+    var letter = document.getElementById('profile-avatar-letter');
+    var img = document.createElement('img');
+    img.src = url + '?t=' + Date.now();
+    img.alt = '';
+    img.onerror = function () {
+        img.remove();
+        if (letter) letter.style.display = '';
+    };
+    img.onload = function () {
+        if (letter) letter.style.display = 'none';
+    };
+    wrap.insertBefore(img, wrap.firstChild);
+}
+
+function _loadAvatar(username) {
+    var url = '/api/users/' + encodeURIComponent(username) + '/avatar';
+    fetch(url, { credentials: 'include' }).then(function (r) {
+        if (r.ok && r.status !== 204) {
+            _setAvatarImg(url);
+        }
+    }).catch(function () {});
 }
 
 init();

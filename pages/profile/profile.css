@@ -46,6 +46,34 @@
     font-size: 15px;
     font-weight: 700;
     flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: absolute;
+    inset: 0;
+}
+.profile-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.profile-avatar:hover .profile-avatar-overlay {
+    opacity: 1;
+}
+.profile-avatar-overlay svg {
+    color: #fff;
 }
 
 .profile-username {
@@ -921,4 +949,76 @@
     display: flex;
     gap: 6px;
     flex-shrink: 0;
+}
+
+/* ── Avatar crop modal ────────────────────────────── */
+.avatar-crop-box {
+    width: 380px;
+    max-width: calc(100vw - 32px);
+}
+.avatar-crop-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+.avatar-crop-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.avatar-crop-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-muted);
+    align-self: flex-start;
+}
+.avatar-crop-current {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 32px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.avatar-crop-current img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.avatar-crop-canvas-wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+#avatar-crop-canvas {
+    border-radius: 8px;
+    cursor: grab;
+    touch-action: none;
+    display: block;
+    max-width: 100%;
+}
+#avatar-crop-canvas:active {
+    cursor: grabbing;
+}
+.avatar-crop-hint {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-align: center;
+}
+.avatar-crop-select-btn {
+    width: 100%;
+    justify-content: center;
+    gap: 6px;
 }

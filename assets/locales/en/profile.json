@@ -10,6 +10,17 @@
     "style": "Style",
     "privacy": "Privacy"
   },
+  "avatar": {
+    "modal_title": "Change profile photo",
+    "current_label": "Current photo",
+    "new_label": "New photo",
+    "select_btn": "Select image",
+    "crop_hint": "Drag to adjust · Scroll to zoom",
+    "invalid_format": "Format not allowed. Use jpg, png or webp.",
+    "too_large": "Image cannot exceed 2 MB.",
+    "saved": "Photo updated",
+    "error": "Error uploading photo"
+  },
   "auth_method": {
     "internal": "Internal",
     "google": "Google",

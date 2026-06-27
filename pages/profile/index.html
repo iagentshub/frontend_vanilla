@@ -36,7 +36,15 @@
                 <!-- Nav lateral -->
                 <nav class="profile-nav">
                     <div class="profile-nav-user">
-                        <div class="profile-avatar" id="profile-avatar">A</div>
+                        <div class="profile-avatar" id="profile-avatar" title="Cambiar foto">
+                            <span id="profile-avatar-letter">A</span>
+                            <div class="profile-avatar-overlay">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                    <path d="M1.5 5.5A1.5 1.5 0 0 1 3 4h.5l1-2h7l1 2H13a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-7Z" stroke="currentColor" stroke-width="1.3"/>
+                                    <circle cx="8" cy="9" r="2.2" stroke="currentColor" stroke-width="1.3"/>
+                                </svg>
+                            </div>
+                        </div>
                         <div class="profile-nav-user-info">
                             <div class="profile-username" id="profile-username">…</div>
                             <div class="profile-nav-badges">
@@ -255,6 +263,48 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modal recorte de avatar -->
+    <div id="modal-avatar-crop" class="modal-bg" style="display:none">
+        <div class="modal-box avatar-crop-box">
+            <div class="modal-header">
+                <span class="modal-title" data-i18n="profile.avatar.modal_title">Cambiar foto de perfil</span>
+                <button class="modal-close" id="avatar-crop-close" type="button">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body avatar-crop-body">
+                <!-- Foto actual -->
+                <div class="avatar-crop-section">
+                    <p class="avatar-crop-label" data-i18n="profile.avatar.current_label">Foto actual</p>
+                    <div class="avatar-crop-current" id="avatar-crop-current">
+                        <span id="avatar-crop-current-letter"></span>
+                    </div>
+                </div>
+                <!-- Nueva foto -->
+                <div class="avatar-crop-section">
+                    <p class="avatar-crop-label" data-i18n="profile.avatar.new_label">Nueva foto</p>
+                    <div id="avatar-crop-canvas-wrap" class="avatar-crop-canvas-wrap" hidden>
+                        <canvas id="avatar-crop-canvas"></canvas>
+                        <p class="avatar-crop-hint" data-i18n="profile.avatar.crop_hint">Arrastra para ajustar · Scroll para hacer zoom</p>
+                    </div>
+                    <button class="btn btn-ghost avatar-crop-select-btn" id="avatar-crop-select-btn" type="button">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span data-i18n="profile.avatar.select_btn">Seleccionar imagen</span>
+                    </button>
+                    <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="avatar-crop-cancel" type="button" data-i18n="common.actions.cancel">Cancelar</button>
+                <button class="btn btn-primary" id="avatar-crop-save" type="button" disabled data-i18n="common.actions.save">Guardar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal conexión (mismo modal que /connections) -->
@@ -491,6 +541,7 @@
     <script src="/profile/profile-teams.js"></script>
     <script src="/profile/profile-workspaces.js"></script>
     <script src="/profile/profile-privacy.js"></script>
+    <script src="/profile/profile-avatar-crop.js"></script>
 </body>
 
 </html>
