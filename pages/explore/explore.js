@@ -26,9 +26,13 @@
         return _AVATAR_COLORS[code % _AVATAR_COLORS.length];
     }
 
+    function _activeType() {
+        return (document.querySelector('.explore-type-tab.active') || {}).dataset.type || 'all';
+    }
+
     function _getFilters() {
         return {
-            type:     (document.querySelector('.explore-type-tab.active') || {}).dataset.type || 'all',
+            type:     _activeType(),
             category: (document.getElementById('explore-category') || {}).value || '',
             q:        (document.getElementById('explore-search') || {}).value || '',
         };
@@ -98,7 +102,7 @@
         if (el) el.hidden = !on;
     }
 
-    async function _load(reset) {
+    async function _loadResources(reset) {
         if (_loading) return;
         if (reset) _offset = 0;
         _setLoading(true);
@@ -176,6 +180,109 @@
         } catch (_) {}
     }
 
+    // ── Users mode ────────────────────────────────────────────────────────────
+
+    var _userOffset = 0;
+    var _userHasMore = false;
+    var _userLoading = false;
+    var _wsId = '';        // needed for invite
+
+    function _renderUserCard(u) {
+        var initial = (u.username || '?').charAt(0).toUpperCase();
+        var color   = _avatarColor(u.username);
+        var isSelf  = _me && u.username === _me;
+        var followersLabel = window.t ? t('social.follow.followers') : 'seguidores';
+        var resourcesLabel = window.t ? t('explore.users.resources') : 'recursos';
+        return '<div class="explore-user-card">' +
+            '<a href="/u/' + encodeURIComponent(u.username) + '" class="explore-user-avatar" style="background:' + color + '" title="' + esc(u.username) + '">' +
+            initial + '</a>' +
+            '<div class="explore-user-info">' +
+            '<a href="/u/' + encodeURIComponent(u.username) + '" class="explore-user-name">@' + esc(u.username) + '</a>' +
+            '<span class="explore-user-meta">' +
+            '<strong>' + (u.followers_count || 0) + '</strong> ' + followersLabel + ' · ' +
+            '<strong>' + (u.public_resources_count || 0) + '</strong> ' + resourcesLabel +
+            '</span>' +
+            '</div>' +
+            '<div class="explore-user-actions">' +
+            '<a href="/u/' + encodeURIComponent(u.username) + '" class="btn btn-ghost btn-sm">' +
+            (window.t ? t('explore.users.view_profile') : 'Ver perfil') + '</a>' +
+            (!isSelf ? '<button class="btn btn-ghost btn-sm explore-invite-btn" data-username="' + esc(u.username) + '">' +
+            (window.t ? t('explore.users.invite') : 'Invitar') + '</button>' : '') +
+            '</div>' +
+            '</div>';
+    }
+
+    async function _loadUsers(reset) {
+        if (_userLoading) return;
+        if (reset) _userOffset = 0;
+        _userLoading = true;
+        _setLoading(true);
+        var q = (document.getElementById('explore-search') || {}).value || '';
+        var params = ['limit=21', 'offset=' + _userOffset];
+        if (q) params.push('q=' + encodeURIComponent(q));
+        try {
+            var items = await fetch('/api/users?' + params.join('&'), { credentials: 'include' })
+                .then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+
+            _userHasMore = items.length > 20;
+            if (_userHasMore) items = items.slice(0, 20);
+
+            var grid   = document.getElementById('explore-grid');
+            var empty  = document.getElementById('explore-empty');
+            var moreWrap = document.getElementById('explore-load-more');
+
+            if (reset) grid.innerHTML = '';
+            if (!items.length && _userOffset === 0) {
+                empty.hidden = false;
+                if (moreWrap) moreWrap.hidden = true;
+            } else {
+                empty.hidden = true;
+                grid.innerHTML += items.map(_renderUserCard).join('');
+                _userOffset += items.length;
+                if (moreWrap) moreWrap.hidden = !_userHasMore;
+            }
+        } catch (_) {}
+        _userLoading = false;
+        _setLoading(false);
+    }
+
+    async function _inviteUser(username) {
+        if (!_wsId) {
+            if (window.toast) toast(window.t ? t('explore.users.invite_no_ws') : 'Sin workspace activo', 'error');
+            return;
+        }
+        try {
+            await fetch('/api/workspaces/' + encodeURIComponent(_wsId) + '/invitations', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username }),
+            }).then(function (r) {
+                if (r.status === 409) throw new Error(window.t ? t('explore.users.invite_already') : 'Ya invitado o miembro');
+                if (!r.ok) throw new Error(window.t ? t('explore.users.invite_error') : 'Error al invitar');
+                return r.json();
+            });
+            if (window.toast) toast((window.t ? t('explore.users.invite_sent') : 'Invitación enviada a') + ' @' + username, 'success');
+        } catch (e) {
+            if (window.toast) toast(e.message, 'error');
+        }
+    }
+
+    function _toggleCategoryBar(show) {
+        var bar = document.getElementById('explore-category-bar');
+        if (bar) bar.style.display = show ? '' : 'none';
+    }
+
+    function _load(reset) {
+        if (_activeType() === 'users') {
+            _toggleCategoryBar(false);
+            _loadUsers(reset);
+        } else {
+            _toggleCategoryBar(true);
+            _loadResources(reset);
+        }
+    }
+
     function _bindFilters() {
         document.getElementById('explore-type-tabs').addEventListener('click', function (e) {
             var tab = e.target.closest('.explore-type-tab');
@@ -195,6 +302,8 @@
         });
 
         document.getElementById('explore-grid').addEventListener('click', function (e) {
+            var invBtn = e.target.closest('.explore-invite-btn');
+            if (invBtn) { e.stopPropagation(); _inviteUser(invBtn.dataset.username); return; }
             var starBtn = e.target.closest('[data-action="star"]');
             if (starBtn) { e.stopPropagation(); _toggleStar(starBtn); return; }
             var forkBtn = e.target.closest('[data-action="fork"]');
@@ -212,7 +321,10 @@
         renderNav('nav-root', 'explore');
         fetch('/api/auth/me', { credentials: 'include' })
             .then(function (r) { return r.json(); })
-            .then(function (d) { _me = d.username || ''; })
+            .then(function (d) {
+                _me    = d.username || '';
+                _wsId  = d.workspace_id || d.username || '';
+            })
             .catch(function () {});
         _bindFilters();
         _load(true);

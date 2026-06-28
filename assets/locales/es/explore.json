@@ -1,12 +1,22 @@
 {
   "title": "Explorar",
   "subtitle": "Descubre agentes, skills y conocimiento público de la comunidad",
-  "search_placeholder": "Buscar recursos...",
+  "search_placeholder": "Buscar...",
   "all_categories": "Todas las categorías",
   "type_all": "Todo",
   "type_agents": "Agentes",
   "type_skills": "Skills",
   "type_knowledge": "Conocimiento",
+  "type_users": "Usuarios",
   "load_more": "Cargar más",
-  "empty": "No hay recursos que coincidan con tu búsqueda."
+  "empty": "No hay resultados que coincidan con tu búsqueda.",
+  "users": {
+    "resources": "recursos",
+    "view_profile": "Ver perfil",
+    "invite": "Invitar",
+    "invite_sent": "Invitación enviada a",
+    "invite_already": "Ya es miembro o tiene invitación pendiente",
+    "invite_error": "Error al enviar la invitación",
+    "invite_no_ws": "No hay workspace activo para invitar"
+  }
 }
