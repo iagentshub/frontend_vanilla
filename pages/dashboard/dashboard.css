@@ -111,6 +111,9 @@
     color: var(--accent);
 }
 
+/* Botón añadir: solo útil en móvil (en desktop la lista siempre está visible) */
+.des-add-btn { display: none; }
+
 /* ── Edit sidebar (reemplaza al nav durante personalización) ─────────────────── */
 .dash-edit-sidebar {
     width: 232px;
@@ -297,6 +300,8 @@
     flex: 1 1 120px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 10px;
     padding: 14px 14px 12px;
     border-radius: var(--radius);
@@ -327,7 +332,7 @@
     color: var(--accent);
 }
 
-.dash-stat-body { min-width: 0; }
+.dash-stat-body { min-width: 0; text-align: center; }
 
 .dash-stat-value {
     font-size: 1.4rem;
@@ -838,7 +843,7 @@
     .dash-page-header .page-subtitle { display: none; }
     .dash-page-header .page-title    { font-size: 1.1rem; }
 
-    /* Edit sidebar → bottom sheet fijo */
+    /* Edit sidebar → bottom sheet fijo, colapsado por defecto */
     .dash-edit-sidebar {
         position: fixed;
         bottom: 0;
@@ -848,15 +853,25 @@
         width: 100%;
         min-height: unset;
         height: auto;
-        max-height: 52vh;
+        max-height: none;
         border-right: none;
         border-top: 1px solid var(--line-strong);
         border-radius: 16px 16px 0 0;
         box-shadow: 0 -8px 32px rgba(0,0,0,.22);
         z-index: 650;
+        overflow: hidden;
+        transition: max-height .28s ease;
+    }
+    /* Expandido: muestra la lista */
+    .dash-edit-sidebar.des-expanded {
+        max-height: 52vh;
         overflow-y: auto;
     }
-    /* Header del bottom sheet: pegado arriba, hint oculto */
+    /* Lista oculta hasta expandir */
+    .dash-edit-sidebar .des-list { display: none; }
+    .dash-edit-sidebar.des-expanded .des-list { display: flex; }
+
+    /* Header siempre visible */
     .des-header {
         position: sticky;
         top: 0;
@@ -867,10 +882,14 @@
     }
     .des-hint { display: none; }
 
-    /* Margen inferior para que el grid no quede tapado por el bottom sheet */
-    body.dash-editing .page-content { padding-bottom: 54vh; }
+    /* Botón añadir visible en móvil */
+    .des-add-btn { display: inline-flex !important; }
 
-    /* Ocultar el hamburger durante la edición (el sheet tiene su propio "Listo") */
+    /* Sólo añadir padding cuando el sheet está expandido */
+    body.dash-editing .page-content { padding-bottom: 70px; }
+    body.dash-editing.des-sheet-open .page-content { padding-bottom: 54vh; }
+
+    /* Ocultar el hamburger durante la edición */
     body.dash-editing #nav-hamburger { display: none !important; }
 }
 
@@ -881,6 +900,14 @@
     .dash-panel--full   { grid-column: span 1; }
 }
 
+@media (max-width: 600px) {
+    /* Grid uniforme: todas las tarjetas del mismo ancho */
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    }
+}
+
 @media (max-width: 480px) {
-    .dash-stat-card { padding: 12px 14px; gap: 10px; }
+    .dash-stat-card { padding: 12px 10px; gap: 8px; }
 }

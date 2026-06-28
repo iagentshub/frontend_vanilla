@@ -8,16 +8,26 @@
     var _limit       = 40;
     var _hasMore     = false;
     var _loading     = false;
-    var _searchTimer = null;
     var _starred     = {};
     var _forked      = {};
-    var _me          = '';   // username del usuario autenticado
+    var _linked      = {};
+    var _me          = '';
+    var _searched    = false;   // true after first explicit search
+
+    var _SVG_EYE = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+        '<path d="M1.5 8C1.5 8 4 3.5 8 3.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>' +
+        '<circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>' +
+        '</svg>';
 
     var _SVG_FORK = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none">' +
         '<circle cx="8" cy="2.5" r="1.7" stroke="currentColor" stroke-width="1.4"/>' +
         '<circle cx="3" cy="13.5" r="1.7" stroke="currentColor" stroke-width="1.4"/>' +
         '<circle cx="13" cy="13.5" r="1.7" stroke="currentColor" stroke-width="1.4"/>' +
         '<path d="M8 4.2v3.5m0 0L3 11.8m5-4.1l5 4.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>';
+    var _SVG_LINK = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none">' +
+        '<path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5L7 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+        '<path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
         '</svg>';
 
     function _avatarColor(name) {
@@ -26,8 +36,14 @@
         return _AVATAR_COLORS[code % _AVATAR_COLORS.length];
     }
 
+    function esc(v) {
+        return String(v == null ? '' : v)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
     function _activeType() {
-        return (document.querySelector('.explore-type-tab.active') || {}).dataset.type || 'all';
+        return (document.getElementById('explore-type') || {}).value || 'all';
     }
 
     function _getFilters() {
@@ -43,7 +59,7 @@
         if (filters.type && filters.type !== 'all') params.push('type=' + encodeURIComponent(filters.type));
         if (filters.category) params.push('category=' + encodeURIComponent(filters.category));
         if (filters.q)        params.push('q=' + encodeURIComponent(filters.q));
-        params.push('limit=' + (_limit + 1));  // fetch one extra to detect more
+        params.push('limit=' + (_limit + 1));
         params.push('offset=' + offset);
         return '/api/explore' + (params.length ? '?' + params.join('&') : '');
     }
@@ -55,19 +71,28 @@
         var starred = !!_starred[key];
         var forked  = !!_forked[key];
         var isOwn   = _me && r.owner === _me;
-        var isForkable = !isOwn && (r.resource_type === 'agent' || r.resource_type === 'skill');
+        var isForkable = !isOwn && (r.resource_type === 'agent' || r.resource_type === 'skill' || r.resource_type === 'knowledge');
         var originBadge = r.fork_of_id
-            ? '<span class="explore-card-fork-badge">fork</span>'
-            : (r.linked_to_id ? '<span class="explore-card-fork-badge">linked</span>' : '');
+            ? '<span class="explore-card-fork-badge">' + (window.t ? t('labels.fork') : 'fork') + '</span>'
+            : (r.linked_to_id ? '<span class="explore-card-fork-badge">' + (window.t ? t('labels.linked') : 'linked') + '</span>' : '');
         var labelChips = (window.LABELS && r.labels && r.labels.length)
             ? '<div class="label-chips-row" style="margin-top:4px">' + LABELS.renderChips(r.labels) + '</div>'
             : '';
+        var isLinked = !!_linked[key];
         var forkBtn = isForkable
             ? '<button class="explore-card-fork-btn' + (forked ? ' forked' : '') + '" data-action="fork"' +
               ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
-              ' data-owner="' + esc(r.owner) + '" title="' + (forked ? 'Ya copiado' : 'Copiar a mi workspace') + '"' +
+              ' data-owner="' + esc(r.owner) + '" title="' + (forked ? 'Ya forkeado' : (window.t ? t('labels.actions.fork') : 'Fork')) + '"' +
               (forked ? ' disabled' : '') + '>' +
               _SVG_FORK +
+              '</button>'
+            : '';
+        var linkBtn = isForkable
+            ? '<button class="explore-card-fork-btn' + (isLinked ? ' forked' : '') + '" data-action="link"' +
+              ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
+              ' title="' + (isLinked ? 'Ya enlazado' : (window.t ? t('labels.actions.link') : 'Link')) + '"' +
+              (isLinked ? ' disabled' : '') + '>' +
+              _SVG_LINK +
               '</button>'
             : '';
         return '<div class="explore-card" data-id="' + esc(r.resource_id) + '" data-type="' + esc(r.resource_type) + '" data-owner="' + esc(r.owner) + '">' +
@@ -87,7 +112,10 @@
             '<div class="explore-card-footer">' +
             '<a href="/u/' + encodeURIComponent(r.owner) + '" class="explore-card-author">@' + esc(r.owner) + '</a>' +
             '<div class="explore-card-actions">' +
+            '<button class="explore-card-eye-btn" data-action="preview" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '" title="Vista previa">' +
+            _SVG_EYE + '</button>' +
             forkBtn +
+            linkBtn +
             '<button class="explore-card-star-btn' + (starred ? ' starred' : '') + '" data-action="star" data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '">' +
             '★ <span class="star-count">' + (r.stars_count || 0) + '</span>' +
             '</button>' +
@@ -102,11 +130,30 @@
         if (el) el.hidden = !on;
     }
 
+    function _setMessage(text) {
+        var el  = document.getElementById('explore-empty');
+        var msg = document.getElementById('explore-empty-msg');
+        if (msg) msg.textContent = text;
+        if (el)  el.hidden = !text;
+    }
+
+    function _showPrompt() {
+        _setMessage(window.t ? t('explore.prompt') : 'Elige un tipo y escribe tu búsqueda para explorar.');
+        var grid = document.getElementById('explore-grid');
+        grid.innerHTML = '';
+        grid.hidden = true;
+        var moreWrap = document.getElementById('explore-load-more');
+        if (moreWrap) moreWrap.hidden = true;
+    }
+
     async function _loadResources(reset) {
         if (_loading) return;
         if (reset) _offset = 0;
         _setLoading(true);
-        var filters = _getFilters();
+        _setMessage('');   // hide while loading
+        var filters  = _getFilters();
+        var grid     = document.getElementById('explore-grid');
+        var moreWrap = document.getElementById('explore-load-more');
         try {
             var items = await fetch(_buildUrl(filters, _offset), { credentials: 'include' })
                 .then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
@@ -114,17 +161,14 @@
             _hasMore = items.length > _limit;
             if (_hasMore) items = items.slice(0, _limit);
 
-            var grid = document.getElementById('explore-grid');
-            var empty = document.getElementById('explore-empty');
-            var moreWrap = document.getElementById('explore-load-more');
-
             if (reset) grid.innerHTML = '';
 
             if (!items.length && _offset === 0) {
-                empty.hidden = false;
+                grid.hidden = true;
+                _setMessage(window.t ? t('explore.empty') : 'No hay resultados que coincidan con tu búsqueda.');
                 if (moreWrap) moreWrap.hidden = true;
             } else {
-                empty.hidden = true;
+                grid.hidden = false;
                 grid.innerHTML += items.map(_renderCard).join('');
                 _offset += items.length;
                 if (moreWrap) moreWrap.hidden = !_hasMore;
@@ -133,16 +177,19 @@
         _setLoading(false);
     }
 
+    function _resourceUrl(type, id, action) {
+        if (type === 'knowledge') return '/api/knowledge/' + encodeURIComponent(id) + '/' + action;
+        var plural = type === 'skill' ? 'skills' : 'agents';
+        return '/api/' + plural + '/private/' + encodeURIComponent(id) + '/' + action;
+    }
+
     async function _forkResource(btn) {
         var key   = btn.dataset.key;
         var type  = btn.dataset.type;
         var id    = btn.dataset.id;
         btn.disabled = true;
         try {
-            var plural = type === 'skill' ? 'skills' : 'agents';
-            var r = await fetch('/api/' + plural + '/private/' + encodeURIComponent(id) + '/fork', {
-                method: 'POST', credentials: 'include',
-            });
+            var r = await fetch(_resourceUrl(type, id, 'fork'), { method: 'POST', credentials: 'include' });
             var data = await r.json();
             if (!r.ok) {
                 if (window.toast) toast(data.detail || 'Error al copiar', 'error');
@@ -152,8 +199,30 @@
             _forked[key] = true;
             btn.classList.add('forked');
             btn.title = 'Ya copiado';
-            var label = type === 'skill' ? 'Skill copiada' : 'Agente copiado';
-            if (window.toast) toast(label + ' a tu workspace', 'success');
+            var labels = { agent: 'Agente copiado', skill: 'Skill copiada', knowledge: 'Knowledge copiado' };
+            if (window.toast) toast((labels[type] || 'Copiado') + ' a tu workspace', 'success');
+        } catch (_) {
+            btn.disabled = false;
+        }
+    }
+
+    async function _linkResource(btn) {
+        var key  = btn.dataset.key;
+        var type = btn.dataset.type;
+        var id   = btn.dataset.id;
+        btn.disabled = true;
+        try {
+            var r = await fetch(_resourceUrl(type, id, 'link'), { method: 'POST', credentials: 'include' });
+            var data = await r.json();
+            if (!r.ok) {
+                if (window.toast) toast(data.detail || (window.t ? t('labels.actions.link_error') : 'Error al enlazar'), 'error');
+                btn.disabled = false;
+                return;
+            }
+            _linked[key] = true;
+            btn.classList.add('forked');
+            btn.title = 'Ya enlazado';
+            if (window.toast) toast((window.t ? t('labels.actions.link_success') : 'Enlazado') + ': ' + data.name, 'success');
         } catch (_) {
             btn.disabled = false;
         }
@@ -165,12 +234,10 @@
         var id   = btn.dataset.id;
         var isStarred = !!_starred[key];
         try {
-            var r;
-            if (isStarred) {
-                r = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', { method: 'DELETE', credentials: 'include' });
-            } else {
-                r = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', { method: 'POST', credentials: 'include' });
-            }
+            var method = isStarred ? 'DELETE' : 'POST';
+            var r = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', {
+                method: method, credentials: 'include',
+            });
             if (!r.ok) return;
             var data = await r.json();
             _starred[key] = !isStarred;
@@ -182,10 +249,10 @@
 
     // ── Users mode ────────────────────────────────────────────────────────────
 
-    var _userOffset = 0;
+    var _userOffset  = 0;
     var _userHasMore = false;
     var _userLoading = false;
-    var _wsId = '';        // needed for invite
+    var _wsId        = '';
 
     function _renderUserCard(u) {
         var initial = (u.username || '?').charAt(0).toUpperCase();
@@ -220,6 +287,9 @@
         var q = (document.getElementById('explore-search') || {}).value || '';
         var params = ['limit=21', 'offset=' + _userOffset];
         if (q) params.push('q=' + encodeURIComponent(q));
+        var grid     = document.getElementById('explore-grid');
+        var moreWrap = document.getElementById('explore-load-more');
+        _setMessage('');   // hide while loading
         try {
             var items = await fetch('/api/users?' + params.join('&'), { credentials: 'include' })
                 .then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
@@ -227,16 +297,13 @@
             _userHasMore = items.length > 20;
             if (_userHasMore) items = items.slice(0, 20);
 
-            var grid   = document.getElementById('explore-grid');
-            var empty  = document.getElementById('explore-empty');
-            var moreWrap = document.getElementById('explore-load-more');
-
             if (reset) grid.innerHTML = '';
             if (!items.length && _userOffset === 0) {
-                empty.hidden = false;
+                grid.hidden = true;
+                _setMessage(window.t ? t('explore.empty') : 'No hay resultados que coincidan con tu búsqueda.');
                 if (moreWrap) moreWrap.hidden = true;
             } else {
-                empty.hidden = true;
+                grid.hidden = false;
                 grid.innerHTML += items.map(_renderUserCard).join('');
                 _userOffset += items.length;
                 if (moreWrap) moreWrap.hidden = !_userHasMore;
@@ -268,51 +335,193 @@
         }
     }
 
-    function _toggleCategoryBar(show) {
-        var bar = document.getElementById('explore-category-bar');
-        if (bar) bar.style.display = show ? '' : 'none';
+    var _AVATAR_COLORS_P = ['#4f46e5','#0891b2','#059669','#d97706','#7c3aed','#db2777','#0f766e'];
+    function _avatarColorP(name) {
+        var code = 0;
+        for (var i = 0; i < (name || '').length; i++) code += name.charCodeAt(i);
+        return _AVATAR_COLORS_P[code % _AVATAR_COLORS_P.length];
     }
 
-    function _load(reset) {
+    function _abpItem(text) {
+        return '<div class="abp-item"><span class="abp-item-bullet"></span><span>' + esc(text) + '</span></div>';
+    }
+    function _abpEmpty() { return '<span class="abp-empty">—</span>'; }
+
+    function _openPreviewModal(data) {
+        var type  = data.resource_type || '';
+        var badge = { agent: 'Agente', skill: 'Skill', knowledge: 'Knowledge' }[type] || type;
+        var labelChips = (window.LABELS && data.labels && data.labels.length)
+            ? LABELS.renderChips(data.labels) : '';
+
+        document.getElementById('ep-modal-title').textContent = data.name || '';
+
+        var html = '';
+
+        if (type === 'agent') {
+            var color   = _avatarColorP(data.name || '');
+            var initial = (data.name || '?').charAt(0).toUpperCase();
+            var temp    = typeof data.temperature === 'number' ? data.temperature : 0.7;
+            var tempPct = Math.round(temp * 100);
+
+            // Header (avatar + meta)
+            html += '<div class="abp-header">'
+                + '<div class="agent-avatar" style="background:' + color + ';width:38px;height:38px;font-size:16px;flex-shrink:0">' + initial + '</div>'
+                + '<div class="abp-agent-meta">'
+                + '<div class="abp-agent-name">' + esc(data.name) + '</div>'
+                + (data.description ? '<div class="abp-agent-desc">' + esc(data.description) + '</div>' : '')
+                + (labelChips || data.category ? '<div class="abp-agent-badges">'
+                    + (data.category ? '<span class="explore-card-type-badge">' + esc(data.category) + '</span>' : '')
+                    + (labelChips ? labelChips : '')
+                    + '</div>' : '')
+                + '</div>'
+                + '</div>';
+
+            // Skills + Knowledge grid
+            var skillsHtml = (data.skills && data.skills.length)
+                ? data.skills.map(_abpItem).join('') : _abpEmpty();
+            var knowledgeHtml = (data.knowledge && data.knowledge.length)
+                ? data.knowledge.map(_abpItem).join('') : _abpEmpty();
+
+            html += '<div class="abp-grid-2">'
+                + '<div class="abp-section"><div class="abp-section-label">Skills</div>' + skillsHtml + '</div>'
+                + '<div class="abp-section"><div class="abp-section-label">Conocimiento</div>' + knowledgeHtml + '</div>'
+                + '<div class="abp-section"><div class="abp-section-label">Config</div>'
+                + '<div class="abp-cfg-row"><span class="abp-cfg-key">Temperatura</span>'
+                + '<span class="abp-temp-bar"><span class="abp-temp-track"><span class="abp-temp-fill" style="width:' + tempPct + '%"></span></span>'
+                + '<span class="abp-cfg-val">' + temp.toFixed(1) + '</span></span></div>'
+                + (data.use_memory ? '<div class="abp-cfg-row"><span class="abp-cfg-key">Memoria</span><span class="abp-cfg-val abp-cfg-val--on">On</span></div>' : '')
+                + '</div>'
+                + '</div>';
+
+            // System prompt (full width)
+            if (data.system_prompt) {
+                html += '<div class="abp-section abp-section--full">'
+                    + '<div class="abp-section-label">Prompt de sistema</div>'
+                    + '<pre class="abp-prompt-pre">' + esc(data.system_prompt) + (data.system_prompt.length >= 600 ? '…' : '') + '</pre>'
+                    + '</div>';
+            }
+
+        } else if (type === 'skill') {
+            // Header row
+            html += '<div style="display:flex;align-items:center;gap:8px">'
+                + '<span class="explore-card-type-badge">' + esc(badge) + '</span>'
+                + (data.category ? '<span style="font-size:12px;color:var(--ink-2)">' + esc(data.category) + '</span>' : '')
+                + (labelChips || '') + '</div>';
+            if (data.description) {
+                html += '<p style="font-size:13px;color:var(--ink-2);margin:0">' + esc(data.description) + '</p>';
+            }
+            if (data.parameters && data.parameters.length) {
+                html += '<div class="abp-section"><div class="abp-section-label">Parámetros</div>'
+                    + data.parameters.map(function (p) {
+                        return '<div class="abp-item"><span class="abp-item-bullet"></span>'
+                            + '<code style="background:var(--surface-3);padding:1px 5px;border-radius:3px;font-size:11px">' + esc(p.name || p) + '</code>'
+                            + (p.description ? '<span style="color:var(--ink-3);font-size:11.5px"> ' + esc(p.description) + '</span>' : '')
+                            + '</div>';
+                    }).join('') + '</div>';
+            }
+            if (data.body) {
+                html += '<div class="abp-section"><div class="abp-section-label">Instrucciones</div>'
+                    + '<pre class="abp-prompt-pre" style="max-height:280px">' + esc(data.body) + (data.body.length >= 3000 ? '…' : '') + '</pre>'
+                    + '</div>';
+            }
+
+        } else if (type === 'knowledge') {
+            html += '<div style="display:flex;align-items:center;gap:8px">'
+                + '<span class="explore-card-type-badge">' + esc(badge) + '</span>'
+                + (labelChips || '') + '</div>';
+            if (data.source) {
+                html += '<div class="abp-section" style="min-height:0"><div class="abp-section-label">Fuente</div>'
+                    + '<span style="font-size:12.5px;color:var(--ink-2)">' + esc(data.source) + '</span>'
+                    + (data.char_count ? '<span style="font-size:11px;color:var(--ink-3)">' + (data.char_count >= 1000 ? (data.char_count / 1000).toFixed(1) + 'k' : data.char_count) + ' chars</span>' : '')
+                    + '</div>';
+            }
+            if (data.content) {
+                html += '<div class="abp-section"><div class="abp-section-label">Contenido</div>'
+                    + '<pre class="abp-prompt-pre" style="max-height:300px">' + esc(data.content) + (data.content.length >= 2000 ? '…' : '') + '</pre>'
+                    + '</div>';
+            }
+        }
+
+        document.getElementById('ep-content').innerHTML = html;
+        document.getElementById('explore-preview-modal').style.display = 'flex';
+    }
+
+    async function _previewResource(type, id) {
+        try {
+            var data = await fetch('/api/explore/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/preview', {
+                credentials: 'include',
+            }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+            _openPreviewModal(data);
+        } catch (_) {
+            if (window.toast) toast('No se pudo cargar la vista previa', 'error');
+        }
+    }
+
+    function _toggleCategoryBar(show) {
+        var el = document.getElementById('explore-category');
+        if (el) el.style.display = show ? '' : 'none';
+    }
+
+    function _doSearch() {
+        _searched = true;
         if (_activeType() === 'users') {
             _toggleCategoryBar(false);
-            _loadUsers(reset);
+            _loadUsers(true);
         } else {
             _toggleCategoryBar(true);
-            _loadResources(reset);
+            _loadResources(true);
         }
     }
 
     function _bindFilters() {
-        document.getElementById('explore-type-tabs').addEventListener('click', function (e) {
-            var tab = e.target.closest('.explore-type-tab');
-            if (!tab) return;
-            document.querySelectorAll('.explore-type-tab').forEach(function (t) { t.classList.remove('active'); });
-            tab.classList.add('active');
-            _load(true);
+        // Type dropdown: only toggle category bar, don't auto-search
+        document.getElementById('explore-type').addEventListener('change', function () {
+            _toggleCategoryBar(_activeType() !== 'users');
+            if (_searched) _doSearch();
         });
 
-        document.getElementById('explore-category').addEventListener('change', function () {
-            _load(true);
+        // Enter key in search input triggers search
+        document.getElementById('explore-search').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') _doSearch();
         });
 
-        document.getElementById('explore-search').addEventListener('input', function () {
-            clearTimeout(_searchTimer);
-            _searchTimer = setTimeout(function () { _load(true); }, 300);
+        // Search button
+        document.getElementById('explore-search-btn').addEventListener('click', function () {
+            _doSearch();
         });
 
+        // Preview modal close
+        document.getElementById('ep-close').addEventListener('click', function () {
+            document.getElementById('explore-preview-modal').style.display = 'none';
+        });
+        document.getElementById('explore-preview-modal').addEventListener('click', function (e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') document.getElementById('explore-preview-modal').style.display = 'none';
+        });
+
+        // Card actions
         document.getElementById('explore-grid').addEventListener('click', function (e) {
             var invBtn = e.target.closest('.explore-invite-btn');
             if (invBtn) { e.stopPropagation(); _inviteUser(invBtn.dataset.username); return; }
+            var eyeBtn = e.target.closest('[data-action="preview"]');
+            if (eyeBtn) { e.stopPropagation(); _previewResource(eyeBtn.dataset.type, eyeBtn.dataset.id); return; }
             var starBtn = e.target.closest('[data-action="star"]');
             if (starBtn) { e.stopPropagation(); _toggleStar(starBtn); return; }
             var forkBtn = e.target.closest('[data-action="fork"]');
-            if (forkBtn) { e.stopPropagation(); _forkResource(forkBtn); }
+            if (forkBtn) { e.stopPropagation(); _forkResource(forkBtn); return; }
+            var lnkBtn = e.target.closest('[data-action="link"]');
+            if (lnkBtn) { e.stopPropagation(); _linkResource(lnkBtn); }
         });
 
+        // Load more
         var moreBtn = document.getElementById('explore-load-more-btn');
         if (moreBtn) {
-            moreBtn.addEventListener('click', function () { _load(false); });
+            moreBtn.addEventListener('click', function () {
+                if (_activeType() === 'users') _loadUsers(false);
+                else _loadResources(false);
+            });
         }
     }
 
@@ -322,12 +531,13 @@
         fetch('/api/auth/me', { credentials: 'include' })
             .then(function (r) { return r.json(); })
             .then(function (d) {
-                _me    = d.username || '';
-                _wsId  = d.workspace_id || d.username || '';
+                _me   = d.username || '';
+                _wsId = d.workspace_id || d.username || '';
             })
             .catch(function () {});
         _bindFilters();
-        _load(true);
+        // Show initial prompt — no auto-load
+        _showPrompt();
     }
 
     init();

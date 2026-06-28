@@ -10,7 +10,7 @@ var FilterAgents = (function () {
     var _initialScope = null;
 
     // Etiquetas visibles en la barra de filtros (excluye 'private' — es el default)
-    var _FILTER_LABELS = ['public','production','staging','development','test','favorite','draft','review','deprecated','quarantine','archived','delete'];
+    var _FILTER_LABELS = ['public','production','staging','development','test','fork','linked','favorite','draft','review','deprecated','quarantine','archived','delete'];
 
     var _SVG_SEARCH = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     var _SVG_CHEVRON = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';

@@ -8,7 +8,9 @@
   "type_skills": "Skills",
   "type_knowledge": "Knowledge",
   "type_users": "Users",
+  "btn_search": "Search",
   "load_more": "Load more",
+  "prompt": "Choose a type and enter your search to explore.",
   "empty": "No results match your search.",
   "users": {
     "resources": "resources",

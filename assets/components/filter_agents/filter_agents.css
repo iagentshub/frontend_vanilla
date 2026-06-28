@@ -279,3 +279,25 @@
     border-radius: 50%;
     flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+    .fa-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    .fa-search-wrap {
+        flex: none;
+    }
+    /* Botones de filtro en fila scrollable horizontal */
+    .fa-filter-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    .fa-filter-group::-webkit-scrollbar { display: none; }
+    .fa-clear-all {
+        align-self: flex-start;
+    }
+}

@@ -250,8 +250,9 @@
 
 @media (max-width: 600px) {
     .admin-stats-grid { grid-template-columns: 1fr 1fr; }
-    .admin-toolbar { flex-direction: column; }
-    .admin-search-wrap { min-width: 100%; }
+    .admin-toolbar { flex-direction: row; flex-wrap: wrap; }
+    .admin-search-wrap { flex: 1 1 100%; }
+    .admin-select { flex: 1 1 auto; min-width: 0; }
 }
 
 @media (max-width: 480px) {

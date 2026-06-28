@@ -167,7 +167,11 @@
 }
 
 @media (max-width: 768px) {
-    .form-row-2 { grid-template-columns: 1fr; }
+    .form-row-2        { grid-template-columns: 1fr; }
+    .routine-form-row  { grid-template-columns: 1fr; }
+    .abp-grid-2        { grid-template-columns: 1fr; }
+    /* Modal blueprint: ancho completo en móvil */
+    .abp-box           { width: 100%; }
 }
 
 /* ── Panel shared ── */

@@ -120,8 +120,17 @@ function _renderGrid() {
 function _bindEditBtn() {
     var headerBtn = document.getElementById('btn-edit-dashboard');
     var doneBtn   = document.getElementById('btn-done-editing');
+    var addBtn    = document.getElementById('btn-add-widget');
     if (headerBtn) headerBtn.addEventListener('click', function () { _setEditMode(true); });
     if (doneBtn)   doneBtn.addEventListener('click',   function () { _setEditMode(false); });
+    if (addBtn)    addBtn.addEventListener('click',    function () { _toggleAddSheet(); });
+}
+
+function _toggleAddSheet() {
+    var sidebar = document.getElementById('dash-edit-sidebar');
+    if (!sidebar) return;
+    var open = sidebar.classList.toggle('des-expanded');
+    document.body.classList.toggle('des-sheet-open', open);
 }
 
 function _setEditMode(on) {
@@ -133,6 +142,12 @@ function _setEditMode(on) {
     if (nav)       { nav.style.display       = on ? 'none' : '';  nav.setAttribute('aria-hidden', on ? 'true' : 'false'); }
     if (sidebar)   { sidebar.style.display   = on ? 'flex' : 'none'; sidebar.setAttribute('aria-hidden', on ? 'false' : 'true'); }
     if (headerBtn) { headerBtn.style.display = on ? 'none' : ''; }
+
+    if (!on && sidebar) {
+        sidebar.classList.remove('des-expanded');
+        document.body.classList.remove('des-sheet-open');
+    }
+
     document.body.classList.toggle('dash-editing', on);
 
     if (on) _fillSidebar();
@@ -141,12 +156,20 @@ function _setEditMode(on) {
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 function _fillSidebar() {
-    var list = document.getElementById('des-widget-list');
+    var list   = document.getElementById('des-widget-list');
+    var addBtn = document.getElementById('btn-add-widget');
     if (!list) return;
 
     var available = Object.keys(_WIDGETS).filter(function (wid) { return _layout.indexOf(wid) === -1; });
 
+    // Mostrar/ocultar el botón "Añadir" según haya disponibles
+    if (addBtn) addBtn.style.display = available.length ? '' : 'none';
+
+    // Si ya no hay disponibles, colapsar el sheet en móvil
     if (!available.length) {
+        var sidebar = document.getElementById('dash-edit-sidebar');
+        if (sidebar) sidebar.classList.remove('des-expanded');
+        document.body.classList.remove('des-sheet-open');
         list.innerHTML = '<p class="des-empty">Todos los paneles estan en el dashboard.<br>Usa × en un panel para quitarlo.</p>';
         return;
     }

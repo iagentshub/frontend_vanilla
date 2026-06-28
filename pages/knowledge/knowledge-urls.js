@@ -6,6 +6,7 @@ var KnowledgeUrls = (function () {
     var _loaded = false;
     var _activeFolderId = null;
     var _page = 1;
+    var _query = '';
 
     function init() {
         document.getElementById('btn-add-url').addEventListener('click', _openModal);
@@ -43,8 +44,14 @@ var KnowledgeUrls = (function () {
     }
 
     function _visibleItems() {
-        if (!_activeFolderId) return _items;
-        return _items.filter(function (i) { return i.folder_id === _activeFolderId; });
+        var items = _activeFolderId
+            ? _items.filter(function (i) { return i.folder_id === _activeFolderId; })
+            : _items;
+        if (!_query) return items;
+        var q = _query.toLowerCase();
+        return items.filter(function (i) {
+            return ((i.title || '') + ' ' + (i.source || '')).toLowerCase().indexOf(q) !== -1;
+        });
     }
 
     function _render() {
@@ -142,5 +149,8 @@ var KnowledgeUrls = (function () {
 
     function getItems() { return _items; }
 
-    return { init: init, load: load, getItems: getItems };
+    return {
+        init: init, load: load, getItems: getItems,
+        setQuery: function (q) { _query = q || ''; _page = 1; _render(); },
+    };
 })();

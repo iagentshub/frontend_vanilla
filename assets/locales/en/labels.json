@@ -2,6 +2,7 @@
   "group": {
     "visibility":      "Visibility",
     "environment":     "Environment",
+    "origin":          "Origin",
     "status":          "Status",
     "exclusive_hint":  "Exclusive (only one active)",
     "multi_hint":      "Multi-select"
@@ -12,6 +13,8 @@
   "staging":     "Staging",
   "development": "Development",
   "test":        "Test",
+  "fork":        "Fork",
+  "linked":      "Linked",
   "favorite":    "Favorite",
   "draft":       "Draft",
   "review":      "Review",
@@ -28,6 +31,8 @@
     "staging":     "Pre-production environment. The resource is ready for final validation before going to production.",
     "development": "Resource under development or testing. Signals it may still change.",
     "test":        "Resource reserved for testing and validation.",
+    "fork":        "Independent copy of another resource. You can freely modify it without affecting the original. Created via the Fork action.",
+    "linked":      "Live link to a source resource. You can sync it with the original when it changes using the Sync button.",
     "favorite":    "Marks the resource as a favorite for quick access.",
     "draft":       "Work in progress, not ready to use. Blocks access until it is complete.",
     "review":      "The resource needs review before being used or published.",
@@ -42,6 +47,18 @@
     "default":   "Default",
     "blocks":    "Blocks the resource",
     "warns":     "Visual warning",
+    "info":      "Informational",
     "nav_title": "Labels"
+  },
+  "actions": {
+    "fork":         "Fork",
+    "link":         "Link",
+    "sync":         "Sync",
+    "fork_success": "Copied to your workspace",
+    "link_success": "Linked to your workspace",
+    "sync_success": "Synced with original",
+    "fork_error":   "Error forking",
+    "link_error":   "Error linking",
+    "sync_error":   "Error syncing"
   }
 }

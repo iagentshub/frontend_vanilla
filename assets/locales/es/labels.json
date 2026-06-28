@@ -2,6 +2,7 @@
   "group": {
     "visibility":      "Visibilidad",
     "environment":     "Entorno",
+    "origin":          "Origen",
     "status":          "Estado",
     "exclusive_hint":  "Exclusivas (solo una activa)",
     "multi_hint":      "Multi-selección"
@@ -12,6 +13,8 @@
   "staging":     "Staging",
   "development": "Desarrollo",
   "test":        "Test",
+  "fork":        "Fork",
+  "linked":      "Enlazado",
   "favorite":    "Favorito",
   "draft":       "Borrador",
   "review":      "Revisar",
@@ -28,6 +31,8 @@
     "staging":     "Entorno pre-producción. El recurso está listo para validación final antes de pasar a producción.",
     "development": "Recurso en desarrollo o pruebas. Señala que aún puede cambiar.",
     "test":        "Recurso reservado para pruebas y validaciones.",
+    "fork":        "Copia independiente de otro recurso. Puedes modificarla libremente sin afectar al original. Se creó con la acción Fork.",
+    "linked":      "Enlace en vivo a un recurso fuente. Puedes sincronizarlo con el original cuando este cambie usando el botón Sincronizar.",
     "favorite":    "Marca el recurso como favorito para encontrarlo rápido.",
     "draft":       "Borrador en construcción, todavía no listo para usar. Bloquea el acceso hasta que esté terminado.",
     "review":      "El recurso necesita revisión antes de usarse o publicarse.",
@@ -42,6 +47,18 @@
     "default":   "Por defecto",
     "blocks":    "Bloquea el recurso",
     "warns":     "Aviso visual",
+    "info":      "Informativa",
     "nav_title": "Etiquetas"
+  },
+  "actions": {
+    "fork":   "Fork",
+    "link":   "Enlazar",
+    "sync":   "Sincronizar",
+    "fork_success":   "Copiado a tu workspace",
+    "link_success":   "Enlazado en tu workspace",
+    "sync_success":   "Sincronizado con el original",
+    "fork_error":     "Error al hacer fork",
+    "link_error":     "Error al enlazar",
+    "sync_error":     "Error al sincronizar"
   }
 }

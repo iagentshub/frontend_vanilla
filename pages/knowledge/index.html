@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="/assets/components/action-menu/action-menu.css" />
     <!-- Página -->
     <link rel="stylesheet" href="/assets/css/labels.css" />
+    <link rel="stylesheet" href="/assets/components/filter_agents/filter_agents.css" />
     <link rel="stylesheet" href="/knowledge/knowledge.css" />
     <link rel="stylesheet" href="/memory/memory.css" />
 </head>
@@ -99,7 +100,7 @@
 
             <!-- Panel Skills -->
             <div id="tab-skills" class="tab-panel">
-                <div id="skills-label-strip" class="lbl-filter-strip" style="margin-bottom:12px"></div>
+                <div id="fk-mount-skills"></div>
                 <div class="knowledge-tab-layout">
                     <div class="kf-panel" id="kf-panel-skill" data-section="skill"></div>
                     <div class="knowledge-tab-content">
@@ -110,6 +111,7 @@
 
             <!-- Panel URLs -->
             <div id="tab-urls" class="tab-panel" style="display:none">
+                <div id="fk-mount-urls"></div>
                 <div class="knowledge-tab-layout">
                     <div class="kf-panel" id="kf-panel-url" data-section="url"></div>
                     <div class="knowledge-tab-content">
@@ -120,6 +122,7 @@
 
             <!-- Panel Documentos -->
             <div id="tab-documents" class="tab-panel" style="display:none">
+                <div id="fk-mount-docs"></div>
                 <div class="knowledge-tab-layout">
                     <div class="kf-panel" id="kf-panel-document" data-section="document"></div>
                     <div class="knowledge-tab-content">
@@ -140,6 +143,7 @@
 
             <!-- Panel Memoria -->
             <div id="tab-memory" class="tab-panel" style="display:none">
+                <div id="fk-mount-memory"></div>
                 <div class="knowledge-tab-layout">
                     <div class="kf-panel" id="kf-panel-memory" data-section="memory"></div>
                     <div class="knowledge-tab-content">
@@ -306,6 +310,8 @@
     <script src="/assets/components/action-menu/action-menu.js"></script>
     <script src="/assets/js/share-teams.js"></script>
     <script src="/assets/components/folder-move-dialog/folder-move-dialog.js"></script>
+    <!-- Componentes de filtrado -->
+    <script src="/assets/components/filter_knowledge/filter_knowledge.js"></script>
     <!-- Página -->
     <script src="/knowledge/skills-load.js"></script>
     <script src="/knowledge/knowledge-folders.js"></script>

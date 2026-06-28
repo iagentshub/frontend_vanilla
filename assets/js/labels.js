@@ -28,6 +28,16 @@ window.LABELS = (function () {
             ],
         },
         {
+            id: 'origin',
+            exclusive: true,
+            required: false,
+            i18nKey: 'labels.group.origin',
+            labels: [
+                { key: 'fork',   color: '#6366f1', i18nKey: 'labels.fork'   },
+                { key: 'linked', color: '#0ea5e9', i18nKey: 'labels.linked' },
+            ],
+        },
+        {
             id: 'status',
             exclusive: false,
             required: false,

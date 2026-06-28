@@ -6,6 +6,7 @@ var KnowledgeMemory = (function () {
     var _activeFolderId = null;
     var _editingFile = null;
     var _page = 1;
+    var _query = '';
 
     var _SVG_FILE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
         + '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'
@@ -96,8 +97,14 @@ var KnowledgeMemory = (function () {
     }
 
     function _visibleMemories() {
-        if (!_activeFolderId) return _memories;
-        return _memories.filter(function (m) { return m.folder_id === _activeFolderId; });
+        var items = _activeFolderId
+            ? _memories.filter(function (m) { return m.folder_id === _activeFolderId; })
+            : _memories;
+        if (!_query) return items;
+        var q = _query.toLowerCase();
+        return items.filter(function (m) {
+            return (m.filename || '').toLowerCase().indexOf(q) !== -1;
+        });
     }
 
     function _render() {
@@ -178,5 +185,8 @@ var KnowledgeMemory = (function () {
         return { filename: filename.replace(/\.[^.]+$/, ''), content: text };
     }
 
-    return { init: init, load: load };
+    return {
+        init: init, load: load,
+        setQuery: function (q) { _query = q || ''; _page = 1; _render(); },
+    };
 })();

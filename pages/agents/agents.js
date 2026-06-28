@@ -215,6 +215,35 @@ function _bindActions() {
                 const full = await api.get(`/api/agents/${encodeURIComponent(id)}`);
                 _openBlueprintModal(full);
             } catch (e) { toast(e.message, 'error'); }
+        } else if (action === 'fork') {
+            btn.disabled = true;
+            try {
+                const r = await api.post(`/api/agents/private/${encodeURIComponent(id)}/fork`);
+                toast((window.t ? t('labels.actions.fork_success') : 'Copiado') + ': ' + r.name, 'success');
+            } catch (e) {
+                toast(window.t ? t('labels.actions.fork_error') : e.message, 'error');
+                btn.disabled = false;
+            }
+        } else if (action === 'link') {
+            btn.disabled = true;
+            try {
+                const r = await api.post(`/api/agents/private/${encodeURIComponent(id)}/link`);
+                toast((window.t ? t('labels.actions.link_success') : 'Enlazado') + ': ' + r.name, 'success');
+                await _loadAll();
+            } catch (e) {
+                toast(window.t ? t('labels.actions.link_error') : e.message, 'error');
+                btn.disabled = false;
+            }
+        } else if (action === 'sync') {
+            btn.disabled = true;
+            try {
+                await api.post(`/api/agents/private/${encodeURIComponent(id)}/sync`);
+                toast(window.t ? t('labels.actions.sync_success') : 'Sincronizado', 'success');
+                await _loadAll();
+            } catch (e) {
+                toast(window.t ? t('labels.actions.sync_error') : e.message, 'error');
+                btn.disabled = false;
+            }
         }
     });
 }

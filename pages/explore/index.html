@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/assets/css/layout.css" />
     <link rel="stylesheet" href="/assets/components/main_nav/main_nav.css" />
     <link rel="stylesheet" href="/assets/css/labels.css" />
+    <link rel="stylesheet" href="/assets/css/modals.css" />
     <link rel="stylesheet" href="/explore/explore.css" />
 </head>
 <body>
@@ -38,36 +39,36 @@
                 <input id="explore-search" class="explore-search" type="search"
                     data-i18n-placeholder="explore.search_placeholder" placeholder="Buscar recursos..." />
             </div>
-            <div class="explore-type-tabs" id="explore-type-tabs">
-                <button class="explore-type-tab active" data-type="all" data-i18n="explore.type_all">Todo</button>
-                <button class="explore-type-tab" data-type="agent" data-i18n="explore.type_agents">Agentes</button>
-                <button class="explore-type-tab" data-type="skill" data-i18n="explore.type_skills">Skills</button>
-                <button class="explore-type-tab" data-type="knowledge" data-i18n="explore.type_knowledge">Knowledge</button>
-                <button class="explore-type-tab" data-type="users" data-i18n="explore.type_users">Usuarios</button>
-            </div>
-            <div id="explore-category-bar">
-                <select id="explore-category" class="select explore-category-select">
-                    <option value="" data-i18n="explore.all_categories">Todas las categorías</option>
-                    <option value="Coding">Coding</option>
-                    <option value="Writing">Writing</option>
-                    <option value="Research">Research</option>
-                    <option value="Data">Data</option>
-                    <option value="DevOps">DevOps</option>
-                    <option value="Support">Support</option>
-                    <option value="Education">Education</option>
-                    <option value="Productivity">Productivity</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+            <select id="explore-type" class="select explore-type-select">
+                <option value="all"       data-i18n="explore.type_all">Todo</option>
+                <option value="agent"     data-i18n="explore.type_agents">Agentes</option>
+                <option value="skill"     data-i18n="explore.type_skills">Skills</option>
+                <option value="knowledge" data-i18n="explore.type_knowledge">Knowledge</option>
+                <option value="users"     data-i18n="explore.type_users">Usuarios</option>
+            </select>
+            <select id="explore-category" class="select explore-type-select" style="width:160px">
+                <option value="" data-i18n="explore.all_categories">Todas las categorías</option>
+                <option value="Coding">Coding</option>
+                <option value="Writing">Writing</option>
+                <option value="Research">Research</option>
+                <option value="Data">Data</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Support">Support</option>
+                <option value="Education">Education</option>
+                <option value="Productivity">Productivity</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Finance">Finance</option>
+                <option value="Other">Other</option>
+            </select>
+            <button id="explore-search-btn" class="btn btn-primary explore-search-btn" data-i18n="explore.btn_search">Buscar</button>
+        </div>
 
         <!-- Results -->
         <div id="explore-loading" class="explore-loading" hidden>
             <div class="spinner"></div>
         </div>
-        <div id="explore-empty" class="explore-empty" hidden>
-            <p data-i18n="explore.empty">No hay recursos que coincidan con tu búsqueda.</p>
+        <div id="explore-empty" class="explore-empty">
+            <p id="explore-empty-msg" data-i18n="explore.prompt">Elige un tipo y escribe tu búsqueda para explorar.</p>
         </div>
         <div id="explore-grid" class="explore-grid"></div>
         <div id="explore-load-more" hidden style="text-align:center;padding:24px 0">
@@ -75,6 +76,21 @@
         </div>
 
     </main>
+</div>
+
+<!-- Modal de previsualización -->
+<div id="explore-preview-modal" class="modal-bg" style="display:none">
+    <div class="modal-box ep-box" style="max-height:80vh;display:flex;flex-direction:column">
+        <div class="modal-header">
+            <span class="modal-title" id="ep-modal-title"></span>
+            <button class="modal-close" id="ep-close" type="button">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <div id="ep-content" class="modal-body" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px"></div>
+    </div>
 </div>
 
 <script src="/assets/js/i18n.js"></script>

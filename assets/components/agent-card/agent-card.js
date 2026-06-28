@@ -1,6 +1,22 @@
 // agent-card.js — renderizado de cards de agente
 'use strict';
 
+var _SVG_FORK_AGENT = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+    '<circle cx="8" cy="2.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+    '<circle cx="3" cy="13.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+    '<circle cx="13" cy="13.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+    '<path d="M8 4v3L3 12M8 7l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>' +
+    '</svg>';
+var _SVG_LINK_AGENT = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+    '<path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5L7 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+    '<path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+    '</svg>';
+var _SVG_SYNC_AGENT = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+    '<path d="M13.5 2.5v4h-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M2.5 13.5v-4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M13.5 6.5A6 6 0 0 0 4 4L2.5 5.5M2.5 9.5A6 6 0 0 0 12 12l1.5-1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+    '</svg>';
+
 var AgentCard = {
     _TYPE_LABELS: { openai: 'OpenAI', claude: 'Claude', gemini: 'Gemini', ollama: 'Ollama' },
     _AVATAR_COLORS: ['#4f46e5', '#0891b2', '#059669', '#d97706', '#7c3aed', '#db2777', '#0f766e'],
@@ -109,6 +125,9 @@ var AgentCard = {
             (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="move-folder" data-id="' + esc(agent.id) + '" data-folder-id="' + esc(agent.folder_id || '') + '" title="' + (t('knowledge.folder.move_to') || 'Mover a carpeta') + '">' +
                 '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 13V5a1 1 0 0 1 1-1h3.5l1.5-2H13a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' +
                 '</button>' : '') +
+            (isPublic ? '<button class="agent-action-icon" data-action="fork" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.fork') : 'Fork') + '">' + _SVG_FORK_AGENT + '</button>' : '') +
+            (isPublic ? '<button class="agent-action-icon" data-action="link" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.link') : 'Link') + '">' + _SVG_LINK_AGENT + '</button>' : '') +
+            (!isPublic && agentLabels.indexOf('linked') !== -1 ? '<button class="agent-action-icon" data-action="sync" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.sync') : 'Sync') + '">' + _SVG_SYNC_AGENT + '</button>' : '') +
             (!isPublic ? '<button class="agent-action-icon agent-action-icon--danger" data-action="delete" data-id="' + esc(agent.id) + '" title="' + t('actions.delete') + '">' +
                 '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
                 '</button>' : '') +

@@ -9,6 +9,13 @@
     gap: 14px;
 }
 
+@media (max-width: 768px) {
+    .agents-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+    }
+}
+
 /* ── Card ── */
 .agent-card {
     display: flex;

@@ -10,6 +10,22 @@
 
     var FALLBACK_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 
+    var FORK_SVG = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+        '<circle cx="8" cy="2.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+        '<circle cx="3" cy="13.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+        '<circle cx="13" cy="13.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>' +
+        '<path d="M8 4v3L3 12M8 7l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>' +
+        '</svg>';
+    var LINK_SVG = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+        '<path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5L7 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+        '<path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+        '</svg>';
+    var SYNC_SVG = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
+        '<path d="M13.5 2.5v4h-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="M2.5 13.5v-4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="M13.5 6.5A6 6 0 0 0 4 4L2.5 5.5M2.5 9.5A6 6 0 0 0 12 12l1.5-1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+        '</svg>';
+
     var SHARE_SVG  = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
         '<circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.4"/>' +
         '<circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.4"/>' +
@@ -77,6 +93,16 @@
                 ? '<button class="skill-action-icon skill-action-icon--danger" data-action="del-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '" title="' + (window.t ? window.t('skills.actions.delete') : 'Eliminar') + '">' + TRASH_SVG + '</button>'
                 : '';
 
+            var forkBtn = !isPrivate
+                ? '<button class="skill-action-icon" data-action="fork-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '" title="' + (window.t ? window.t('labels.actions.fork') : 'Fork') + '">' + FORK_SVG + '</button>'
+                : '';
+            var linkBtn = !isPrivate
+                ? '<button class="skill-action-icon" data-action="link-skill" data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '" title="' + (window.t ? window.t('labels.actions.link') : 'Link') + '">' + LINK_SVG + '</button>'
+                : '';
+            var syncBtn = (isPrivate && skillLabels.indexOf('linked') !== -1)
+                ? '<button class="skill-action-icon" data-action="sync-skill" data-id="' + esc(skill.id) + '" title="' + (window.t ? window.t('labels.actions.sync') : 'Sync') + '">' + SYNC_SVG + '</button>'
+                : '';
+
             var dragAttrs = canEdit
                 ? ' draggable="true" data-drag-id="' + esc(skill.id) + '" data-drag-section="skill"'
                 : '';
@@ -105,6 +131,9 @@
                 shareBtn +
                 moveBtn +
                 exportBtn +
+                forkBtn +
+                linkBtn +
+                syncBtn +
                 deleteBtn +
                 '</div>' +
                 '</footer>' +

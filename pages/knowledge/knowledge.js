@@ -5,6 +5,10 @@ var _privateSkills = [];
 var _activeTab = 'skills';
 var _skillsPage = 1;
 var _lastSkillsFiltered = [];
+var _fkSkills = null;
+var _fkUrls   = null;
+var _fkDocs   = null;
+var _fkMemory = null;
 
 var _folderSkills  = null;
 var _folderUrls    = null;
@@ -13,6 +17,26 @@ var _folderMemory  = null;
 
 var _viewMode = localStorage.getItem('kv-view') || 'grid';
 
+function _initFilters() {
+    _fkSkills = FilterKnowledge.create({
+        mountEl:    document.getElementById('fk-mount-skills'),
+        showLabels: true,
+        onChange:   function () { _applySkillFilter(); },
+    });
+    _fkUrls = FilterKnowledge.create({
+        mountEl:  document.getElementById('fk-mount-urls'),
+        onChange: function (f) { KnowledgeUrls.setQuery(f.query); },
+    });
+    _fkDocs = FilterKnowledge.create({
+        mountEl:  document.getElementById('fk-mount-docs'),
+        onChange: function (f) { KnowledgeDocs.setQuery(f.query); },
+    });
+    _fkMemory = FilterKnowledge.create({
+        mountEl:  document.getElementById('fk-mount-memory'),
+        onChange: function (f) { KnowledgeMemory.setQuery(f.query); },
+    });
+}
+
 async function init() {
     await window.requireAuth();
     renderNav('nav-root', 'knowledge');
@@ -20,6 +44,7 @@ async function init() {
     _initFolders();
     _bindTabs();
     _initViewToggle();
+    _initFilters();
     await loadSkills();
     bindEvents();
     KnowledgeUrls.init();
@@ -156,7 +181,6 @@ async function loadSkills(folderId) {
     ]);
     _privateSkills = results[0];
     SkillCatalog.setSkills(results[1]);
-    _renderSkillLabelStrip();
     _applySkillFilter();
     if (_folderSkills) _folderSkills.updateStats(_privateSkills);
 }
@@ -170,48 +194,17 @@ function _renderSkillsPage() {
     renderLoadMore(grid, _lastSkillsFiltered.length, shown, function () { _skillsPage++; _renderSkillsPage(); });
 }
 
-var _skillLabelFilters     = [];
-var _activeFolderIdSkill   = null;
-
-var _SKILL_FILTER_LABELS = ['public','production','staging','development','test','favorite','draft','review','deprecated','quarantine','archived','delete'];
-
-function _renderSkillLabelStrip() {
-    var strip = document.getElementById('skills-label-strip');
-    if (!strip || !window.LABELS) return;
-    var html = '';
-    var allActive = !_skillLabelFilters.length;
-    html += '<button type="button" class="lbl-filter-chip lbl-filter-chip--all' + (allActive ? ' active' : '') + '" id="sklbl-all">' +
-        (window.t ? t('labels.filter_all') : 'Todos') + '</button>';
-    _SKILL_FILTER_LABELS.forEach(function (key) {
-        var color = LABELS.getColor(key);
-        var label = LABELS.getLabel(key);
-        var isActive = _skillLabelFilters.indexOf(key) !== -1;
-        html += '<button type="button" class="lbl-filter-chip' + (isActive ? ' active' : '') + '"' +
-            ' style="--lc:' + color + '" data-sklbl="' + key + '">' + label + '</button>';
-    });
-    strip.innerHTML = html;
-    document.getElementById('sklbl-all').addEventListener('click', function () {
-        _skillLabelFilters = [];
-        _applySkillFilter();
-    });
-    strip.querySelectorAll('[data-sklbl]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var key = btn.dataset.sklbl;
-            var idx = _skillLabelFilters.indexOf(key);
-            if (idx === -1) _skillLabelFilters.push(key);
-            else _skillLabelFilters.splice(idx, 1);
-            _applySkillFilter();
-        });
-    });
-}
+var _activeFolderIdSkill = null;
 
 function _applySkillFilter() {
-    _renderSkillLabelStrip();
+    var f = _fkSkills ? _fkSkills.getFilter() : { query: '', labels: [] };
+    var q = (f.query || '').toLowerCase();
     _lastSkillsFiltered = _privateSkills.filter(function (s) {
         if (_activeFolderIdSkill !== null && s.folder_id !== _activeFolderIdSkill) return false;
-        if (_skillLabelFilters.length && !_skillLabelFilters.some(function (lbl) {
+        if (f.labels.length && !f.labels.some(function (lbl) {
             return (s.labels || ['private']).indexOf(lbl) !== -1;
         })) return false;
+        if (q && (s.name || '').toLowerCase().indexOf(q) === -1) return false;
         return true;
     });
     _skillsPage = 1;
@@ -388,6 +381,35 @@ function bindEvents() {
             if (window.shareTeams) shareTeams.open('skill', id, btn.dataset.name || id);
         } else if (action === 'export-skill') {
             _openSkillExport(scope, id);
+        } else if (action === 'fork-skill') {
+            btn.disabled = true;
+            try {
+                var forkRes = await api.post('/api/skills/private/' + encodeURIComponent(id) + '/fork');
+                toast((window.t ? t('labels.actions.fork_success') : 'Copiado') + ': ' + forkRes.name, 'success');
+            } catch (err) {
+                toast(window.t ? t('labels.actions.fork_error') : err.message, 'error');
+                btn.disabled = false;
+            }
+        } else if (action === 'link-skill') {
+            btn.disabled = true;
+            try {
+                var linkRes = await api.post('/api/skills/private/' + encodeURIComponent(id) + '/link');
+                toast((window.t ? t('labels.actions.link_success') : 'Enlazado') + ': ' + linkRes.name, 'success');
+                await loadSkills(_folderSkills ? _folderSkills.getActive() : null);
+            } catch (err) {
+                toast(window.t ? t('labels.actions.link_error') : err.message, 'error');
+                btn.disabled = false;
+            }
+        } else if (action === 'sync-skill') {
+            btn.disabled = true;
+            try {
+                await api.post('/api/skills/private/' + encodeURIComponent(id) + '/sync');
+                toast(window.t ? t('labels.actions.sync_success') : 'Sincronizado', 'success');
+                await loadSkills(_folderSkills ? _folderSkills.getActive() : null);
+            } catch (err) {
+                toast(window.t ? t('labels.actions.sync_error') : err.message, 'error');
+                btn.disabled = false;
+            }
         }
     });
 
