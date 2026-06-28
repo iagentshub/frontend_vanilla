@@ -29,7 +29,8 @@
     "send": "Enviar",
     "test": "Test",
     "view": "Ver",
-    "new_agent": "Nuevo agente"
+    "new_agent": "Nuevo agente",
+    "back": "← Volver"
   },
   "search": {
     "clear_aria": "Limpiar búsqueda"

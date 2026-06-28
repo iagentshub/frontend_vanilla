@@ -55,6 +55,9 @@
         var originBadge = r.fork_of_id
             ? '<span class="explore-card-fork-badge">fork</span>'
             : (r.linked_to_id ? '<span class="explore-card-fork-badge">linked</span>' : '');
+        var labelChips = (window.LABELS && r.labels && r.labels.length)
+            ? '<div class="label-chips-row" style="margin-top:4px">' + LABELS.renderChips(r.labels) + '</div>'
+            : '';
         var forkBtn = isForkable
             ? '<button class="explore-card-fork-btn' + (forked ? ' forked' : '') + '" data-action="fork"' +
               ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
@@ -76,6 +79,7 @@
             '</div>' +
             '</div>' +
             '<p class="explore-card-desc">' + esc(r.description || '') + '</p>' +
+            labelChips +
             '<div class="explore-card-footer">' +
             '<a href="/u/' + encodeURIComponent(r.owner) + '" class="explore-card-author">@' + esc(r.owner) + '</a>' +
             '<div class="explore-card-actions">' +

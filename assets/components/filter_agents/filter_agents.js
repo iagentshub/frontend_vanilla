@@ -2,12 +2,15 @@
 'use strict';
 
 var FilterAgents = (function () {
-    var _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: null };
+    var _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: null, labels: [] };
     var _data = { skills: [], connections: [], knowledge: [] };
     var _onChange = null;
     var _openPanel = null;
     var _panelSearch = { skills: '', conn: '', know: '' };
     var _initialScope = null;
+
+    // Etiquetas visibles en la barra de filtros (excluye 'private' — es el default)
+    var _FILTER_LABELS = ['public','production','development','test','favorite','review','quarantine','archived','delete'];
 
     var _SVG_SEARCH = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     var _SVG_CHEVRON = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -24,6 +27,24 @@ var FilterAgents = (function () {
         ];
     }
 
+    function _renderLabelsPanel() {
+        if (!window.LABELS) return '<div class="fa-panel fa-panel--labels" id="fa-panel-labels"><span class="fa-panel-empty">—</span></div>';
+        return '<div class="fa-panel fa-panel--labels" id="fa-panel-labels">' +
+            '<div class="fa-panel-list">' +
+            _FILTER_LABELS.map(function (key) {
+                var active = _state.labels.indexOf(key) !== -1;
+                var color  = LABELS.getColor(key);
+                var label  = LABELS.getLabel(key);
+                return '<div class="fa-option' + (active ? ' fa-option--active' : '') + '"' +
+                    ' data-filter="label" data-id="' + key + '">' +
+                    '<span class="fa-option-check">' + (active ? _SVG_CHECK : '') + '</span>' +
+                    '<span class="fa-lbl-dot" style="background:' + color + '"></span>' +
+                    '<span class="fa-option-label">' + label + '</span>' +
+                    '</div>';
+            }).join('') +
+            '</div></div>';
+    }
+
     function _render(mountEl) {
         var srch = document.getElementById('fa-search');
         var hadFocus = srch && document.activeElement === srch;
@@ -33,7 +54,8 @@ var FilterAgents = (function () {
         var hasConn = _state.connIds.length > 0;
         var hasKnow = _state.knowledgeIds.length > 0;
         var hasMem = _state.memory !== null;
-        var hasAny = _state.query || hasSk || hasConn || hasKnow || hasMem;
+        var hasLbl = _state.labels.length > 0;
+        var hasAny = _state.query || hasSk || hasConn || hasKnow || hasMem || hasLbl;
 
         mountEl.innerHTML =
             '<div class="fa-bar" id="fa-bar">' +
@@ -71,6 +93,13 @@ var FilterAgents = (function () {
             t('agents.filter.memory_label') + (hasMem ? '<span class="fa-filter-count">1</span>' : '') + _SVG_CHEVRON +
             '</button>' +
             (_openPanel === 'memory' ? _renderMemoryPanel() : '') +
+            '</div>' +
+
+            '<div class="fa-dropdown-wrap" id="fa-wrap-labels">' +
+            '<button type="button" class="fa-filter-btn' + (hasLbl ? ' fa-filter-btn--active' : '') + '" id="fa-btn-labels">' +
+            t('labels.group.status') + (hasLbl ? '<span class="fa-filter-count">' + _state.labels.length + '</span>' : '') + _SVG_CHEVRON +
+            '</button>' +
+            (_openPanel === 'labels' ? _renderLabelsPanel() : '') +
             '</div>' +
 
             '</div>' +
@@ -225,7 +254,7 @@ var FilterAgents = (function () {
             });
         });
 
-        ['skills', 'conn', 'know', 'memory'].forEach(function (key) {
+        ['skills', 'conn', 'know', 'memory', 'labels'].forEach(function (key) {
             var btn = document.getElementById('fa-btn-' + key);
             if (btn) {
                 btn.addEventListener('click', function (e) {
@@ -295,12 +324,23 @@ var FilterAgents = (function () {
         var clearAll = document.getElementById('fa-clear-all');
         if (clearAll) {
             clearAll.addEventListener('click', function () {
-                _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope };
+                _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope, labels: [] };
                 _panelSearch = { skills: '', conn: '', know: '' };
                 _openPanel = null;
                 _notifyAndRender(mountEl, null);
             });
         }
+
+        mountEl.querySelectorAll('.fa-option[data-filter="label"]').forEach(function (opt) {
+            opt.addEventListener('mousedown', function (e) {
+                e.preventDefault();
+                var key = opt.dataset.id;
+                var idx = _state.labels.indexOf(key);
+                if (idx === -1) _state.labels.push(key);
+                else _state.labels.splice(idx, 1);
+                _notifyAndRender(mountEl, 'labels');
+            });
+        });
 
         document.addEventListener('click', function _outsideHandler(e) {
             if (_openPanel === null) return;
@@ -337,7 +377,7 @@ var FilterAgents = (function () {
             _data.knowledge = opts.knowledge || [];
             _onChange = opts.onChange || null;
             _initialScope = opts.initialScope || null;
-            _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope };
+            _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope, labels: [] };
             _openPanel = null;
             _render(mountEl);
             return mountEl;
@@ -355,10 +395,11 @@ var FilterAgents = (function () {
                 knowledgeIds: _state.knowledgeIds.slice(),
                 memory: _state.memory,
                 scope: _state.scope,
+                labels: _state.labels.slice(),
             };
         },
         reset: function (mountEl) {
-            _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope };
+            _state = { query: '', skillIds: [], connIds: [], knowledgeIds: [], memory: null, scope: _initialScope, labels: [] };
             _panelSearch = { skills: '', conn: '', know: '' };
             _openPanel = null;
             var el = typeof mountEl === 'string' ? document.querySelector(mountEl) : mountEl;

@@ -203,12 +203,18 @@
                   ' data-key="' + _esc(key) + '" title="' + (forked ? 'Ya copiado' : 'Copiar a mi workspace') + '"' +
                   (forked ? ' disabled' : '') + '>' + _SVG_FORK + '</button>'
                 : '';
+            var labelChips = (window.LABELS && r.labels && r.labels.length)
+                ? LABELS.renderChips(r.labels)
+                : '';
             return '<div class="pub-resource-card">' +
                 '<div class="pub-resource-avatar" style="background:' + _avatarColor(r.name) + '">' +
                 (r.name || '?').charAt(0).toUpperCase() + '</div>' +
                 '<div class="pub-resource-info">' +
                 '<span class="pub-resource-name">' + _esc(r.name) + '</span>' +
+                '<div class="pub-resource-meta">' +
                 '<span class="pub-resource-cat">' + _esc(r.category || '') + '</span>' +
+                (labelChips ? '<div class="label-chips-row" style="margin-top:3px">' + labelChips + '</div>' : '') +
+                '</div>' +
                 '</div>' +
                 '<div class="pub-resource-actions">' +
                 forkBtn +

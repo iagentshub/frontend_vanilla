@@ -10,6 +10,8 @@
 
     var TYPE_LABEL = { openai: 'OpenAI', claude: 'Claude', gemini: 'Gemini', ollama: 'Ollama' };
 
+    var _BLOCKED_LABELS = ['quarantine', 'archived', 'delete'];
+
     window.ConnCard = {
         render: function (conn) {
             var type = (conn.type || 'openai').toLowerCase();
@@ -19,18 +21,25 @@
             var editLabel  = window.t ? window.t('connections.actions.edit')   : 'Editar';
             var deleteTitle = window.t ? window.t('connections.actions.delete') : 'Eliminar';
 
+            var connLabels = conn.labels || ['private'];
+            var isBlocked  = _BLOCKED_LABELS.some(function (bl) { return connLabels.indexOf(bl) !== -1; });
+            var labelChips = (window.LABELS && connLabels.length)
+                ? '<div class="label-chips-row" style="margin:4px 0 0">' + LABELS.renderChips(connLabels) + '</div>'
+                : '';
+
             return (
-                '<article class="conn-card" data-conn-id="' + esc(conn.id) + '" data-type="' + esc(type) + '">' +
+                '<article class="conn-card' + (isBlocked ? ' conn-card--blocked' : '') + '" data-conn-id="' + esc(conn.id) + '" data-type="' + esc(type) + '">' +
                   '<div class="conn-card-body">' +
                     '<div class="conn-card-head">' +
                       '<span class="conn-card-type conn-card-type--' + esc(type) + '">' + esc(typeLabel) + '</span>' +
                     '</div>' +
                     '<h3 class="conn-card-name" title="' + esc(conn.name) + '">' + esc(conn.name) + '</h3>' +
                     (sub ? '<div class="conn-card-sub">' + esc(sub) + '</div>' : '') +
+                    labelChips +
                     '<div class="conn-card-status"></div>' +
                   '</div>' +
                   '<footer class="conn-card-actions">' +
-                    '<button class="card-action-btn card-action-btn--test" data-action="test-conn" data-id="' + esc(conn.id) + '">' +
+                    '<button class="card-action-btn card-action-btn--test" data-action="test-conn" data-id="' + esc(conn.id) + '"' + (isBlocked ? ' disabled' : '') + '>' +
                       '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M5 3l8 5-8 5V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
                       'Test' +
                     '</button>' +

@@ -1,6 +1,29 @@
 // agents-modal.js — modal de crear/editar agente
 'use strict';
 
+// ── Labels ────────────────────────────────────────────────────────────────────
+var _agentLabels = ['private'];
+
+function _initLabelsPicker(currentLabels) {
+    _agentLabels = currentLabels && currentLabels.length ? currentLabels.slice() : ['private'];
+    var wrap = document.getElementById('agent-labels-picker-wrap');
+    if (!wrap || !window.LABELS) return;
+    wrap.innerHTML = LABELS.renderPicker(_agentLabels, 'agent-labels-picker');
+    LABELS.bindPicker('agent-labels-picker', _agentLabels, function (newLabels) {
+        _agentLabels = newLabels;
+        // Sincronizar con la sección de visibilidad social
+        var isPublic = _agentLabels.indexOf('public') !== -1;
+        var pubCb  = document.getElementById('agent-social-public');
+        var opts   = document.getElementById('agent-social-opts');
+        var visSec = document.getElementById('agent-visibility-section');
+        if (pubCb) pubCb.checked = isPublic;
+        if (opts)  opts.style.display = isPublic ? '' : 'none';
+        if (visSec && visSec.style.display !== 'none') {
+            // ya visible — no cambiar display, solo sincronizar checkbox
+        }
+    });
+}
+
 // ── Tab state ─────────────────────────────────────────────────────────────────
 var _agentStep = 1;
 var _AGENT_STEPS = 4;
@@ -109,6 +132,7 @@ function _openAgentModal(agent) {
     document.getElementById('agent-name').value = agent ? (agent.name || '') : '';
     document.getElementById('agent-desc').value = agent ? (agent.description || '') : '';
     document.getElementById('agent-prompt').value = agent ? (agent.system_prompt || '') : '';
+    _initLabelsPicker(agent ? (agent.labels || ['private']) : ['private']);
 
     const scopeField = document.getElementById('agent-scope-field');
     const scopeVal = 'private';
@@ -301,12 +325,31 @@ function _bindAgentModal() {
         });
     }
 
-    // Social public toggle → show/hide options
+    // Social public toggle → update labels picker + show/hide options
     const socialPubCb = document.getElementById('agent-social-public');
     if (socialPubCb) {
         socialPubCb.addEventListener('change', function () {
             const opts = document.getElementById('agent-social-opts');
             if (opts) opts.style.display = this.checked ? '' : 'none';
+            // Sync back to labels picker
+            if (window.LABELS) {
+                _agentLabels = this.checked
+                    ? LABELS.apply(_agentLabels, 'public')
+                    : LABELS.apply(_agentLabels, 'private');
+                // Re-render picker to reflect new state
+                var wrap = document.getElementById('agent-labels-picker-wrap');
+                if (wrap) {
+                    wrap.innerHTML = LABELS.renderPicker(_agentLabels, 'agent-labels-picker');
+                    LABELS.bindPicker('agent-labels-picker', _agentLabels, function (newLabels) {
+                        _agentLabels = newLabels;
+                        var isPublic = _agentLabels.indexOf('public') !== -1;
+                        var pubCb2  = document.getElementById('agent-social-public');
+                        var opts2   = document.getElementById('agent-social-opts');
+                        if (pubCb2) pubCb2.checked = isPublic;
+                        if (opts2)  opts2.style.display = isPublic ? '' : 'none';
+                    });
+                }
+            }
         });
     }
 
@@ -362,10 +405,23 @@ function _bindAgentModal() {
             memory_file: useMemory ? memFile : null,
             routines: agentType === 'claude' ? _getRoutines() : [],
             scope: scopeChecked ? scopeChecked.value : 'private',
+            labels: _agentLabels.slice(),
             ..._buildPlatformPayload(agentType),
         };
         try {
-            await api.post('/api/agents', payload);
+            const saved = await api.post('/api/agents', payload);
+            // Auto-sync public visibility when label is public
+            if (_agentLabels.indexOf('public') !== -1 && saved && saved.id) {
+                const catEl = document.getElementById('agent-social-category');
+                const category = (catEl && catEl.value) || 'Other';
+                await api.put('/api/agents/' + encodeURIComponent(payload.scope || 'private') + '/' + encodeURIComponent(saved.id) + '/visibility', {
+                    is_public: true, category: category, trial_missing_deps: 'warn',
+                }).catch(function () {});
+            } else if (_agentLabels.indexOf('private') !== -1 && saved && saved.id) {
+                await api.put('/api/agents/' + encodeURIComponent(payload.scope || 'private') + '/' + encodeURIComponent(saved.id) + '/visibility', {
+                    is_public: false, category: 'Other', trial_missing_deps: 'warn',
+                }).catch(function () {});
+            }
             toast(t('agents.saved'), 'success');
             _closeAgentModal();
             await _loadAll();

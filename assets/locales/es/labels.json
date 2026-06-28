@@ -1,0 +1,40 @@
+{
+  "group": {
+    "visibility":      "Visibilidad",
+    "environment":     "Entorno",
+    "status":          "Estado",
+    "exclusive_hint":  "Exclusivas (solo una activa)",
+    "multi_hint":      "Multi-selección"
+  },
+  "public":      "Público",
+  "private":     "Privado",
+  "production":  "Producción",
+  "development": "Desarrollo",
+  "test":        "Test",
+  "favorite":    "Favorito",
+  "review":      "Revisar",
+  "quarantine":  "Cuarentena",
+  "archived":    "Archivado",
+  "delete":      "Marcar borrar",
+  "none":        "Ninguno",
+  "filter_all":  "Todos",
+  "desc": {
+    "public":      "El recurso es visible para todos en Explorar y en tu perfil público.",
+    "private":     "Solo tú puedes ver y usar este recurso. No aparece en ningún listado público.",
+    "production":  "Indica que este recurso está en uso activo en un entorno productivo.",
+    "development": "Recurso en desarrollo o pruebas. Señala que aún puede cambiar.",
+    "test":        "Recurso reservado para pruebas y validaciones.",
+    "favorite":    "Marca el recurso como favorito para encontrarlo rápido.",
+    "review":      "El recurso necesita revisión antes de usarse o publicarse.",
+    "quarantine":  "Bloquea el recurso. No se puede usar ni iniciar chats hasta que se quite la etiqueta.",
+    "archived":    "Bloquea el recurso. Indica que ya no está activo. Se puede conservar para referencia.",
+    "delete":      "Marca el recurso para borrado. Bloquea su uso y permite eliminarlo en lote desde el panel."
+  },
+  "catalog": {
+    "title":     "Catálogo de etiquetas",
+    "intro":     "Las etiquetas definen el estado y comportamiento de tus recursos. Cada recurso tiene siempre al menos una etiqueta de visibilidad.",
+    "default":   "Por defecto",
+    "blocks":    "Bloquea el recurso",
+    "nav_title": "Etiquetas"
+  }
+}

@@ -108,6 +108,20 @@ function getModalScope() {
 
 // ── Open / close ──────────────────────────────────────────────────────────────
 
+var _connLabels = ['private'];
+
+function _initConnLabelsPicker(currentLabels) {
+    _connLabels = currentLabels && currentLabels.length ? currentLabels.slice() : ['private'];
+    var wrap = document.getElementById('conn-labels-picker-wrap');
+    if (!wrap || !window.LABELS) return;
+    wrap.innerHTML = LABELS.renderPicker(_connLabels, 'conn-labels-picker');
+    LABELS.bindPicker('conn-labels-picker', _connLabels, function (newLabels) {
+        _connLabels = newLabels;
+    });
+}
+
+function getConnLabels() { return _connLabels.slice(); }
+
 function openModal(conn, wsCtx) {
     var defaultType = conn && conn.type ? conn.type : Providers.first();
     document.getElementById('conn-modal-title').textContent =
@@ -117,6 +131,7 @@ function openModal(conn, wsCtx) {
     document.getElementById('conn-type').value = defaultType;
 
     buildDynamicFields(defaultType, conn);
+    _initConnLabelsPicker(conn ? (conn.labels || ['private']) : ['private']);
 
     // Scope row: only in team workspace
     var scopeRow = document.getElementById('conn-scope-row');

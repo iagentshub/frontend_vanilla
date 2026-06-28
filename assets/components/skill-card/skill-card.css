@@ -226,3 +226,9 @@
     box-shadow: var(--shadow);
     font-weight: 600;
 }
+
+.skill-card--blocked {
+    opacity: 0.6;
+    border-color: var(--danger, #ef4444);
+    background: color-mix(in srgb, var(--danger, #ef4444) 4%, var(--surface));
+}

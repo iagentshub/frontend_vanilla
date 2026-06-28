@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="/assets/components/dialog_chat/dialog_chat.css" />
     <link rel="stylesheet" href="/assets/components/agent-catalog/agent-catalog.css" />
     <link rel="stylesheet" href="/assets/components/action-menu/action-menu.css" />
+    <!-- Sistema de etiquetas -->
+    <link rel="stylesheet" href="/assets/css/labels.css" />
     <!-- Página -->
     <link rel="stylesheet" href="/knowledge/knowledge.css" />
     <link rel="stylesheet" href="/agents/agents.css" />
@@ -63,6 +65,12 @@
                 <input type="file" id="agent-file-input" accept=".json,.md" style="display:none">
             </div>
             <div id="filter-agents-root"></div>
+            <div id="agents-delete-banner" style="display:none;margin:0 0 12px;padding:10px 14px;background:var(--color-danger-subtle,#fef2f2);border:1px solid var(--color-danger,#ef4444);border-radius:8px;display:flex;align-items:center;gap:10px">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 3.5v3m0 2h.01" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span id="agents-delete-count" style="font-size:.85rem;color:var(--color-danger,#ef4444);flex:1"></span>
+                <button id="agents-delete-all-btn" class="btn btn-danger btn-sm" style="font-size:.8rem;padding:4px 10px"></button>
+                <button id="agents-delete-dismiss-btn" class="btn btn-ghost btn-sm" style="font-size:.8rem;padding:4px 10px">✕</button>
+            </div>
             <div class="af-layout">
                 <div class="af-folder-panel" id="af-folder-panel"></div>
                 <div class="af-content">
@@ -106,6 +114,10 @@
                         <label data-i18n="agents.modal.field_description">Descripcion</label>
                         <input id="agent-desc" class="input" data-i18n-placeholder="agents.modal.placeholder_desc"
                             placeholder="Para que sirve este agente" />
+                    </div>
+                    <div class="field">
+                        <label data-i18n="agents.modal.field_labels">Etiquetas</label>
+                        <div id="agent-labels-picker-wrap"></div>
                     </div>
                     <div class="field">
                         <label data-i18n="agents.modal.field_prompt">Instrucciones</label>
@@ -481,6 +493,7 @@
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/labels.js"></script>
     <!-- Componentes -->
     <script src="/assets/components/main_nav/main_nav.js"></script>
     <script src="/assets/components/agent-card/agent-card.js"></script>

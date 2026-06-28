@@ -172,3 +172,12 @@
     white-space: nowrap;
     opacity: 0.75;
 }
+
+.conn-card--blocked {
+    opacity: 0.6;
+    border-color: var(--danger, #ef4444);
+    background: color-mix(in srgb, var(--danger, #ef4444) 4%, var(--surface));
+}
+.conn-card--blocked .card-action-btn--test {
+    cursor: not-allowed;
+}

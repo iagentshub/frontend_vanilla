@@ -26,6 +26,9 @@
             var resolvedScope = scope || skill.scope || 'public';
             var isPrivate = resolvedScope === 'private';
             var isShared = !!skill._shared;
+            var _BLOCKED_LBLS = ['quarantine', 'archived', 'delete'];
+            var skillLabels = skill.labels || ['private'];
+            var isSkillBlocked = _BLOCKED_LBLS.some(function (bl) { return skillLabels.indexOf(bl) !== -1; });
 
             var iconHtml = skill.icon
                 ? '<span style="font-size:1.1rem;line-height:1">' + esc(skill.icon) + '</span>'
@@ -79,7 +82,7 @@
                 : '';
 
             return (
-                '<article class="skill-card"' + dragAttrs + ' data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">' +
+                '<article class="skill-card' + (isSkillBlocked ? ' skill-card--blocked' : '') + '"' + dragAttrs + ' data-id="' + esc(skill.id) + '" data-scope="' + resolvedScope + '">' +
                 '<div class="skill-card-body">' +
                 '<div class="skill-card-top">' +
                 '<div class="skill-card-icon">' + iconHtml + '</div>' +
@@ -92,6 +95,9 @@
                 '</div>' +
                 '</div>' +
                 descHtml +
+                (window.LABELS && skill.labels && skill.labels.length
+                    ? '<div class="label-chips-row" style="margin-top:5px;padding:0 1px">' + LABELS.renderChips(skill.labels) + '</div>'
+                    : '') +
                 '</div>' +
                 '<footer class="skill-card-footer">' +
                 editBtn +

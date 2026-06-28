@@ -89,6 +89,7 @@ function bindEvents() {
             name: document.getElementById('conn-name').value.trim(),
             type: type,
             scope: getModalScope(),
+            labels: getConnLabels(),
         };
         Object.assign(payload, collectDynamicFields());
         try {

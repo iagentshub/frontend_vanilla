@@ -149,19 +149,15 @@ function _initViewToggle() {
 }
 
 async function loadSkills(folderId) {
+    _activeFolderIdSkill = folderId || null;
     var results = await Promise.all([
         api.get('/api/skills?scope=private'),
         api.get('/api/skills?scope=public'),
     ]);
     _privateSkills = results[0];
     SkillCatalog.setSkills(results[1]);
-
-    _lastSkillsFiltered = folderId
-        ? _privateSkills.filter(function (s) { return s.folder_id === folderId; })
-        : _privateSkills;
-    _skillsPage = 1;
-    _renderSkillsPage();
-
+    _renderSkillLabelStrip();
+    _applySkillFilter();
     if (_folderSkills) _folderSkills.updateStats(_privateSkills);
 }
 
@@ -174,22 +170,85 @@ function _renderSkillsPage() {
     renderLoadMore(grid, _lastSkillsFiltered.length, shown, function () { _skillsPage++; _renderSkillsPage(); });
 }
 
-var _skillViewScope = 'private';
-var _skillViewId    = '';
+var _skillLabelFilters     = [];
+var _activeFolderIdSkill   = null;
+
+var _SKILL_FILTER_LABELS = ['public','production','development','test','favorite','review','quarantine','archived','delete'];
+
+function _renderSkillLabelStrip() {
+    var strip = document.getElementById('skills-label-strip');
+    if (!strip || !window.LABELS) return;
+    var html = '';
+    var allActive = !_skillLabelFilters.length;
+    html += '<button type="button" class="lbl-filter-chip lbl-filter-chip--all' + (allActive ? ' active' : '') + '" id="sklbl-all">' +
+        (window.t ? t('labels.filter_all') : 'Todos') + '</button>';
+    _SKILL_FILTER_LABELS.forEach(function (key) {
+        var color = LABELS.getColor(key);
+        var label = LABELS.getLabel(key);
+        var isActive = _skillLabelFilters.indexOf(key) !== -1;
+        html += '<button type="button" class="lbl-filter-chip' + (isActive ? ' active' : '') + '"' +
+            ' style="--lc:' + color + '" data-sklbl="' + key + '">' + label + '</button>';
+    });
+    strip.innerHTML = html;
+    document.getElementById('sklbl-all').addEventListener('click', function () {
+        _skillLabelFilters = [];
+        _applySkillFilter();
+    });
+    strip.querySelectorAll('[data-sklbl]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var key = btn.dataset.sklbl;
+            var idx = _skillLabelFilters.indexOf(key);
+            if (idx === -1) _skillLabelFilters.push(key);
+            else _skillLabelFilters.splice(idx, 1);
+            _applySkillFilter();
+        });
+    });
+}
+
+function _applySkillFilter() {
+    _renderSkillLabelStrip();
+    _lastSkillsFiltered = _privateSkills.filter(function (s) {
+        if (_activeFolderIdSkill !== null && s.folder_id !== _activeFolderIdSkill) return false;
+        if (_skillLabelFilters.length && !_skillLabelFilters.some(function (lbl) {
+            return (s.labels || ['private']).indexOf(lbl) !== -1;
+        })) return false;
+        return true;
+    });
+    _skillsPage = 1;
+    _renderSkillsPage();
+}
+
+var _skillViewScope  = 'private';
+var _skillViewId     = '';
+var _skillViewLabels = ['private'];
 
 async function viewSkill(scope, id) {
     _skillViewScope = scope;
     _skillViewId    = id;
     try {
         var s = await api.get('/api/skills/' + scope + '/' + encodeURIComponent(id));
-        document.getElementById('skill-view-title').textContent = (s.icon ? s.icon + ' ' : '') + s.name;
+        document.getElementById('skill-view-title').textContent = s.name;
         document.getElementById('skill-view-content').textContent = s.content || t('skills.no_content');
+        // Labels picker
+        _skillViewLabels = s.labels && s.labels.length ? s.labels.slice() : ['private'];
+        var lpWrap = document.getElementById('skill-labels-picker-wrap');
+        if (lpWrap && window.LABELS) {
+            lpWrap.innerHTML = LABELS.renderPicker(_skillViewLabels, 'skill-labels-picker');
+            LABELS.bindPicker('skill-labels-picker', _skillViewLabels, function (newLabels) {
+                _skillViewLabels = newLabels;
+                var isPublic = newLabels.indexOf('public') !== -1;
+                var pubCb2 = document.getElementById('skill-social-public');
+                var opts2  = document.getElementById('skill-social-opts');
+                if (pubCb2) pubCb2.checked = isPublic;
+                if (opts2)  opts2.style.display = isPublic ? '' : 'none';
+            });
+        }
         // Pre-fill visibility
         var pubCb = document.getElementById('skill-social-public');
         var opts  = document.getElementById('skill-social-opts');
         if (pubCb) {
-            pubCb.checked = false;
-            if (opts) opts.style.display = 'none';
+            pubCb.checked = _skillViewLabels.indexOf('public') !== -1;
+            if (opts) opts.style.display = pubCb.checked ? '' : 'none';
             api.get('/api/social/me/resources?type=skill').then(function (data) {
                 var row = (data.resources || []).find(function (r) { return r.resource_id === id; });
                 if (!row) return;
@@ -277,9 +336,16 @@ function bindEvents() {
             var catEl    = document.getElementById('skill-social-category');
             skillVisSaveBtn.disabled = true;
             try {
+                // Sincronizar label de visibilidad con el toggle
+                if (isPublic && _skillViewLabels.indexOf('public') === -1) {
+                    _skillViewLabels = window.LABELS ? LABELS.apply(_skillViewLabels, 'public') : _skillViewLabels;
+                } else if (!isPublic && _skillViewLabels.indexOf('private') === -1) {
+                    _skillViewLabels = window.LABELS ? LABELS.apply(_skillViewLabels, 'private') : _skillViewLabels;
+                }
                 await api.put('/api/skills/' + encodeURIComponent(_skillViewScope) + '/' + encodeURIComponent(_skillViewId) + '/visibility', {
                     is_public: isPublic,
                     category: catEl ? catEl.value : 'Other',
+                    labels: _skillViewLabels,
                 });
                 toast(t('social.visibility.saved'), 'success');
             } catch (err) { toast(err.message, 'error'); }

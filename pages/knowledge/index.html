@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/assets/components/dialog_skill/dialog_skill.css" />
     <link rel="stylesheet" href="/assets/components/action-menu/action-menu.css" />
     <!-- Página -->
+    <link rel="stylesheet" href="/assets/css/labels.css" />
     <link rel="stylesheet" href="/knowledge/knowledge.css" />
     <link rel="stylesheet" href="/memory/memory.css" />
 </head>
@@ -98,6 +99,7 @@
 
             <!-- Panel Skills -->
             <div id="tab-skills" class="tab-panel">
+                <div id="skills-label-strip" class="lbl-filter-strip" style="margin-bottom:12px"></div>
                 <div class="knowledge-tab-layout">
                     <div class="kf-panel" id="kf-panel-skill" data-section="skill"></div>
                     <div class="knowledge-tab-content">
@@ -164,6 +166,8 @@
                 <!-- Visibilidad -->
                 <div class="skill-visibility-section" id="skill-visibility-section" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
                     <div class="platform-section-title" data-i18n="social.visibility.title">Visibilidad en iAgents Hub</div>
+                    <!-- Picker de etiquetas -->
+                    <div id="skill-labels-picker-wrap" style="margin-bottom:12px"></div>
                     <label class="toggle-label" style="margin-bottom:8px">
                         <input type="checkbox" id="skill-social-public" class="toggle-checkbox" />
                         <span class="toggle-track"></span>
@@ -293,6 +297,7 @@
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/labels.js"></script>
     <!-- Componentes -->
     <script src="/assets/components/main_nav/main_nav.js"></script>
     <script src="/assets/components/skill-card/skill-card.js"></script>

@@ -20,6 +20,7 @@ var NAV_ICONS = {
     team: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13v-.5A3.5 3.5 0 0 1 5 9a3.5 3.5 0 0 1 3.5 3.5V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 9.2A3.5 3.5 0 0 1 14.5 12.5V13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     explore: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 5.5l-2 4.5-4.5 2 2-4.5 4.5-2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/></svg>',
     feed: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    labels: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 5a1 1 0 0 1 1-1h6.5l4 4-4 4H3a1 1 0 0 1-1-1V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="5.5" cy="8" r="1" fill="currentColor"/></svg>',
 };
 
 function _renderLangSwitcher() {
@@ -88,6 +89,9 @@ function renderNav(mountId, activePage) {
             '<button class="nav-icon-btn" id="nav-feed-btn" title="Feed" aria-label="Feed">' +
             NAV_ICONS.feed +
             '</button>' +
+            '<a href="/labels" class="nav-icon-btn' + (activePage === 'labels' ? ' active' : '') + '" title="' + t('labels.catalog.nav_title') + '" aria-label="' + t('labels.catalog.nav_title') + '">' +
+            NAV_ICONS.labels +
+            '</a>' +
             '<a href="/docs" class="nav-icon-btn' + (activePage === 'docs' ? ' active' : '') + '" title="' + t('nav.docs') + '" aria-label="' + t('nav.docs') + '">' +
             NAV_ICONS.docs +
             '</a>' +

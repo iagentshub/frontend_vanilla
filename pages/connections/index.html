@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/assets/components/filter_connections/filter_connections.css" />
     <link rel="stylesheet" href="/assets/components/conn-card/conn-card.css" />
     <!-- Página -->
+    <link rel="stylesheet" href="/assets/css/labels.css" />
     <link rel="stylesheet" href="/connections/connections.css" />
 </head>
 
@@ -88,6 +89,10 @@
                     </div>
                     <!-- campos dinámicos según proveedor — generados por buildDynamicFields() -->
                     <div id="conn-dynamic-fields"></div>
+                    <div class="field">
+                        <label data-i18n="agents.modal.field_labels">Etiquetas</label>
+                        <div id="conn-labels-picker-wrap"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-ghost" id="conn-cancel" data-i18n="common.actions.cancel">Cancelar</button>
@@ -107,6 +112,7 @@
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/providers.js"></script>
+    <script src="/assets/js/labels.js"></script>
     <!-- Componentes -->
     <script src="/assets/components/main_nav/main_nav.js"></script>
     <script src="/assets/components/filter_connections/filter_connections.js"></script>

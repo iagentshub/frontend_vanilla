@@ -77,6 +77,10 @@ function _applyFilter() {
     if (f.scope) list = list.filter(a => (a.scope || 'private') === f.scope);
     else list = list.filter(a => (a.scope || 'private') === 'private');
 
+    if (f.labels && f.labels.length) {
+        list = list.filter(a => f.labels.some(lbl => (a.labels || ['private']).indexOf(lbl) !== -1));
+    }
+
     if (_activeFolderId !== null) {
         list = list.filter(a => (a.folder_id || null) === _activeFolderId);
     }
@@ -84,10 +88,40 @@ function _applyFilter() {
     _filteredAgents = list;
     _agentPage = 1;
     _renderAgentPage();
+    _updateDeleteBanner();
 
     if (window._folderAgents) {
         window._folderAgents.updateStats(_agents.filter(a => (a.scope || 'private') === 'private'));
     }
+}
+
+function _updateDeleteBanner() {
+    var banner   = document.getElementById('agents-delete-banner');
+    var countEl  = document.getElementById('agents-delete-count');
+    var deleteBtn = document.getElementById('agents-delete-all-btn');
+    if (!banner) return;
+    var toDelete = _agents.filter(function (a) { return (a.labels || []).indexOf('delete') !== -1; });
+    if (!toDelete.length) { banner.style.display = 'none'; return; }
+    banner.style.display = 'flex';
+    var n = toDelete.length;
+    countEl.textContent = n + ' agente' + (n > 1 ? 's' : '') + ' marcado' + (n > 1 ? 's' : '') + ' para borrar';
+    deleteBtn.textContent = 'Borrar ' + (n > 1 ? 'todos' : 'este');
+    deleteBtn.onclick = async function () {
+        if (!confirm('¿Seguro que quieres borrar ' + n + ' agente' + (n > 1 ? 's' : '') + ' marcado' + (n > 1 ? 's' : '') + ' para borrar?')) return;
+        deleteBtn.disabled = true;
+        var ok = 0;
+        for (var i = 0; i < toDelete.length; i++) {
+            try {
+                await api.del('/api/agents/' + encodeURIComponent(toDelete[i].id));
+                ok++;
+            } catch (_) {}
+        }
+        if (window.toast) toast('Borrado' + (ok > 1 ? 's ' + ok + ' agentes' : ' 1 agente'), 'success');
+        await _loadAll();
+    };
+    document.getElementById('agents-delete-dismiss-btn').onclick = function () {
+        banner.style.display = 'none';
+    };
 }
 
 function _renderAgentPage() {

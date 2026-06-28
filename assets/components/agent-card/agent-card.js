@@ -48,11 +48,28 @@ var AgentCard = {
             ? '<span class="agent-tok-badge" title="' + totalTokens.toLocaleString() + ' tokens">' + AgentCard._fmtTokens(totalTokens) + ' tok</span>'
             : '';
 
+        var _BLOCKED_LABELS = ['quarantine', 'archived', 'delete'];
+        var agentLabels = agent.labels || ['private'];
+        var isBlocked = _BLOCKED_LABELS.some(function (bl) { return agentLabels.indexOf(bl) !== -1; });
+        var blockingLabel = isBlocked ? agentLabels.find(function (l) { return _BLOCKED_LABELS.indexOf(l) !== -1; }) : null;
+
+        if (isBlocked) {
+            chatDisabled = true;
+            chatTitle = window.LABELS ? LABELS.getLabel(blockingLabel) : blockingLabel;
+        }
+
+        var labelChips = (window.LABELS && agentLabels.length)
+            ? LABELS.renderChips(agentLabels)
+            : '';
+        var labelsRow = labelChips
+            ? '<div class="label-chips-row agent-label-chips">' + labelChips + '</div>'
+            : '';
+
         var dragAttrs = (!isPublic && !agent._shared)
             ? ' draggable="true" data-drag-id="' + esc(agent.id) + '" data-drag-section="agents"'
             : '';
 
-        return '<div class="agent-card"' + dragAttrs + '>' +
+        return '<div class="agent-card' + (isBlocked ? ' agent-card--blocked' : '') + '"' + dragAttrs + '>' +
             '<div class="agent-card-body">' +
             '<div class="agent-card-top">' +
             '<div class="agent-avatar" style="background:' + avatarColor + '">' + esc(initial) + '</div>' +
@@ -68,6 +85,7 @@ var AgentCard = {
             '</div>' +
             '</div>' +
             '<p class="agent-card-desc">' + esc(agent.description || t('agents.card.no_description')) + '</p>' +
+            labelsRow +
             '</div>' +
             '<div class="agent-card-footer">' +
             '<button class="agent-action-chat" data-action="chat" data-id="' + esc(agent.id) + '"' +

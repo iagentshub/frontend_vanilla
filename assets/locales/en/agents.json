@@ -79,6 +79,7 @@
     "scope_private": "Private",
     "scope_public": "Public",
     "field_description": "Description",
+    "field_labels": "Labels",
     "field_prompt": "System prompt",
     "field_temp": "Temperature",
     "field_skills": "Assigned skills",

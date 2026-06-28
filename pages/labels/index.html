@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <script>(function(){var m={noir:"dark-red",marble:"light-red",ember:"dark-orange",ocean:"dark-blue",forest:"dark-red",dusk:"dark-purple",light:"light-red"};var t=localStorage.getItem("ga-theme")||"dark-red";t=m[t]||t;document.documentElement.setAttribute("data-theme",t);})();</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iAgents Hub · Etiquetas</title>
+    <link rel="stylesheet" href="/assets/css/variables.css" />
+    <link rel="stylesheet" href="/assets/themes/themes.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/layout.css" />
+    <link rel="stylesheet" href="/assets/components/main_nav/main_nav.css" />
+    <link rel="stylesheet" href="/assets/css/labels.css" />
+    <link rel="stylesheet" href="/labels/labels-catalog.css" />
+</head>
+<body>
+<div class="app-shell">
+    <div id="nav-root"></div>
+    <main class="page-content labels-page">
+        <div class="page-header">
+            <h1 class="page-title" data-i18n="labels.catalog.title">Catálogo de etiquetas</h1>
+        </div>
+        <p class="labels-intro" data-i18n="labels.catalog.intro">Las etiquetas definen el estado y comportamiento de tus recursos. Cada recurso tiene siempre al menos una etiqueta de visibilidad.</p>
+        <div id="labels-catalog-root"></div>
+    </main>
+</div>
+<script src="/assets/js/i18n.js"></script>
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/theme.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/labels.js"></script>
+<script src="/assets/components/main_nav/main_nav.js"></script>
+<script src="/labels/labels-catalog.js"></script>
+</body>
+</html>
