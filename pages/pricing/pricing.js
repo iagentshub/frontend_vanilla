@@ -363,13 +363,8 @@
         modalSubmit.disabled = true;
         modalStatus.hidden   = true;
 
-        fetch('/api/admin/contact-requests', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: modalType.value, label: 'solicitud_formacion', name: name, email: email, message: message })
-        })
-        .then(function (res) {
-            if (!res.ok) throw new Error(res.status);
+        api.post('/api/admin/contact-requests', { type: modalType.value, label: 'solicitud_formacion', name: name, email: email, message: message })
+        .then(function () {
             modalStatus.textContent = t('pricing.contact_success');
             modalStatus.className   = 'pr-modal-status pr-modal-status--ok';
             modalStatus.hidden      = false;

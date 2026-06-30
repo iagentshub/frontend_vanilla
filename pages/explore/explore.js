@@ -1,18 +1,18 @@
 (function () {
     'use strict';
 
-    var _AVATAR_COLORS = ['#4f46e5','#0891b2','#059669','#d97706','#7c3aed','#db2777','#0f766e'];
-    var _TYPE_LABELS   = { agent: 'Agente', skill: 'Skill', knowledge: 'Knowledge' };
+    var _AVATAR_COLORS = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#7c3aed', '#db2777', '#0f766e'];
+    var _TYPE_LABELS = { agent: 'Agente', skill: 'Skill', knowledge: 'Knowledge' };
 
-    var _offset      = 0;
-    var _limit       = 40;
-    var _hasMore     = false;
-    var _loading     = false;
-    var _starred     = {};
-    var _forked      = {};
-    var _linked      = {};
-    var _me          = '';
-    var _searched    = false;   // true after first explicit search
+    var _offset = 0;
+    var _limit = 40;
+    var _hasMore = false;
+    var _loading = false;
+    var _starred = {};
+    var _forked = {};
+    var _linked = {};
+    var _me = '';
+    var _searched = false;   // true after first explicit search
 
     var _SVG_EYE = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">' +
         '<path d="M1.5 8C1.5 8 4 3.5 8 3.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>' +
@@ -38,8 +38,8 @@
 
     function esc(v) {
         return String(v == null ? '' : v)
-            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     function _activeType() {
@@ -48,9 +48,9 @@
 
     function _getFilters() {
         return {
-            type:     _activeType(),
+            type: _activeType(),
             category: (document.getElementById('explore-category') || {}).value || '',
-            q:        (document.getElementById('explore-search') || {}).value || '',
+            q: (document.getElementById('explore-search') || {}).value || '',
         };
     }
 
@@ -58,27 +58,27 @@
         var params = [];
         if (filters.type && filters.type !== 'all') params.push('type=' + encodeURIComponent(filters.type));
         if (filters.category) params.push('category=' + encodeURIComponent(filters.category));
-        if (filters.q)        params.push('q=' + encodeURIComponent(filters.q));
+        if (filters.q) params.push('q=' + encodeURIComponent(filters.q));
         params.push('limit=' + (_limit + 1));
         params.push('offset=' + offset);
         return '/api/explore' + (params.length ? '?' + params.join('&') : '');
     }
 
     function _renderCard(r) {
-        var key     = r.resource_type + ':' + r.resource_id;
-        var color   = _avatarColor(r.name);
+        var key = r.resource_type + ':' + r.resource_id;
+        var color = _avatarColor(r.name);
         var initial = (r.name || '?').charAt(0).toUpperCase();
         var starred = !!_starred[key];
-        var forked  = !!_forked[key];
-        var isOwn   = _me && r.owner === _me;
+        var forked = !!_forked[key];
+        var isOwn = _me && r.owner === _me;
         var isForkable = !isOwn && (r.resource_type === 'agent' || r.resource_type === 'skill' || r.resource_type === 'knowledge');
         var originBadge = r.fork_of_id
             ? '<span class="explore-card-fork-badge">' + (window.t ? t('labels.fork') : 'fork') + '</span>'
             : (r.linked_to_id ? '<span class="explore-card-fork-badge">' + (window.t ? t('labels.linked') : 'linked') + '</span>' : '');
         var verifiedBadge = r.verified
             ? '<span class="explore-card-verified-badge" title="Verificado por el equipo">' +
-              '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 4L13 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-              ' Verificado</span>'
+            '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 4L13 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            ' Verificado</span>'
             : '';
         var labelChips = (window.LABELS && r.labels && r.labels.length)
             ? '<div class="label-chips-row" style="margin-top:4px">' + LABELS.renderChips(r.labels) + '</div>'
@@ -86,19 +86,19 @@
         var isLinked = !!_linked[key];
         var forkBtn = isForkable
             ? '<button class="explore-card-fork-btn' + (forked ? ' forked' : '') + '" data-action="fork"' +
-              ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
-              ' data-owner="' + esc(r.owner) + '" title="' + (forked ? 'Ya forkeado' : (window.t ? t('labels.actions.fork') : 'Fork')) + '"' +
-              (forked ? ' disabled' : '') + '>' +
-              _SVG_FORK +
-              '</button>'
+            ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
+            ' data-owner="' + esc(r.owner) + '" title="' + (forked ? 'Ya forkeado' : (window.t ? t('labels.actions.fork') : 'Fork')) + '"' +
+            (forked ? ' disabled' : '') + '>' +
+            _SVG_FORK +
+            '</button>'
             : '';
         var linkBtn = isForkable
             ? '<button class="explore-card-fork-btn' + (isLinked ? ' forked' : '') + '" data-action="link"' +
-              ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
-              ' title="' + (isLinked ? 'Ya enlazado' : (window.t ? t('labels.actions.link') : 'Link')) + '"' +
-              (isLinked ? ' disabled' : '') + '>' +
-              _SVG_LINK +
-              '</button>'
+            ' data-key="' + esc(key) + '" data-type="' + esc(r.resource_type) + '" data-id="' + esc(r.resource_id) + '"' +
+            ' title="' + (isLinked ? 'Ya enlazado' : (window.t ? t('labels.actions.link') : 'Link')) + '"' +
+            (isLinked ? ' disabled' : '') + '>' +
+            _SVG_LINK +
+            '</button>'
             : '';
         var tryBtn = (!isOwn && r.resource_type === 'agent')
             ? '<button class="explore-card-try-btn" data-action="try" data-id="' + esc(r.resource_id) + '" data-owner="' + esc(r.owner) + '" title="Probar agente">Probar</button>'
@@ -141,10 +141,10 @@
     }
 
     function _setMessage(text) {
-        var el  = document.getElementById('explore-empty');
+        var el = document.getElementById('explore-empty');
         var msg = document.getElementById('explore-empty-msg');
         if (msg) msg.textContent = text;
-        if (el)  el.hidden = !text;
+        if (el) el.hidden = !text;
     }
 
     function _showPrompt() {
@@ -161,8 +161,8 @@
         if (reset) _offset = 0;
         _setLoading(true);
         _setMessage('');   // hide while loading
-        var filters  = _getFilters();
-        var grid     = document.getElementById('explore-grid');
+        var filters = _getFilters();
+        var grid = document.getElementById('explore-grid');
         var moreWrap = document.getElementById('explore-load-more');
         try {
             var items = await fetch(_buildUrl(filters, _offset), { credentials: 'include' })
@@ -190,13 +190,13 @@
     function _resourceUrl(type, id, action) {
         if (type === 'knowledge') return '/api/knowledge/' + encodeURIComponent(id) + '/' + action;
         var plural = type === 'skill' ? 'skills' : 'agents';
-        return '/api/' + plural + '/private/' + encodeURIComponent(id) + '/' + action;
+        return '/api/' + plural + '/public/' + encodeURIComponent(id) + '/' + action;
     }
 
     async function _forkResource(btn) {
-        var key   = btn.dataset.key;
-        var type  = btn.dataset.type;
-        var id    = btn.dataset.id;
+        var key = btn.dataset.key;
+        var type = btn.dataset.type;
+        var id = btn.dataset.id;
         btn.disabled = true;
         try {
             var r = await fetch(_resourceUrl(type, id, 'fork'), { method: 'POST', credentials: 'include' });
@@ -217,9 +217,9 @@
     }
 
     async function _linkResource(btn) {
-        var key  = btn.dataset.key;
+        var key = btn.dataset.key;
         var type = btn.dataset.type;
-        var id   = btn.dataset.id;
+        var id = btn.dataset.id;
         btn.disabled = true;
         try {
             var r = await fetch(_resourceUrl(type, id, 'link'), { method: 'POST', credentials: 'include' });
@@ -239,17 +239,13 @@
     }
 
     async function _toggleStar(btn) {
-        var key  = btn.dataset.key;
+        var key = btn.dataset.key;
         var type = btn.dataset.type;
-        var id   = btn.dataset.id;
+        var id = btn.dataset.id;
         var isStarred = !!_starred[key];
         try {
-            var method = isStarred ? 'DELETE' : 'POST';
-            var r = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', {
-                method: method, credentials: 'include',
-            });
-            if (!r.ok) return;
-            var data = await r.json();
+            var url = '/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star';
+            var data = await (isStarred ? api.del(url) : api.post(url, {}));
             _starred[key] = !isStarred;
             btn.classList.toggle('starred', !isStarred);
             var countEl = btn.querySelector('.star-count');
@@ -259,15 +255,15 @@
 
     // ── Users mode ────────────────────────────────────────────────────────────
 
-    var _userOffset  = 0;
+    var _userOffset = 0;
     var _userHasMore = false;
     var _userLoading = false;
-    var _wsId        = '';
+    var _wsId = '';
 
     function _renderUserCard(u) {
         var initial = (u.username || '?').charAt(0).toUpperCase();
-        var color   = _avatarColor(u.username);
-        var isSelf  = _me && u.username === _me;
+        var color = _avatarColor(u.username);
+        var isSelf = _me && u.username === _me;
         var followersLabel = window.t ? t('social.follow.followers') : 'seguidores';
         var resourcesLabel = window.t ? t('explore.users.resources') : 'recursos';
         return '<div class="explore-user-card">' +
@@ -284,7 +280,7 @@
             '<a href="/u/' + encodeURIComponent(u.username) + '" class="btn btn-ghost btn-sm">' +
             (window.t ? t('explore.users.view_profile') : 'Ver perfil') + '</a>' +
             (!isSelf ? '<button class="btn btn-ghost btn-sm explore-invite-btn" data-username="' + esc(u.username) + '">' +
-            (window.t ? t('explore.users.invite') : 'Invitar') + '</button>' : '') +
+                (window.t ? t('explore.users.invite') : 'Invitar') + '</button>' : '') +
             '</div>' +
             '</div>';
     }
@@ -297,12 +293,11 @@
         var q = (document.getElementById('explore-search') || {}).value || '';
         var params = ['limit=21', 'offset=' + _userOffset];
         if (q) params.push('q=' + encodeURIComponent(q));
-        var grid     = document.getElementById('explore-grid');
+        var grid = document.getElementById('explore-grid');
         var moreWrap = document.getElementById('explore-load-more');
         _setMessage('');   // hide while loading
         try {
-            var items = await fetch('/api/users?' + params.join('&'), { credentials: 'include' })
-                .then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+            var items = await api.get('/api/users?' + params.join('&'));
 
             _userHasMore = items.length > 20;
             if (_userHasMore) items = items.slice(0, 20);
@@ -329,23 +324,17 @@
             return;
         }
         try {
-            await fetch('/api/workspaces/' + encodeURIComponent(_wsId) + '/invitations', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username }),
-            }).then(function (r) {
-                if (r.status === 409) throw new Error(window.t ? t('explore.users.invite_already') : 'Ya invitado o miembro');
-                if (!r.ok) throw new Error(window.t ? t('explore.users.invite_error') : 'Error al invitar');
-                return r.json();
-            });
+            await api.post('/api/workspaces/' + encodeURIComponent(_wsId) + '/invitations', { username: username });
             if (window.toast) toast((window.t ? t('explore.users.invite_sent') : 'Invitación enviada a') + ' @' + username, 'success');
         } catch (e) {
-            if (window.toast) toast(e.message, 'error');
+            var msg = e.status === 409
+                ? (window.t ? t('explore.users.invite_already') : 'Ya invitado o miembro')
+                : (window.t ? t('explore.users.invite_error') : 'Error al invitar');
+            if (window.toast) toast(msg, 'error');
         }
     }
 
-    var _AVATAR_COLORS_P = ['#4f46e5','#0891b2','#059669','#d97706','#7c3aed','#db2777','#0f766e'];
+    var _AVATAR_COLORS_P = ['#4f46e5', '#0891b2', '#059669', '#d97706', '#7c3aed', '#db2777', '#0f766e'];
     function _avatarColorP(name) {
         var code = 0;
         for (var i = 0; i < (name || '').length; i++) code += name.charCodeAt(i);
@@ -358,7 +347,7 @@
     function _abpEmpty() { return '<span class="abp-empty">—</span>'; }
 
     function _openPreviewModal(data) {
-        var type  = data.resource_type || '';
+        var type = data.resource_type || '';
         var badge = { agent: 'Agente', skill: 'Skill', knowledge: 'Knowledge' }[type] || type;
         var labelChips = (window.LABELS && data.labels && data.labels.length)
             ? LABELS.renderChips(data.labels) : '';
@@ -368,9 +357,9 @@
         var html = '';
 
         if (type === 'agent') {
-            var color   = _avatarColorP(data.name || '');
+            var color = _avatarColorP(data.name || '');
             var initial = (data.name || '?').charAt(0).toUpperCase();
-            var temp    = typeof data.temperature === 'number' ? data.temperature : 0.7;
+            var temp = typeof data.temperature === 'number' ? data.temperature : 0.7;
             var tempPct = Math.round(temp * 100);
 
             // Header (avatar + meta)
@@ -458,9 +447,7 @@
 
     async function _previewResource(type, id) {
         try {
-            var data = await fetch('/api/explore/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/preview', {
-                credentials: 'include',
-            }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); });
+            var data = await api.get('/api/explore/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/preview');
             _openPreviewModal(data);
         } catch (_) {
             if (window.toast) toast('No se pudo cargar la vista previa', 'error');
@@ -482,8 +469,7 @@
         modal.style.display = 'flex';
 
         try {
-            var conns = await fetch('/api/connections', { credentials: 'include' })
-                .then(function (r) { return r.ok ? r.json() : []; });
+            var conns = await api.get('/api/connections').catch(function () { return []; });
             if (!conns.length) {
                 select.innerHTML = '<option value="">Sin connections disponibles</option>';
             } else {
@@ -501,10 +487,10 @@
     }
 
     async function _submitTry() {
-        var modal     = document.getElementById('explore-try-modal');
-        var agentId   = modal.dataset.agentId || '';
-        var connId    = document.getElementById('et-conn-select').value;
-        var message   = (document.getElementById('et-message').value || '').trim();
+        var modal = document.getElementById('explore-try-modal');
+        var agentId = modal.dataset.agentId || '';
+        var connId = document.getElementById('et-conn-select').value;
+        var message = (document.getElementById('et-message').value || '').trim();
         var submitBtn = document.getElementById('et-submit');
 
         if (!connId) { if (window.toast) toast('Selecciona una connection', 'error'); return; }
@@ -515,12 +501,7 @@
         document.getElementById('et-warnings').hidden = true;
 
         try {
-            var res = await fetch('/api/agents/public/' + encodeURIComponent(agentId) + '/try', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ connection_id: connId, message: message }),
-            }).then(function (r) { if (!r.ok) throw new Error(r.statusText); return r.json(); });
+            var res = await api.post('/api/agents/public/' + encodeURIComponent(agentId) + '/try', { connection_id: connId, message: message });
 
             // Show warnings
             if (res.warnings && res.warnings.length) {
@@ -621,13 +602,12 @@
     async function init() {
         await window.requireAuth();
         renderNav('nav-root', 'explore');
-        fetch('/api/auth/me', { credentials: 'include' })
-            .then(function (r) { return r.json(); })
+        api.get('/api/auth/me')
             .then(function (d) {
-                _me   = d.username || '';
+                _me = d.username || '';
                 _wsId = d.workspace_id || d.username || '';
             })
-            .catch(function () {});
+            .catch(function () { });
         _bindFilters();
         // Show initial prompt — no auto-load
         _showPrompt();

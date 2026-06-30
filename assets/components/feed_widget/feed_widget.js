@@ -69,12 +69,8 @@
         var id      = btn.dataset.id;
         var starred = !!_starred[key];
         try {
-            var method = starred ? 'DELETE' : 'POST';
-            var res = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', {
-                method: method, credentials: 'include',
-            });
-            if (!res.ok) return;
-            var data = await res.json();
+            var url = '/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star';
+            var data = await (starred ? api.del(url) : api.post(url, {}));
             _starred[key] = !starred;
             btn.classList.toggle('starred', !starred);
             btn.textContent = '★ ' + (data.stars || 0);
@@ -88,10 +84,7 @@
         _body.innerHTML = '<div class="feed-drawer-spinner"><div class="spinner"></div></div>';
 
         try {
-            var items = await fetch('/api/feed?limit=30', { credentials: 'include' }).then(function (r) {
-                if (!r.ok) throw new Error();
-                return r.json();
-            });
+            var items = await api.get('/api/feed?limit=30');
 
             if (!items.length) {
                 _body.innerHTML =

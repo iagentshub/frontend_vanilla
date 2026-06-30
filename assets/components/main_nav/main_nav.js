@@ -152,7 +152,7 @@ function renderNav(mountId, activePage) {
 
         // ── Workspace switcher logic ──────────────────────────────────────
         function _loadWorkspaces(activeWsId) {
-            fetch('/api/workspaces').then(function (r) { return r.json(); }).then(function (list) {
+            api.get('/api/workspaces').then(function (list) {
                 var listEl = document.getElementById('nav-ws-list');
                 if (!listEl) return;
                 listEl.innerHTML = list.map(function (ws) {
@@ -172,11 +172,8 @@ function renderNav(mountId, activePage) {
                             _closeWsDropdown();
                             return;
                         }
-                        fetch('/api/workspaces/switch/' + encodeURIComponent(wsId), { method: 'POST' })
-                            .then(function (r) { return r.json(); })
-                            .then(function (res) {
-                                if (res.ok) window.location.reload();
-                            })
+                        api.post('/api/workspaces/switch/' + encodeURIComponent(wsId), {})
+                            .then(function () { window.location.reload(); })
                             .catch(function () {});
                     });
                 });
@@ -211,16 +208,13 @@ function renderNav(mountId, activePage) {
                 _closeWsDropdown();
                 var name = window.prompt('Nombre del nuevo workspace:');
                 if (!name || !name.trim()) return;
-                fetch('/api/workspaces', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name.trim() }),
-                }).then(function (r) { return r.json(); }).then(function (ws) {
+                api.post('/api/workspaces', { name: name.trim() })
+                .then(function (ws) {
                     if (ws.id) {
-                        fetch('/api/workspaces/switch/' + encodeURIComponent(ws.id), { method: 'POST' })
-                            .then(function () { window.location.reload(); });
+                        return api.post('/api/workspaces/switch/' + encodeURIComponent(ws.id), {});
                     }
-                }).catch(function () {});
+                }).then(function () { window.location.reload(); })
+                .catch(function () {});
             });
         }
 
@@ -233,7 +227,7 @@ function renderNav(mountId, activePage) {
         });
 
         document.getElementById('nav-logout-btn').addEventListener('click', async function () {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            await api.post('/api/auth/logout', {});
             window.location.replace('/login');
         });
 
@@ -277,11 +271,7 @@ function renderNav(mountId, activePage) {
                 var next = curr === 'es' ? 'en' : 'es';
                 if (window.i18n) window.i18n.setLang(next);
                 if (_navUserRole !== 'guest') {
-                    fetch('/api/settings', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ language: next }),
-                    }).catch(function () {});
+                    api.put('/api/settings', { language: next }).catch(function () {});
                 }
             });
         }

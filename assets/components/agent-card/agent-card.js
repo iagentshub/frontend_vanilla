@@ -50,13 +50,18 @@ var AgentCard = {
         var initial = (agent.name || '?').charAt(0).toUpperCase();
         var avatarColor = AgentCard._avatarColor(agent.name || '');
 
+        var _BLOCKED_LABELS = ['draft', 'quarantine', 'archived', 'delete'];
+        var agentLabels = agent.labels || ['private'];
+        var isBlocked = _BLOCKED_LABELS.some(function (bl) { return agentLabels.indexOf(bl) !== -1; });
+        var blockingLabel = isBlocked ? agentLabels.find(function (l) { return _BLOCKED_LABELS.indexOf(l) !== -1; }) : null;
+
         var scopeBadge = isPublic
             ? '<span class="agent-scope-badge agent-scope-badge--public">' + t('agents.scope.badge_public') + '</span>'
             : (agent._shared ? '<span class="agent-scope-badge agent-scope-badge--shared">' + (t('teams.teams.sharing.shared_badge') || 'Compartido') + '</span>' : '');
         var socialBadge = agent._social_public
             ? '<span class="agent-scope-badge agent-scope-badge--social" title="' + esc(agent._social_category || '') + '">' +
-              '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
-              '</span>'
+            '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
+            '</span>'
             : '';
         var linkBadge = '';
         if (agentLabels.indexOf('linked') !== -1) {
@@ -71,19 +76,14 @@ var AgentCard = {
             : '';
         var verifiedBadge = agent._social_verified
             ? '<span class="agent-scope-badge agent-scope-badge--verified" title="Verificado por el equipo de iAgentsHub">' +
-              '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 4L13 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-              ' Verificado</span>'
+            '<svg width="9" height="9" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 4L13 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            ' Verificado</span>'
             : '';
 
         var totalTokens = (agent.tokens_in || 0) + (agent.tokens_out || 0);
         var tokBadge = totalTokens
             ? '<span class="agent-tok-badge" title="' + totalTokens.toLocaleString() + ' tokens">' + AgentCard._fmtTokens(totalTokens) + ' tok</span>'
             : '';
-
-        var _BLOCKED_LABELS = ['draft', 'quarantine', 'archived', 'delete'];
-        var agentLabels = agent.labels || ['private'];
-        var isBlocked = _BLOCKED_LABELS.some(function (bl) { return agentLabels.indexOf(bl) !== -1; });
-        var blockingLabel = isBlocked ? agentLabels.find(function (l) { return _BLOCKED_LABELS.indexOf(l) !== -1; }) : null;
 
         if (isBlocked) {
             chatDisabled = true;

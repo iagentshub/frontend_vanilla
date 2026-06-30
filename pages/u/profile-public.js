@@ -231,15 +231,7 @@
         btn.disabled = true;
         try {
             var plural = type === 'skill' ? 'skills' : 'agents';
-            var r = await fetch('/api/' + plural + '/private/' + encodeURIComponent(id) + '/fork', {
-                method: 'POST', credentials: 'include',
-            });
-            var data = await r.json();
-            if (!r.ok) {
-                if (window.toast) toast(data.detail || 'Error al copiar', 'error');
-                btn.disabled = false;
-                return;
-            }
+            await api.post('/api/' + plural + '/private/' + encodeURIComponent(id) + '/fork', {});
             _forked[key] = true;
             btn.classList.add('forked');
             btn.title = 'Ya copiado';

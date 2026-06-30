@@ -44,7 +44,7 @@ async function init() {
     await window.requireAuth();
 
     // Verify gestor role
-    var me = await fetch('/api/auth/me').then(function (r) { return r.json(); });
+    var me = await api.get('/api/auth/me');
     if (me.role !== 'gestor' && me.role !== 'admin') {
         window.location.replace('/dashboard/');
         return;

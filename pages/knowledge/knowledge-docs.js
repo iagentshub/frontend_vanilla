@@ -141,16 +141,7 @@ var KnowledgeDocs = (function () {
         var fd = new FormData();
         fd.append('file', file);
         if (folderId) fd.append('folder_id', folderId);
-        var resp = await fetch('/api/knowledge/document', {
-            method: 'POST',
-            body: fd,
-            credentials: 'same-origin',
-        });
-        if (!resp.ok) {
-            var err = await resp.json().catch(function () { return { detail: resp.statusText }; });
-            throw new Error(err.detail || resp.statusText);
-        }
-        return await resp.json();
+        return await api.upload('/api/knowledge/document', fd);
     }
 
     async function _uploadSingle(file) {

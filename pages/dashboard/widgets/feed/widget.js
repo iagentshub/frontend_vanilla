@@ -64,11 +64,8 @@
         var id   = btn.dataset.id;
         var was  = !!_starred[key];
         try {
-            var res = await fetch('/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star', {
-                method: was ? 'DELETE' : 'POST', credentials: 'include',
-            });
-            if (!res.ok) return;
-            var d = await res.json();
+            var url = '/api/' + encodeURIComponent(type) + '/' + encodeURIComponent(id) + '/star';
+            var d = await (was ? api.del(url) : api.post(url, {}));
             _starred[key] = !was;
             btn.classList.toggle('starred', !was);
             var span = btn.querySelector('span');

@@ -320,9 +320,7 @@ class AgentChatDialog {
 
     async _initConversation() {
         try {
-            const r = await fetch(`/api/chats/${encodeURIComponent(this.agent.id)}`);
-            if (!r.ok) { this._fallbackGuest(); return; }
-            const list = await r.json();
+            const list = await api.get(`/api/chats/${encodeURIComponent(this.agent.id)}`);
             if (list.length > 0) {
                 this._convList = list;
                 this._convPage = 1;
@@ -352,14 +350,13 @@ class AgentChatDialog {
     }
 
     async _newConversation() {
-        const r = await fetch(`/api/chats/${encodeURIComponent(this.agent.id)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: '' }),
-        });
-        if (r.status === 403) { this._fallbackGuest(); return; }
-        if (!r.ok) return;
-        const conv = await r.json();
+        let conv;
+        try {
+            conv = await api.post(`/api/chats/${encodeURIComponent(this.agent.id)}`, { title: '' });
+        } catch (e) {
+            if (e.status === 403) { this._fallbackGuest(); }
+            return;
+        }
         this._convList.unshift(conv);
         this._convId = conv.id;
         this.messages = [];
@@ -370,9 +367,10 @@ class AgentChatDialog {
     }
 
     async _loadConversation(convId) {
-        const r = await fetch(`/api/chats/${encodeURIComponent(this.agent.id)}/${encodeURIComponent(convId)}`);
-        if (!r.ok) return;
-        const msgs = await r.json();
+        let msgs;
+        try {
+            msgs = await api.get(`/api/chats/${encodeURIComponent(this.agent.id)}/${encodeURIComponent(convId)}`);
+        } catch { return; }
         this._convId = convId;
         this.messages = msgs.map(m => ({
             role: m.role,

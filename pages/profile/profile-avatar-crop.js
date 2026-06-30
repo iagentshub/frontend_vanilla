@@ -297,21 +297,13 @@
             _exportBlob(function (blob) {
                 var form = new FormData();
                 form.append('avatar', blob, 'avatar.png');
-                fetch('/api/auth/me/avatar', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: form,
-                }).then(function (r) { return r.json(); }).then(function (data) {
-                    if (data.ok) {
-                        // Update both avatar instances
-                        if (typeof _setAvatarImg === 'function') _setAvatarImg(data.avatar_url);
-                        _closeModal();
-                        toast(t('profile.avatar.saved') || 'Foto actualizada', 'success');
-                    } else {
-                        toast(data.detail || t('profile.avatar.error') || 'Error al guardar', 'error');
-                    }
-                }).catch(function () {
-                    toast(t('profile.avatar.error') || 'Error al guardar', 'error');
+                api.upload('/api/auth/me/avatar', form)
+                .then(function (data) {
+                    if (typeof _setAvatarImg === 'function') _setAvatarImg(data.avatar_url);
+                    _closeModal();
+                    toast(t('profile.avatar.saved') || 'Foto actualizada', 'success');
+                }).catch(function (e) {
+                    toast((e && e.message) || t('profile.avatar.error') || 'Error al guardar', 'error');
                 }).finally(function () {
                     saveBtn.disabled = false;
                     saveBtn.textContent = t('common.actions.save') || 'Guardar';

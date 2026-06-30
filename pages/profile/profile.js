@@ -35,8 +35,7 @@ async function init() {
 
 async function loadUser() {
     try {
-        var r = await fetch('/api/auth/me');
-        var d = await r.json();
+        var d = await api.get('/api/auth/me');
         var u = d.username || '';
         _currentRole = d.role || 'standard';
         _authMethod = d.auth_method || 'internal';
@@ -104,8 +103,7 @@ function _initSocialForm(username) {
     }
 
     // Load current values
-    fetch('/api/users/' + encodeURIComponent(username), { credentials: 'include' })
-        .then(function (r) { return r.json(); })
+    api.get('/api/users/' + encodeURIComponent(username))
         .then(function (d) {
             if (bioEl) { bioEl.value = d.bio || ''; if (bioCount) bioCount.textContent = bioEl.value.length; }
             if (emailEl) emailEl.value = d.email_public || '';
@@ -129,20 +127,14 @@ function _initSocialForm(username) {
         }
         saveBtn.disabled = true;
         saveBtn.textContent = t('common.saving') || 'Guardando…';
-        fetch('/api/auth/me/profile', {
-            method: 'PUT',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                bio:          bioEl  ? bioEl.value.trim()   : null,
-                languages:    langs,
-                email_public: emailEl ? emailEl.value.trim() : null,
-                github:       githubEl ? githubEl.value.trim() : null,
-                cv:           cvEl    ? cvEl.value           : null,
-            }),
-        }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d.ok) toast(t('profile.social.saved') || 'Perfil guardado', 'success');
-            else toast(d.detail || t('profile.social.error') || 'Error al guardar', 'error');
+        api.put('/api/auth/me/profile', {
+            bio:          bioEl  ? bioEl.value.trim()   : null,
+            languages:    langs,
+            email_public: emailEl ? emailEl.value.trim() : null,
+            github:       githubEl ? githubEl.value.trim() : null,
+            cv:           cvEl    ? cvEl.value           : null,
+        }).then(function () {
+            toast(t('profile.social.saved') || 'Perfil guardado', 'success');
         }).catch(function () {
             toast(t('profile.social.error') || 'Error al guardar', 'error');
         }).finally(function () {
@@ -180,11 +172,8 @@ async function renderThemePicker() {
 
     if (_currentRole !== 'guest') {
         try {
-            var r = await fetch('/api/settings');
-            if (r.ok) {
-                var s = await r.json();
-                if (s.theme) window.setTheme(s.theme);
-            }
+            var s = await api.get('/api/settings');
+            if (s.theme) window.setTheme(s.theme);
         } catch (e) { }
     }
 
@@ -215,11 +204,7 @@ async function renderThemePicker() {
         _renderAccent();
         if (_currentRole !== 'guest') {
             try {
-                await fetch('/api/settings', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ theme: mode + '-' + accent }),
-                });
+                await api.put('/api/settings', { theme: mode + '-' + accent });
             } catch (e) { }
         }
     }
@@ -268,7 +253,7 @@ async function renderLangPicker() {
 
     if (_currentRole !== 'guest') {
         try {
-            var s = await fetch('/api/settings').then(function (r) { return r.ok ? r.json() : {}; });
+            var s = await api.get('/api/settings');
             if (s.language && s.language !== window.i18n.getLang()) window.i18n.setLang(s.language);
         } catch (e) {}
     }
@@ -294,11 +279,7 @@ async function renderLangPicker() {
                 _render();
                 if (_currentRole !== 'guest') {
                     try {
-                        await fetch('/api/settings', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ language: lang }),
-                        });
+                        await api.put('/api/settings', { language: lang });
                     } catch (e) {}
                 }
             });
