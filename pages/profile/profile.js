@@ -10,15 +10,15 @@ var _LANGS = [
 ];
 
 var _ALL_LANGS = [
-    { id: 'es', label: 'Español',    flag: '🇪🇸' },
-    { id: 'en', label: 'English',    flag: '🇬🇧' },
-    { id: 'fr', label: 'Français',   flag: '🇫🇷' },
-    { id: 'de', label: 'Deutsch',    flag: '🇩🇪' },
-    { id: 'pt', label: 'Português',  flag: '🇵🇹' },
-    { id: 'it', label: 'Italiano',   flag: '🇮🇹' },
-    { id: 'zh', label: '中文',        flag: '🇨🇳' },
-    { id: 'ja', label: '日本語',      flag: '🇯🇵' },
-    { id: 'ar', label: 'العربية',    flag: '🇸🇦' },
+    { id: 'es', label: 'Español', flag: '🇪🇸' },
+    { id: 'en', label: 'English', flag: '🇬🇧' },
+    { id: 'fr', label: 'Français', flag: '🇫🇷' },
+    { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
+    { id: 'pt', label: 'Português', flag: '🇵🇹' },
+    { id: 'it', label: 'Italiano', flag: '🇮🇹' },
+    { id: 'zh', label: '中文', flag: '🇨🇳' },
+    { id: 'ja', label: '日本語', flag: '🇯🇵' },
+    { id: 'ar', label: 'العربية', flag: '🇸🇦' },
 ];
 
 async function init() {
@@ -64,6 +64,11 @@ async function loadUser() {
         if (elAuthDet) elAuthDet.textContent = authLabel;
 
         _initNav(_authMethod);
+        if (_currentRole === 'admin') {
+            var navLogs = document.getElementById('nav-logs');
+            if (navLogs) navLogs.style.display = '';
+            if (typeof window.initLogs === 'function') window.initLogs();
+        }
         if (typeof window.initAvatarCrop === 'function') window.initAvatarCrop(u);
         _initSocialForm(u);
     } catch (e) { }
@@ -116,7 +121,7 @@ function _initSocialForm(username) {
                 });
             }
         })
-        .catch(function () {});
+        .catch(function () { });
 
     // Save
     form.addEventListener('submit', function (e) {
@@ -128,11 +133,11 @@ function _initSocialForm(username) {
         saveBtn.disabled = true;
         saveBtn.textContent = t('common.saving') || 'Guardando…';
         api.put('/api/auth/me/profile', {
-            bio:          bioEl  ? bioEl.value.trim()   : null,
-            languages:    langs,
+            bio: bioEl ? bioEl.value.trim() : null,
+            languages: langs,
             email_public: emailEl ? emailEl.value.trim() : null,
-            github:       githubEl ? githubEl.value.trim() : null,
-            cv:           cvEl    ? cvEl.value           : null,
+            github: githubEl ? githubEl.value.trim() : null,
+            cv: cvEl ? cvEl.value : null,
         }).then(function () {
             toast(t('profile.social.saved') || 'Perfil guardado', 'success');
         }).catch(function () {
@@ -178,17 +183,17 @@ async function renderThemePicker() {
     }
 
     var _MODES = [
-        { id: 'dark',  labelKey: 'profile.theme_dark',  fallback: 'Oscuro', bg: '#0A0A0A' },
-        { id: 'light', labelKey: 'profile.theme_light', fallback: 'Claro',  bg: '#F5F5F7' },
+        { id: 'dark', labelKey: 'profile.theme_dark', fallback: 'Oscuro', bg: '#0A0A0A' },
+        { id: 'light', labelKey: 'profile.theme_light', fallback: 'Claro', bg: '#F5F5F7' },
     ];
     var _ACCENTS = [
-        { id: 'red',    labelKey: 'profile.theme_red',    fallback: 'Rojo'    },
-        { id: 'blue',   labelKey: 'profile.theme_blue',   fallback: 'Azul'    },
+        { id: 'red', labelKey: 'profile.theme_red', fallback: 'Rojo' },
+        { id: 'blue', labelKey: 'profile.theme_blue', fallback: 'Azul' },
         { id: 'orange', labelKey: 'profile.theme_orange', fallback: 'Naranja' },
-        { id: 'purple', labelKey: 'profile.theme_purple', fallback: 'Morado'  },
+        { id: 'purple', labelKey: 'profile.theme_purple', fallback: 'Morado' },
     ];
 
-    function _curMode()   { return window.getTheme().split('-')[0]; }
+    function _curMode() { return window.getTheme().split('-')[0]; }
     function _curAccent() { return window.getTheme().split('-')[1]; }
 
     function _accentColor(accentId) {
@@ -255,7 +260,7 @@ async function renderLangPicker() {
         try {
             var s = await api.get('/api/settings');
             if (s.language && s.language !== window.i18n.getLang()) window.i18n.setLang(s.language);
-        } catch (e) {}
+        } catch (e) { }
     }
 
     window.i18n.onLangChange(function () { _render(); });
@@ -280,7 +285,7 @@ async function renderLangPicker() {
                 if (_currentRole !== 'guest') {
                     try {
                         await api.put('/api/settings', { language: lang });
-                    } catch (e) {}
+                    } catch (e) { }
                 }
             });
         });
@@ -409,7 +414,7 @@ function _loadAvatar(username) {
         if (r.ok && r.status !== 204) {
             _setAvatarImg(url);
         }
-    }).catch(function () {});
+    }).catch(function () { });
 }
 
 init();
