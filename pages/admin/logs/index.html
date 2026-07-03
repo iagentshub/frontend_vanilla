@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <script>(function(){var m={noir:"dark-red",marble:"light-red",ember:"dark-orange",ocean:"dark-blue",forest:"dark-red",dusk:"dark-purple",light:"light-red"};var t=localStorage.getItem("ga-theme")||"dark-red";t=m[t]||t;document.documentElement.setAttribute("data-theme",t);})();</script>
+    <script>(function () { var m = { noir: "dark-red", marble: "light-red", ember: "dark-orange", ocean: "dark-blue", forest: "dark-red", dusk: "dark-purple", light: "light-red" }; var t = localStorage.getItem("ga-theme") || "dark-red"; t = m[t] || t; document.documentElement.setAttribute("data-theme", t); })();</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>iAgents Hub · Logs</title>
@@ -30,7 +30,8 @@
 
             <!-- Pestañas internas -->
             <div class="logs-inner-tabs">
-                <button class="logs-inner-tab active" data-tab="summary" data-i18n="admin.logs.tab_summary">Resumen</button>
+                <button class="logs-inner-tab active" data-tab="summary"
+                    data-i18n="admin.logs.tab_summary">Resumen</button>
                 <button class="logs-inner-tab" data-tab="viewer" data-i18n="admin.logs.tab_viewer">Visor</button>
             </div>
 
@@ -57,20 +58,25 @@
                         <option value="frontend" data-i18n="admin.logs.service_frontend">Frontend</option>
                     </select>
                     <input id="logs-search" type="search" class="logs-search"
-                           data-i18n-placeholder="admin.logs.search_placeholder">
+                        data-i18n-placeholder="admin.logs.search_placeholder">
                     <button id="btn-logs-refresh" class="btn btn-ghost btn-sm logs-icon-btn" title="↺">↺</button>
-                    <a id="btn-logs-download" class="btn btn-ghost btn-sm logs-icon-btn" download
-                       style="display:none" title="⬇">⬇</a>
+                    <a id="btn-logs-download" class="btn btn-ghost btn-sm logs-icon-btn" download style="display:none"
+                        title="⬇">⬇</a>
                 </div>
                 <div class="logs-table-wrap">
                     <table class="logs-table">
                         <thead>
                             <tr>
                                 <th class="logs-th sortable" data-col="date" data-i18n="admin.logs.col_date">Fecha</th>
-                                <th class="logs-th sortable" data-col="ts"   data-i18n="admin.logs.col_time">Hora</th>
-                                <th class="logs-th sortable" data-col="level"  data-i18n="admin.logs.col_level">Nivel</th>
-                                <th class="logs-th sortable" data-col="source" data-i18n="admin.logs.col_service">Servicio</th>
-                                <th class="logs-th"                            data-i18n="admin.logs.col_message">Mensaje</th>
+                                <th class="logs-th sortable" data-col="ts" data-i18n="admin.logs.col_time">Hora</th>
+                                <th class="logs-th sortable" data-col="level" data-i18n="admin.logs.col_level">Nivel
+                                </th>
+                                <th class="logs-th sortable" data-col="ip" title="Haz clic para filtrar por IP">IP</th>
+                                <th class="logs-th sortable" data-col="username"
+                                    title="Haz clic para filtrar por usuario">Usuario</th>
+                                <th class="logs-th sortable" data-col="source" data-i18n="admin.logs.col_service">
+                                    Servicio</th>
+                                <th class="logs-th" data-i18n="admin.logs.col_message">Mensaje</th>
                             </tr>
                         </thead>
                         <tbody id="logs-tbody"></tbody>

@@ -130,9 +130,9 @@ function renderNav(mountId, activePage) {
                 adminSection.className = 'nav-section nav-admin-section';
                 var mailItem = d.webmail_url
                     ? '<a href="' + d.webmail_url + '" target="_blank" rel="noopener" class="nav-link">' +
-                      '<span class="nav-link-icon">' + NAV_ICONS.mail + '</span>' +
-                      t('nav.admin_mail') +
-                      '</a>'
+                    '<span class="nav-link-icon">' + NAV_ICONS.mail + '</span>' +
+                    t('nav.admin_mail') +
+                    '</a>'
                     : '';
                 adminSection.innerHTML =
                     '<div class="nav-section-label">' + t('nav.admin') + '</div>' +
@@ -140,9 +140,9 @@ function renderNav(mountId, activePage) {
                     '<span class="nav-link-icon">' + NAV_ICONS.admin + '</span>' +
                     t('nav.admin_users') +
                     '</a>' +
-                    '<a href="/admin/logs/" class="nav-link' + (activePage === 'admin-logs' ? ' active' : '') + '">' +
+                    '<a href="/admin/metadata/" class="nav-link' + (activePage === 'admin-metadata' ? ' active' : '') + '">' +
                     '<span class="nav-link-icon">' + NAV_ICONS.logs + '</span>' +
-                    t('nav.admin_logs') +
+                    'Metadata' +
                     '</a>' +
                     mailItem;
                 var spacer = mount.querySelector('.nav-spacer');
@@ -174,10 +174,10 @@ function renderNav(mountId, activePage) {
                         }
                         api.post('/api/workspaces/switch/' + encodeURIComponent(wsId), {})
                             .then(function () { window.location.reload(); })
-                            .catch(function () {});
+                            .catch(function () { });
                     });
                 });
-            }).catch(function () {});
+            }).catch(function () { });
         }
 
         function _openWsDropdown() {
@@ -209,12 +209,12 @@ function renderNav(mountId, activePage) {
                 var name = window.prompt('Nombre del nuevo workspace:');
                 if (!name || !name.trim()) return;
                 api.post('/api/workspaces', { name: name.trim() })
-                .then(function (ws) {
-                    if (ws.id) {
-                        return api.post('/api/workspaces/switch/' + encodeURIComponent(ws.id), {});
-                    }
-                }).then(function () { window.location.reload(); })
-                .catch(function () {});
+                    .then(function (ws) {
+                        if (ws.id) {
+                            return api.post('/api/workspaces/switch/' + encodeURIComponent(ws.id), {});
+                        }
+                    }).then(function () { window.location.reload(); })
+                    .catch(function () { });
             });
         }
 
@@ -271,7 +271,7 @@ function renderNav(mountId, activePage) {
                 var next = curr === 'es' ? 'en' : 'es';
                 if (window.i18n) window.i18n.setLang(next);
                 if (_navUserRole !== 'guest') {
-                    api.put('/api/settings', { language: next }).catch(function () {});
+                    api.put('/api/settings', { language: next }).catch(function () { });
                 }
             });
         }
