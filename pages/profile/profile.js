@@ -64,11 +64,7 @@ async function loadUser() {
         if (elAuthDet) elAuthDet.textContent = authLabel;
 
         _initNav(_authMethod);
-        if (_currentRole === 'admin') {
-            var navLogs = document.getElementById('nav-logs');
-            if (navLogs) navLogs.style.display = '';
-            if (typeof window.initLogs === 'function') window.initLogs();
-        }
+
         if (typeof window.initAvatarCrop === 'function') window.initAvatarCrop(u);
         _initSocialForm(u);
     } catch (e) { }
