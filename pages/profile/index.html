@@ -128,10 +128,8 @@
                         </button>
                         <button class="profile-nav-item" data-section="section-logs" id="nav-logs" style="display:none">
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                                <rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor"
-                                    stroke-width="1.4" />
-                                <path d="M4 5h8M4 8h5M4 11h3" stroke="currentColor" stroke-width="1.3"
-                                    stroke-linecap="round" />
+                                <path d="M1 8h2.5l2-5 3 10 2-7 2 4H15" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                             <span>Logs del sistema</span>
                         </button>
@@ -391,29 +389,51 @@
                     <div id="section-logs" class="profile-section" hidden>
                         <div class="section-title">Logs del sistema</div>
 
-                        <!-- Filtros -->
+                        <!-- Filtros rápidos -->
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                            <button class="btn btn-ghost btn-sm" id="log-quick-errors" title="Ver todos los errores">
+                                <span style="color:#ef4444;font-weight:700;margin-right:4px">✕</span>Solo errores
+                            </button>
+                            <button class="btn btn-ghost btn-sm" id="log-quick-warnings"
+                                title="Ver errores y advertencias">
+                                <span style="color:#f59e0b;font-weight:700;margin-right:4px">⚠</span>Errores y avisos
+                            </button>
+                            <button class="btn btn-ghost btn-sm" id="log-quick-today" title="Ver actividad de hoy">
+                                <span style="margin-right:4px">🗓</span>Hoy
+                            </button>
+                            <button class="btn btn-ghost btn-sm" id="log-quick-clear"
+                                title="Quitar todos los filtros activos">Limpiar filtros</button>
+                        </div>
+
+                        <!-- Filtros detallados -->
                         <div
                             style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2,var(--surface))">
                             <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">
-                                <div style="display:flex;flex-direction:column;gap:4px;min-width:130px">
-                                    <label style="font-size:0.75rem;color:var(--text-2)">Fecha desde</label>
-                                    <input type="date" id="log-f-date-from" class="input"
-                                        style="height:32px;font-size:0.82rem" />
+                                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px">
+                                    <label style="font-size:0.75rem;color:var(--text-2)">IP
+                                        <span style="font-weight:400;opacity:0.7">— haz clic en la tabla para
+                                            rellenar</span>
+                                    </label>
+                                    <input type="text" id="log-f-ip" class="input" style="height:32px;font-size:0.82rem"
+                                        placeholder="192.168.…" />
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:4px;min-width:130px">
-                                    <label style="font-size:0.75rem;color:var(--text-2)">Fecha hasta</label>
-                                    <input type="date" id="log-f-date-to" class="input"
-                                        style="height:32px;font-size:0.82rem" />
+                                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px">
+                                    <label style="font-size:0.75rem;color:var(--text-2)">Usuario
+                                        <span style="font-weight:400;opacity:0.7">— haz clic en la tabla para
+                                            rellenar</span>
+                                    </label>
+                                    <input type="text" id="log-f-username" class="input"
+                                        style="height:32px;font-size:0.82rem" placeholder="usuario o guest" />
                                 </div>
                                 <div style="display:flex;flex-direction:column;gap:4px;min-width:110px">
                                     <label style="font-size:0.75rem;color:var(--text-2)">Nivel</label>
                                     <select id="log-f-level" class="select" style="height:32px;font-size:0.82rem">
                                         <option value="">Todos</option>
-                                        <option value="DEBUG">DEBUG</option>
-                                        <option value="INFO">INFO</option>
-                                        <option value="OK">OK</option>
-                                        <option value="WARNING">WARNING</option>
-                                        <option value="ERROR">ERROR</option>
+                                        <option value="DEBUG">● DEBUG</option>
+                                        <option value="INFO">● INFO</option>
+                                        <option value="OK">● OK</option>
+                                        <option value="WARNING">⚠ WARNING</option>
+                                        <option value="ERROR">✕ ERROR</option>
                                     </select>
                                 </div>
                                 <div style="display:flex;flex-direction:column;gap:4px;min-width:110px">
@@ -426,20 +446,20 @@
                                 </div>
                             </div>
                             <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end">
-                                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px">
-                                    <label style="font-size:0.75rem;color:var(--text-2)">IP</label>
-                                    <input type="text" id="log-f-ip" class="input" style="height:32px;font-size:0.82rem"
-                                        placeholder="192.168.…" />
+                                <div style="display:flex;flex-direction:column;gap:4px;min-width:130px">
+                                    <label style="font-size:0.75rem;color:var(--text-2)">Fecha desde</label>
+                                    <input type="date" id="log-f-date-from" class="input"
+                                        style="height:32px;font-size:0.82rem" />
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px">
-                                    <label style="font-size:0.75rem;color:var(--text-2)">Usuario</label>
-                                    <input type="text" id="log-f-username" class="input"
-                                        style="height:32px;font-size:0.82rem" placeholder="usuario o guest" />
+                                <div style="display:flex;flex-direction:column;gap:4px;min-width:130px">
+                                    <label style="font-size:0.75rem;color:var(--text-2)">Fecha hasta</label>
+                                    <input type="date" id="log-f-date-to" class="input"
+                                        style="height:32px;font-size:0.82rem" />
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:4px;flex:2;min-width:180px">
+                                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px">
                                     <label style="font-size:0.75rem;color:var(--text-2)">Buscar en acción</label>
                                     <input type="text" id="log-f-q" class="input" style="height:32px;font-size:0.82rem"
-                                        placeholder="texto libre…" />
+                                        placeholder="login, /api/agents, 500…" />
                                 </div>
                             </div>
                             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -458,19 +478,30 @@
                                     <tr style="background:var(--surface-2,var(--surface))">
                                         <th
                                             style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
-                                            Fecha</th>
-                                        <th
-                                            style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
-                                            Hora</th>
-                                        <th
-                                            style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
-                                            IP</th>
-                                        <th
-                                            style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
-                                            Usuario</th>
+                                            Fecha / Hora</th>
                                         <th
                                             style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
                                             Nivel</th>
+                                        <th style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)"
+                                            title="Haz clic en una IP para filtrar">
+                                            IP
+                                            <svg width="10" height="10" viewBox="0 0 16 16" fill="none"
+                                                style="opacity:0.5;vertical-align:middle;margin-left:2px">
+                                                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+                                                <path d="M12 12l3 3" stroke="currentColor" stroke-width="1.5"
+                                                    stroke-linecap="round" />
+                                            </svg>
+                                        </th>
+                                        <th style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)"
+                                            title="Haz clic en un usuario para filtrar">
+                                            Usuario
+                                            <svg width="10" height="10" viewBox="0 0 16 16" fill="none"
+                                                style="opacity:0.5;vertical-align:middle;margin-left:2px">
+                                                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+                                                <path d="M12 12l3 3" stroke="currentColor" stroke-width="1.5"
+                                                    stroke-linecap="round" />
+                                            </svg>
+                                        </th>
                                         <th
                                             style="text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;color:var(--text-2)">
                                             Fuente</th>
@@ -481,7 +512,7 @@
                                 </thead>
                                 <tbody id="log-tbody">
                                     <tr>
-                                        <td colspan="7" style="text-align:center;padding:28px;color:var(--text-2)">
+                                        <td colspan="6" style="text-align:center;padding:28px;color:var(--text-2)">
                                             Cargando…</td>
                                     </tr>
                                 </tbody>
