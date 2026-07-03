@@ -56,7 +56,10 @@
     }
 
     // ═══ LOG MODAL ══════════════════════════════════════════════════════════
-    var _logLines = [], _logLevel = '', _logSource = '', _logSearch = '', _logTimer = null;
+    var _logLines = [], _logLevel = '', _logSource = '', _logSearch = '',
+        _logIp = '', _logUser = '', _logTimer = null;
+    var _logModalDate = null;
+    var _logPage = 1, _logPageSize = 50, _logTotal = 0, _logPages = 0;
     var _LEVEL_CLS = { DEBUG: 'log-level-debug', INFO: 'log-level-info', OK: 'log-level-ok', WARNING: 'log-level-warning', ERROR: 'log-level-error' };
 
     function _esc(s) {
@@ -65,10 +68,14 @@
 
     function _renderLogTable() {
         var search = _logSearch.toLowerCase();
+        var ipQ = _logIp.toLowerCase();
+        var userQ = _logUser.toLowerCase();
         var visible = _logLines.filter(function (l) {
             if (_logLevel && l.level !== _logLevel) return false;
             if (_logSource && l.source !== _logSource) return false;
-            if (search && (l.ip + l.username + l.summary + l.date + l.time).toLowerCase().indexOf(search) === -1) return false;
+            if (ipQ && l.ip.toLowerCase().indexOf(ipQ) === -1) return false;
+            if (userQ && l.username.toLowerCase().indexOf(userQ) === -1) return false;
+            if (search && (l.summary + l.date + l.time).toLowerCase().indexOf(search) === -1) return false;
             return true;
         });
         var tbody = document.getElementById('logs-tbody');
@@ -83,24 +90,39 @@
                     '<td class="logs-td logs-td-date">' + _esc(l.date) + '</td>' +
                     '<td class="logs-td logs-td-time">' + _esc(l.time) + '</td>' +
                     '<td class="logs-td"><span class="log-level ' + cls + '">' + _esc(l.level) + '</span></td>' +
-                    '<td class="logs-td" style="cursor:pointer;color:var(--accent)" data-log-ip="' + _esc(l.ip) + '">' + _esc(l.ip) + '</td>' +
-                    '<td class="logs-td" style="cursor:pointer;color:var(--accent)" data-log-user="' + _esc(l.username) + '">' + _esc(l.username) + '</td>' +
+                    '<td class="logs-td" style="cursor:pointer;color:var(--accent)" data-log-ip="' + _esc(l.ip) + '" title="Filtrar por esta IP">' + _esc(l.ip) + '</td>' +
+                    '<td class="logs-td" style="cursor:pointer;color:var(--accent)" data-log-user="' + _esc(l.username) + '" title="Filtrar por este usuario">' + _esc(l.username) + '</td>' +
                     '<td class="logs-td">' + svc + '</td>' +
                     '<td class="logs-td logs-td-msg">' + _esc(l.summary) + '</td>' +
                     '</tr>';
             }).join('');
         }
         var cnt = document.getElementById('logs-count');
-        if (cnt) cnt.textContent = visible.length + ' / ' + _logLines.length + ' entradas';
+        var prev = document.getElementById('logs-pag-prev');
+        var next = document.getElementById('logs-pag-next');
+        var pLabel = document.getElementById('logs-pag-label');
+        var active = [_logLevel, _logSource, _logIp, _logUser, _logSearch].filter(Boolean).length;
+        if (cnt) cnt.textContent =
+            'Página ' + _logPage + ': ' + visible.length + ' de ' + _logLines.length + ' entradas' +
+            (active ? ' (' + active + ' filtro' + (active > 1 ? 's' : '') + ')' : '') +
+            ' \u2014 total del día: ' + _logTotal.toLocaleString();
+        if (prev) prev.disabled = _logPage <= 1;
+        if (next) next.disabled = _logPage >= _logPages;
+        if (pLabel) pLabel.textContent = _logPages > 1 ? 'Pág. ' + _logPage + ' / ' + _logPages : '';
     }
 
-    function _loadLogData(date) {
+    function _loadLogData(date, page) {
+        _logModalDate = date || _logModalDate;
+        _logPage = page || 1;
         var tbody = document.getElementById('logs-tbody');
         if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="logs-td logs-td-empty">Cargando…</td></tr>';
-        api.get('/api/admin/logs?date_from=' + date + '&date_to=' + date + '&page_size=500').then(function (data) {
+        var qs = 'date_from=' + _logModalDate + '&date_to=' + _logModalDate + '&page_size=' + _logPageSize + '&page=' + _logPage;
+        api.get('/api/admin/logs?' + qs).then(function (data) {
             _logLines = (data.items || []).map(function (r) {
                 return { date: r.date, time: r.time, level: r.level, ip: r.ip || '-', username: r.username || '-', source: r.source, summary: r.summary || '' };
             });
+            _logTotal = data.total || 0;
+            _logPages = data.pages || 0;
             _renderLogTable();
             var dl = document.getElementById('btn-logs-download');
             if (dl) {
@@ -109,7 +131,7 @@
                 })).join('\n');
                 dl.style.display = '';
                 dl.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-                dl.download = date + '.csv';
+                dl.download = _logModalDate + '_p' + _logPage + '.csv';
             }
         }).catch(function () {
             if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="logs-td logs-td-empty" style="color:var(--danger,#ef4444)">Error al cargar.</td></tr>';
@@ -117,14 +139,15 @@
     }
 
     function _openLogModal(date, fmtDate) {
-        _logLevel = ''; _logSource = ''; _logSearch = '';
+        _logLevel = ''; _logSource = ''; _logSearch = ''; _logIp = ''; _logUser = '';
+        _logPage = 1;
         var modal = document.getElementById('logs-modal');
         var title = document.getElementById('logs-modal-title');
         if (modal) modal.style.display = '';
         if (title) title.textContent = 'Logs — ' + fmtDate;
         document.body.style.overflow = 'hidden';
-        ['logs-level-select', 'logs-service-select', 'logs-search'].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
-        _loadLogData(date);
+        ['logs-level-select', 'logs-service-select', 'logs-search', 'logs-ip-filter', 'logs-user-filter'].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
+        _loadLogData(date, 1);
     }
 
     function _closeLogModal() {
@@ -138,19 +161,50 @@
         if (close) close.addEventListener('click', _closeLogModal);
         var modal = document.getElementById('logs-modal');
         if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) _closeLogModal(); });
+
         var lvl = document.getElementById('logs-level-select');
         var svc = document.getElementById('logs-service-select');
         var si = document.getElementById('logs-search');
-        if (lvl) lvl.onchange = function () { _logLevel = lvl.value; _renderLogTable(); };
-        if (svc) svc.onchange = function () { _logSource = svc.value; _renderLogTable(); };
+        var ipEl = document.getElementById('logs-ip-filter');
+        var usEl = document.getElementById('logs-user-filter');
+        var clr = document.getElementById('logs-clear-filters');
+        var rfr = document.getElementById('btn-logs-refresh');
+        var prev = document.getElementById('logs-pag-prev');
+        var next = document.getElementById('logs-pag-next');
+
+        if (lvl) lvl.onchange = function () { _logLevel = lvl.value; _logPage = 1; _loadLogData(null, 1); };
+        if (svc) svc.onchange = function () { _logSource = svc.value; _logPage = 1; _loadLogData(null, 1); };
         if (si) si.addEventListener('input', function () { clearTimeout(_logTimer); _logTimer = setTimeout(function () { _logSearch = si.value; _renderLogTable(); }, 200); });
+        if (ipEl) ipEl.addEventListener('input', function () { clearTimeout(_logTimer); _logTimer = setTimeout(function () { _logIp = ipEl.value; _renderLogTable(); }, 200); });
+        if (usEl) usEl.addEventListener('input', function () { clearTimeout(_logTimer); _logTimer = setTimeout(function () { _logUser = usEl.value; _renderLogTable(); }, 200); });
+        if (clr) clr.addEventListener('click', function () {
+            _logLevel = ''; _logSource = ''; _logSearch = ''; _logIp = ''; _logUser = '';
+            [lvl, svc, si, ipEl, usEl].forEach(function (el) { if (el) el.value = ''; });
+            _logPage = 1;
+            _loadLogData(null, 1);
+        });
+        // Refresh: recarga la página actual SIN borrar filtros
+        if (rfr) rfr.addEventListener('click', function () { _loadLogData(null, _logPage); });
+        // Paginación
+        if (prev) prev.addEventListener('click', function () { if (_logPage > 1) _loadLogData(null, _logPage - 1); });
+        if (next) next.addEventListener('click', function () { if (_logPage < _logPages) _loadLogData(null, _logPage + 1); });
+
+        // Clic en IP de la tabla → rellena el campo IP
         var tbody = document.getElementById('logs-tbody');
         if (tbody) tbody.addEventListener('click', function (e) {
-            var ip = e.target.closest('[data-log-ip]');
-            var user = e.target.closest('[data-log-user]');
-            if (ip && ip.dataset.logIp !== '-') { if (si) si.value = ip.dataset.logIp; _logSearch = ip.dataset.logIp; _renderLogTable(); }
-            else if (user && user.dataset.logUser !== '-') { if (si) si.value = user.dataset.logUser; _logSearch = user.dataset.logUser; _renderLogTable(); }
+            var ipCell = e.target.closest('[data-log-ip]');
+            var userCell = e.target.closest('[data-log-user]');
+            if (ipCell && ipCell.dataset.logIp !== '-') {
+                if (ipEl) { ipEl.value = ipCell.dataset.logIp; }
+                _logIp = ipCell.dataset.logIp;
+                _renderLogTable();
+            } else if (userCell && userCell.dataset.logUser !== '-') {
+                if (usEl) { usEl.value = userCell.dataset.logUser; }
+                _logUser = userCell.dataset.logUser;
+                _renderLogTable();
+            }
         });
+
         document.querySelectorAll('.logs-th.sortable').forEach(function (th) {
             th.addEventListener('click', function () {
                 var col = th.dataset.col, dir = th._dir || 1;
@@ -163,6 +217,7 @@
 
     // ═══ TABLES ═════════════════════════════════════════════════════════════
     var _allTables = [], _tablesInit = false;
+    var _tblSortCol = 'rows', _tblSortDir = -1;
 
     function _fmtBytes(b) {
         if (!b || isNaN(b)) return null;
@@ -172,43 +227,78 @@
     }
 
     function _initTables() {
-        if (_tablesInit) { _renderTableCards(); return; }
+        if (_tablesInit) { _renderTableRows(); return; }
         _tablesInit = true;
-        var grid = document.getElementById('meta-tables-grid');
-        if (grid) grid.innerHTML = '<p style="color:var(--text-2);grid-column:1/-1">Cargando…</p>';
+        var tbody = document.getElementById('meta-tables-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--text-2)">Cargando\u2026</td></tr>';
         api.get('/api/admin/metadata/tables').then(function (rows) {
             _allTables = rows || [];
-            _renderTableCards();
+            _renderTableRows();
+            _bindTableSortHeaders();
         }).catch(function () {
-            var g = document.getElementById('meta-tables-grid');
-            if (g) g.innerHTML = '<p style="color:var(--danger,#ef4444);grid-column:1/-1">Error al cargar tablas.</p>';
+            var t = document.getElementById('meta-tables-tbody');
+            if (t) t.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--danger,#ef4444)">Error al cargar tablas.</td></tr>';
         });
     }
 
-    function _renderTableCards() {
+    function _renderTableRows() {
         var q = ((document.getElementById('meta-table-search') || {}).value || '').toLowerCase();
         var filtered = _allTables.filter(function (t) { return !q || t.name.toLowerCase().indexOf(q) !== -1; });
-        var grid = document.getElementById('meta-tables-grid');
         var cnt = document.getElementById('meta-table-count');
         if (cnt) cnt.textContent = filtered.length + ' de ' + _allTables.length + ' tablas';
-        if (!grid) return;
-        if (!filtered.length) { grid.innerHTML = '<p style="color:var(--text-2);grid-column:1/-1">Sin resultados.</p>'; return; }
-        grid.innerHTML = filtered.map(function (r) {
-            var size = _fmtBytes(r.size_bytes);
-            var empty = !r.rows;
-            return '<div class="admin-stat-card" style="flex-direction:column;gap:5px;padding:16px 18px;cursor:pointer" ' +
+
+        // Sort
+        var col = _tblSortCol, dir = _tblSortDir;
+        filtered.sort(function (a, b) {
+            var av = (col === 'name') ? a.name : (a[col] != null ? a[col] : -1);
+            var bv = (col === 'name') ? b.name : (b[col] != null ? b[col] : -1);
+            return av < bv ? dir : av > bv ? -dir : 0;
+        });
+
+        var tbody = document.getElementById('meta-tables-tbody');
+        if (!tbody) return;
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--text-2)">Sin resultados.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(function (r, i) {
+            var size = _fmtBytes(r.size_bytes) || '\u2014';
+            var rowBg = i % 2 === 1 ? 'var(--surface-2,var(--surface))' : 'transparent';
+            var emptyCol = r.rows ? '' : 'color:var(--text-2)';
+            return '<tr style="background:' + rowBg + ';cursor:pointer;transition:background .1s" ' +
                 'onclick="window._metaOpenTable(\'' + r.name + '\')" ' +
-                'onmouseenter="this.style.borderColor=\'var(--accent)\'" ' +
-                'onmouseleave="this.style.borderColor=\'\'">' +
-                '<span style="font-family:monospace;font-size:0.72rem;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%" title="' + r.name + '">' + r.name + '</span>' +
-                '<span style="font-size:1.55rem;font-weight:700;line-height:1.1;color:' + (empty ? 'var(--text-2)' : 'var(--ink)') + '">' + (r.rows || 0).toLocaleString() + '</span>' +
-                '<div style="display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:2px">' +
-                '<span style="font-size:0.7rem;color:var(--text-2)">' + (r.col_count || '?') + '\u00a0col</span>' +
-                (size ? '<span style="font-size:0.7rem;color:var(--text-2)">' + size + '</span>' : '<span></span>') +
-                '</div></div>';
+                'onmouseenter="this.style.background=\'var(--surface-2)\';" ' +
+                'onmouseleave="this.style.background=\'' + rowBg + '\';">' +
+                '<td style="padding:8px 14px;border-bottom:1px solid var(--border);font-family:monospace;font-size:0.82rem">' + r.name + '</td>' +
+                '<td style="padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;' + emptyCol + (r.rows ? ';font-weight:600' : '') + '">' + (r.rows || 0).toLocaleString() + '</td>' +
+                '<td style="padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;color:var(--text-2)">' + (r.col_count || '\u2014') + '</td>' +
+                '<td style="padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;color:var(--text-2);font-size:0.78rem">' + size + '</td>' +
+                '</tr>';
         }).join('');
     }
-    window._metaFilterTables = _renderTableCards;
+    window._metaFilterTables = _renderTableRows;
+
+    function _bindTableSortHeaders() {
+        var map = { 'th-name': 'name', 'th-rows': 'rows', 'th-cols': 'col_count', 'th-size': 'size_bytes' };
+        Object.keys(map).forEach(function (thId) {
+            var th = document.getElementById(thId);
+            if (!th) return;
+            th.addEventListener('click', function () {
+                var field = map[thId];
+                if (_tblSortCol === field) { _tblSortDir = -_tblSortDir; } else { _tblSortCol = field; _tblSortDir = -1; }
+                Object.keys(map).forEach(function (id) {
+                    var arr = document.getElementById(id + '-arrow');
+                    if (arr) { arr.textContent = '\u2195'; arr.style.opacity = '0.4'; }
+                });
+                var arr = document.getElementById(thId + '-arrow');
+                if (arr) { arr.textContent = _tblSortDir === -1 ? '\u2193' : '\u2191'; arr.style.opacity = '1'; }
+                _renderTableRows();
+            });
+        });
+        // Mark initial sort
+        var initArr = document.getElementById('th-rows-arrow');
+        if (initArr) { initArr.textContent = '\u2193'; initArr.style.opacity = '1'; }
+    }
 
     // ═══ TABLE BROWSER DIALOG ═══════════════════════════════════════════════
     var _tbl = null, _tblPage = 1, _tblPageSize = 50, _tblQ = '';
