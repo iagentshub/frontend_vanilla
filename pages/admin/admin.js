@@ -49,7 +49,7 @@ function _startPolling() {
     _refreshTimer = setInterval(reloadData, 30000);
 }
 
-var _TAB_IDS = ['general', 'users', 'workspaces', 'teams', 'agents', 'connections', 'knowledge'];
+var _TAB_IDS = ['general', 'users', 'workspaces', 'teams', 'agents', 'connections', 'knowledge', 'config'];
 
 function _bindTabs() {
     document.querySelectorAll('.admin-tab').forEach(function (btn) {
@@ -63,6 +63,7 @@ function _bindTabs() {
                 var panel = document.getElementById('tab-' + id);
                 if (panel) panel.style.display = (id === _activeTab) ? '' : 'none';
             });
+            if (_activeTab === 'config' && window.adminConfig) adminConfig.init();
         });
     });
 }

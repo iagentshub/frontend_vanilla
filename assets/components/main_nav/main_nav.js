@@ -145,7 +145,7 @@ function renderNav(mountId, activePage) {
                     '</a>' +
                     '<a href="/admin/metadata/" class="nav-link' + (activePage === 'admin-metadata' ? ' active' : '') + '">' +
                     '<span class="nav-link-icon">' + NAV_ICONS.logs + '</span>' +
-                    'Metadata' +
+                    'Sistema' +
                     '</a>' +
                     mailItem;
                 var spacer = mount.querySelector('.nav-spacer');

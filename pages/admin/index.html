@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <script>(function(){var m={noir:"dark-red",marble:"light-red",ember:"dark-orange",ocean:"dark-blue",forest:"dark-red",dusk:"dark-purple",light:"light-red"};var t=localStorage.getItem("ga-theme")||"dark-red";t=m[t]||t;document.documentElement.setAttribute("data-theme",t);})();</script>
+    <script>(function () { var m = { noir: "dark-red", marble: "light-red", ember: "dark-orange", ocean: "dark-blue", forest: "dark-red", dusk: "dark-purple", light: "light-red" }; var t = localStorage.getItem("ga-theme") || "dark-red"; t = m[t] || t; document.documentElement.setAttribute("data-theme", t); })();</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>iAgents Hub · Administración</title>
@@ -42,6 +42,7 @@
                 <button class="admin-tab" data-tab="agents">Agentes</button>
                 <button class="admin-tab" data-tab="connections">Conexiones</button>
                 <button class="admin-tab" data-tab="knowledge">Conocimiento</button>
+                <button class="admin-tab" data-tab="config">Configuración</button>
             </div>
 
             <!-- General tab: stats dashboard -->
@@ -58,7 +59,10 @@
             <div id="tab-users" class="admin-tab-panel" style="display:none">
                 <div class="admin-toolbar">
                     <div class="admin-search-wrap">
-                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg></span>
                         <input id="user-search" type="search" class="admin-search" placeholder="Buscar por email…">
                     </div>
                     <select id="filter-role" class="admin-select">
@@ -77,43 +81,110 @@
                         <option value="false">Sin verificar</option>
                     </select>
                 </div>
-                <div id="users-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="6"></td></tr><tr class="skeleton-row"><td colspan="6"></td></tr><tr class="skeleton-row"><td colspan="6"></td></tr></tbody></table></div>
+                <div id="users-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="6"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="6"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="6"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Workspaces tab -->
             <div id="tab-workspaces" class="admin-tab-panel" style="display:none">
                 <div class="admin-toolbar">
                     <div class="admin-search-wrap">
-                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-                        <input id="ws-search" type="search" class="admin-search" placeholder="Buscar por nombre o creador…">
+                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg></span>
+                        <input id="ws-search" type="search" class="admin-search"
+                            placeholder="Buscar por nombre o creador…">
                     </div>
                 </div>
-                <div id="workspaces-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="9"></td></tr><tr class="skeleton-row"><td colspan="9"></td></tr><tr class="skeleton-row"><td colspan="9"></td></tr></tbody></table></div>
+                <div id="workspaces-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="9"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="9"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="9"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Teams tab -->
             <div id="tab-teams" class="admin-tab-panel" style="display:none">
                 <div class="admin-toolbar">
                     <div class="admin-search-wrap">
-                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-                        <input id="team-search" type="search" class="admin-search" placeholder="Buscar por nombre o creador…">
+                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg></span>
+                        <input id="team-search" type="search" class="admin-search"
+                            placeholder="Buscar por nombre o creador…">
                     </div>
                 </div>
-                <div id="teams-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr></tbody></table></div>
+                <div id="teams-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Agents tab -->
             <div id="tab-agents" class="admin-tab-panel" style="display:none">
                 <div class="admin-toolbar">
                     <div class="admin-search-wrap">
-                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg></span>
                         <input id="agent-search" type="search" class="admin-search" placeholder="Buscar agente…">
                     </div>
                     <select id="filter-agent-owner" class="admin-select">
                         <option value="">Todos los propietarios</option>
                     </select>
                 </div>
-                <div id="agents-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr></tbody></table></div>
+                <div id="agents-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Connections tab -->
@@ -123,15 +194,33 @@
                         <option value="">Todos los propietarios</option>
                     </select>
                 </div>
-                <div id="connections-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr></tbody></table></div>
+                <div id="connections-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Knowledge tab -->
             <div id="tab-knowledge" class="admin-tab-panel" style="display:none">
                 <div class="admin-toolbar">
                     <div class="admin-search-wrap">
-                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-                        <input id="knowledge-search" type="search" class="admin-search" placeholder="Buscar por título o propietario…">
+                        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.6" />
+                                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                            </svg></span>
+                        <input id="knowledge-search" type="search" class="admin-search"
+                            placeholder="Buscar por título o propietario…">
                     </div>
                     <select id="filter-knowledge-type" class="admin-select">
                         <option value="">Todos los tipos</option>
@@ -142,7 +231,94 @@
                         <option value="">Todos los propietarios</option>
                     </select>
                 </div>
-                <div id="knowledge-table-wrap"><table class="admin-table"><tbody><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr><tr class="skeleton-row"><td colspan="5"></td></tr></tbody></table></div>
+                <div id="knowledge-table-wrap">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                            <tr class="skeleton-row">
+                                <td colspan="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── TAB CONFIGURACIÓN ── -->
+            <div id="tab-config" class="admin-tab-panel" style="display:none">
+                <form id="config-form">
+                    <div class="admin-config-grid">
+
+                        <!-- Registro -->
+                        <div class="admin-config-section">
+                            <div class="admin-config-title">Registro</div>
+                            <div class="admin-config-row">
+                                <span class="admin-config-label">Modo</span>
+                                <select id="cfg-registration" class="select admin-config-select">
+                                    <option value="open">Abierto</option>
+                                    <option value="invite">Solo invitación</option>
+                                    <option value="closed">Cerrado</option>
+                                </select>
+                            </div>
+                            <div class="admin-config-row">
+                                <span class="admin-config-label">Máx. usuarios <span
+                                        class="admin-config-hint">(0=∞)</span></span>
+                                <input type="number" id="cfg-max-users" class="input admin-config-num" min="0" />
+                            </div>
+                            <div class="admin-config-toggle-row">
+                                <label class="toggle">
+                                    <input type="checkbox" id="cfg-email-verify" />
+                                    <span class="toggle-track"></span>
+                                    <span class="toggle-label">Verificar email al registrarse</span>
+                                </label>
+                            </div>
+                            <div class="admin-config-toggle-row">
+                                <label class="toggle">
+                                    <input type="checkbox" id="cfg-guest-enabled" />
+                                    <span class="toggle-track"></span>
+                                    <span class="toggle-label">Acceso como invitado</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Sesiones + Logs -->
+                        <div class="admin-config-section">
+                            <div class="admin-config-title">Sesiones</div>
+                            <div class="admin-config-row">
+                                <span class="admin-config-label">Máx. sesiones simultáneas <span
+                                        class="admin-config-hint">(0=∞)</span></span>
+                                <input type="number" id="cfg-max-sessions" class="input admin-config-num" min="0" />
+                            </div>
+
+                            <div class="admin-config-title" style="margin-top:20px">Logs</div>
+                            <div class="admin-config-row">
+                                <span class="admin-config-label">Retención <span
+                                        class="admin-config-hint">(días)</span></span>
+                                <input type="number" id="cfg-log-retention" class="input admin-config-num" min="1"
+                                    max="365" />
+                            </div>
+
+                            <div class="admin-config-title" style="margin-top:20px">Facturación</div>
+                            <div class="admin-config-toggle-row">
+                                <label class="toggle">
+                                    <input type="checkbox" id="cfg-billing" />
+                                    <span class="toggle-track"></span>
+                                    <span class="toggle-label">Activar planes de suscripción</span>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div><!-- /grid -->
+
+                    <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+                        <button type="submit" class="btn btn-primary" id="btn-save-config">Guardar</button>
+                        <span id="config-save-msg" style="font-size:12px;color:var(--success)"></span>
+                    </div>
+                </form>
             </div>
 
         </main>
@@ -202,7 +378,8 @@
                 </div>
                 <div class="field">
                     <label>Prompt del sistema</label>
-                    <textarea id="edit-agent-prompt" class="textarea" rows="9" style="font-family:var(--font-mono);font-size:12px;line-height:1.6"></textarea>
+                    <textarea id="edit-agent-prompt" class="textarea" rows="9"
+                        style="font-family:var(--font-mono);font-size:12px;line-height:1.6"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -267,6 +444,7 @@
     <script src="/admin/admin-agents.js"></script>
     <script src="/admin/admin-connections.js"></script>
     <script src="/admin/admin-knowledge.js"></script>
+    <script src="/admin/admin-config.js"></script>
     <script src="/admin/admin.js"></script>
 </body>
 

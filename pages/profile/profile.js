@@ -31,6 +31,13 @@ async function init() {
     renderPreferences();
     bindPasswordForm();
     bindNavItems();
+    // Ocultar tab Suscripción si la facturación está desactivada en la config
+    api.get('/api/settings/platform/public').then(function (cfg) {
+        var billingNavBtn = document.getElementById('nav-billing');
+        if (billingNavBtn && cfg.billing_enabled === false) {
+            billingNavBtn.style.display = 'none';
+        }
+    }).catch(function () { });
 }
 
 async function loadUser() {
