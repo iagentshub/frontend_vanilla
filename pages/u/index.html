@@ -17,80 +17,174 @@
     <link rel="stylesheet" href="/u/profile-public.css" />
 </head>
 <body>
-    <div class="app-shell">
-        <div id="nav-root"></div>
+<div class="app-shell">
+    <div id="nav-root"></div>
 
-        <main class="page-content pub-profile-page">
+    <main class="page-content prof-page">
 
-            <!-- Loading state -->
-            <div id="pub-loading" class="pub-loading">
-                <div class="spinner"></div>
-            </div>
+        <!-- Loading -->
+        <div id="pub-loading" class="pub-loading"><div class="spinner"></div></div>
 
-            <!-- Error state -->
-            <div id="pub-error" class="pub-error" hidden>
-                <p id="pub-error-msg"></p>
-                <a href="/" data-i18n="common.actions.back">← Volver</a>
-            </div>
+        <!-- Error -->
+        <div id="pub-error" class="pub-error" hidden>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="opacity:.3;margin-bottom:12px">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <p id="pub-error-msg"></p>
+            <a href="/" class="btn btn-ghost btn-sm">← Volver</a>
+        </div>
 
-            <!-- Profile content -->
-            <div id="pub-content" hidden>
+        <!-- Contenido del perfil -->
+        <div id="pub-content" class="prof-wrap" hidden>
 
-                <!-- Header -->
-                <div class="pub-header">
-                    <div class="pub-avatar" id="pub-avatar">
-                        <span id="pub-avatar-letter"></span>
-                    </div>
-                    <div class="pub-header-info">
-                        <h1 class="pub-username" id="pub-username"></h1>
-                        <div class="pub-meta" id="pub-meta"></div>
-                        <div class="pub-header-actions">
-                            <button id="pub-follow-btn" class="btn btn-ghost pub-follow-btn" hidden>
-                                <span id="pub-follow-label" data-i18n="social.follow.btn_follow">Seguir</span>
-                            </button>
-                            <div class="pub-stats" id="pub-stats" hidden>
-                                <span id="pub-followers"><strong id="pub-followers-count">0</strong> <span data-i18n="social.follow.followers">seguidores</span></span>
-                                <span id="pub-following"><strong id="pub-following-count">0</strong> <span data-i18n="social.follow.following">siguiendo</span></span>
-                            </div>
+            <!-- ── Hero card ──────────────────────────────────────────── -->
+            <div class="prof-hero-card">
+                <div class="prof-cover" id="prof-cover"></div>
+
+                <div class="prof-hero-body">
+                    <div class="prof-avatar-outer">
+                        <div class="prof-avatar" id="pub-avatar">
+                            <span id="pub-avatar-letter"></span>
                         </div>
+                    </div>
+
+                    <div class="prof-hero-info">
+                        <h1 class="prof-name" id="pub-username"></h1>
+                        <p class="prof-tagline" id="pub-tagline" hidden></p>
+                        <div class="prof-hero-chips" id="pub-meta"></div>
+                    </div>
+
+                    <div class="prof-hero-right">
+                        <button id="pub-follow-btn" class="btn btn-primary prof-follow-btn" hidden>
+                            <span id="pub-follow-label">Seguir</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Bio -->
-                <p class="pub-bio" id="pub-bio" hidden></p>
-
-                <!-- Contact strip -->
-                <div class="pub-contact" id="pub-contact" hidden></div>
-
-                <!-- CV -->
-                <section class="pub-section" id="pub-cv-section" hidden>
-                    <h2 class="pub-section-title" data-i18n="profile.social.field_cv">CV</h2>
-                    <div class="pub-cv-body" id="pub-cv-body"></div>
-                </section>
-
-                <!-- Resources tabs (phase 2+) -->
-                <section class="pub-section" id="pub-resources-section" hidden>
-                    <div class="pub-tabs">
-                        <button class="pub-tab active" data-tab="agent" data-i18n="nav.agents">Agentes</button>
-                        <button class="pub-tab" data-tab="skill" data-i18n="nav.skills">Skills</button>
-                        <button class="pub-tab" data-tab="knowledge" data-i18n="nav.knowledge">Knowledge</button>
+                <!-- Stats bar -->
+                <div class="prof-stats-bar" id="pub-stats" hidden>
+                    <div class="prof-stat">
+                        <strong id="pub-followers-count">0</strong>
+                        <span data-i18n="social.follow.followers">seguidores</span>
                     </div>
-                    <div id="pub-resources-list" class="pub-resources-list">
-                        <p class="pub-empty" data-i18n="profile.social.no_resources">Este usuario no tiene recursos públicos todavía.</p>
+                    <div class="prof-stat-sep"></div>
+                    <div class="prof-stat">
+                        <strong id="pub-following-count">0</strong>
+                        <span data-i18n="social.follow.following">siguiendo</span>
                     </div>
-                </section>
-
+                    <div class="prof-stat-sep" id="pub-res-sep" hidden></div>
+                    <div class="prof-stat" id="pub-res-stat" hidden>
+                        <strong id="pub-res-count">0</strong>
+                        <span>recursos</span>
+                    </div>
+                </div>
             </div>
-        </main>
-    </div>
 
-    <script src="/assets/js/i18n.js"></script>
-    <script src="/assets/js/config.js"></script>
-    <script src="/assets/js/theme.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="/assets/js/labels.js"></script>
-    <script src="/assets/components/main_nav/main_nav.js"></script>
-    <script src="/assets/components/workspace-create-wizard/workspace-create-wizard.js"></script>
-    <script src="/u/profile-public.js"></script>
+            <!-- ── Body ──────────────────────────────────────────────── -->
+            <div class="prof-body">
+
+                <!-- Sidebar -->
+                <aside class="prof-sidebar">
+
+                    <!-- Contacto -->
+                    <div class="prof-card" id="pub-contact-card" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <path d="M2 2h12a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M1 4l7 5 7-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            Contacto
+                        </h3>
+                        <div id="pub-contact" class="prof-contact-list"></div>
+                    </div>
+
+                    <!-- Idiomas -->
+                    <div class="prof-card" id="pub-langs-card" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            Idiomas
+                        </h3>
+                        <div id="pub-langs" class="prof-langs-list"></div>
+                    </div>
+
+                    <!-- Miembro desde -->
+                    <div class="prof-card prof-card--slim" id="pub-joined-card" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <rect x="1.5" y="3" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M1.5 7h13M5 1.5V4M11 1.5V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            Miembro desde
+                        </h3>
+                        <span class="prof-joined-date" id="pub-joined-date"></span>
+                    </div>
+
+                </aside>
+
+                <!-- Main content -->
+                <div class="prof-main">
+
+                    <!-- Sobre mí -->
+                    <div class="prof-card" id="pub-about-card" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                            Sobre mí
+                        </h3>
+                        <p class="prof-bio-text" id="pub-bio"></p>
+                    </div>
+
+                    <!-- CV / Experiencia -->
+                    <div class="prof-card" id="pub-cv-section" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M5 5h6M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            Experiencia y trayectoria
+                        </h3>
+                        <div class="prof-cv-body" id="pub-cv-body"></div>
+                    </div>
+
+                    <!-- Recursos públicos -->
+                    <div class="prof-card" id="pub-resources-section" hidden>
+                        <h3 class="prof-card-title">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                                <rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                                <path d="M5 3V2M11 3V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                                <path d="M4 8l2.5 2L10 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Recursos públicos
+                        </h3>
+                        <div class="pub-tabs">
+                            <button class="pub-tab active" data-tab="agent" data-i18n="nav.agents">Agentes</button>
+                            <button class="pub-tab" data-tab="skill" data-i18n="nav.skills">Skills</button>
+                            <button class="pub-tab" data-tab="knowledge" data-i18n="nav.knowledge">Knowledge</button>
+                        </div>
+                        <div id="pub-resources-list" class="pub-resources-list"></div>
+                    </div>
+
+                </div><!-- /prof-main -->
+            </div><!-- /prof-body -->
+        </div><!-- /pub-content -->
+
+    </main>
+</div>
+
+<script src="/assets/js/i18n.js"></script>
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/theme.js"></script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/labels.js"></script>
+<script src="/assets/components/main_nav/main_nav.js"></script>
+<script src="/assets/components/workspace-create-wizard/workspace-create-wizard.js"></script>
+<script src="/u/profile-public.js"></script>
 </body>
 </html>
