@@ -14,7 +14,8 @@
     "logout": "Log out",
     "docs": "Documentation",
     "about": "About",
-    "explore": "Explore"
+    "explore": "Explore",
+    "upgrade": "Upgrade plan"
   },
   "actions": {
     "save": "Save",

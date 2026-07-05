@@ -14,7 +14,8 @@
     "logout": "Cerrar sesion",
     "docs": "Documentación",
     "about": "Acerca de",
-    "explore": "Explorar"
+    "explore": "Explorar",
+    "upgrade": "Mejorar plan"
   },
   "actions": {
     "save": "Guardar",

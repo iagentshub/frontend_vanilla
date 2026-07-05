@@ -12,6 +12,7 @@ var NAV_ICONS = {
     memory: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 8h5M5.5 10.5h5M5.5 13h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>',
     profile: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 14v-.5A5.5 5.5 0 0 1 8 8a5.5 5.5 0 0 1 5.5 5.5V14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     admin: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13v-.5A4.5 4.5 0 0 1 6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="11.5" cy="10.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 9.2v1.3l.8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+    pricing: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 6.5h13" stroke="currentColor" stroke-width="1.4"/><path d="M8 8v3M6.5 9.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     lang: '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 2c-1.5 2-2.5 3.8-2.5 6s1 4 2.5 6M8 2c1.5 2 2.5 3.8 2.5 6S9.5 14 8 14M2 8h12" stroke="currentColor" stroke-width="1.2"/></svg>',
     docs: '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="9.5" r="1" fill="currentColor"/><path d="M8 7v1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
     about: '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="5.5" r="0.9" fill="currentColor"/><path d="M8 7.5v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
@@ -150,6 +151,21 @@ function renderNav(mountId, activePage) {
                     mailItem;
                 var spacer = mount.querySelector('.nav-spacer');
                 if (spacer) spacer.before(adminSection);
+            }
+
+            if (d.role === 'guest') {
+                var existing = mount.querySelector('[data-nav-pricing]');
+                if (existing) return;
+                var pricingSection = document.createElement('div');
+                pricingSection.className = 'nav-section nav-pricing-section';
+                pricingSection.setAttribute('data-nav-pricing', '1');
+                pricingSection.innerHTML =
+                    '<a href="/pricing/" class="nav-link' + (activePage === 'pricing' ? ' active' : '') + '">' +
+                    '<span class="nav-link-icon">' + NAV_ICONS.pricing + '</span>' +
+                    (t('nav.upgrade') || 'Mejorar plan') +
+                    '</a>';
+                var pricingSpacer = mount.querySelector('.nav-spacer');
+                if (pricingSpacer) pricingSpacer.before(pricingSection);
             }
         }).catch(function () { });
 
