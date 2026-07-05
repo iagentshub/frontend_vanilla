@@ -247,16 +247,17 @@ function _initViewToggle() {
 async function loadSkills(folderId, groupId) {
     _activeFolderIdSkill = folderId || null;
     var groupParam = groupId ? '&group_id=' + encodeURIComponent(groupId) : '';
+    // Las tres peticiones en paralelo: private skills, public skills y datos sociales
     var results = await Promise.all([
         api.get('/api/skills?scope=private' + groupParam),
         groupId ? Promise.resolve([]) : api.get('/api/skills?scope=public'),
+        api.get('/api/social/me/resources?type=skill').catch(function () { return { resources: [] }; }),
     ]);
     _privateSkills = results[0];
     // Merge social data (stars, verified) into private skills
     try {
-        var socialSkills = await api.get('/api/social/me/resources?type=skill');
         var socialMap = {};
-        (socialSkills.resources || []).forEach(function (r) { socialMap[r.resource_id] = r; });
+        ((results[2] || {}).resources || []).forEach(function (r) { socialMap[r.resource_id] = r; });
         _privateSkills = _privateSkills.map(function (s) {
             var soc = socialMap[s.id];
             return soc ? Object.assign({}, s, {
