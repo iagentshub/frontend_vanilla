@@ -3,11 +3,11 @@
 .prof-page {
     max-width: 920px;
     margin: 0 auto;
-    padding: 28px 16px 72px;
+    padding: 8px 16px 72px;
 }
 
-@media (max-width: 768px) { .prof-page { padding-top: 60px; } }
-@media (max-width: 480px) { .prof-page { padding-top: 52px; } }
+@media (max-width: 768px) { .prof-page { padding-top: 48px; } }
+@media (max-width: 480px) { .prof-page { padding-top: 44px; } }
 
 /* Loading / error */
 .pub-loading {
@@ -37,7 +37,7 @@
 }
 
 .prof-cover {
-    height: 88px;
+    height: 64px;
     background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
     /* color se sobreescribe por JS con el color de avatar */
 }
@@ -45,23 +45,23 @@
 .prof-hero-body {
     display: flex;
     align-items: flex-start;
-    gap: 18px;
-    padding: 0 24px 20px;
+    gap: 16px;
+    padding: 0 20px 16px;
     position: relative;
 }
 
 .prof-avatar-outer {
-    margin-top: -40px;
+    margin-top: -32px;
     flex-shrink: 0;
 }
 
 .prof-avatar {
-    width: 88px;
-    height: 88px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: var(--accent);
     color: #fff;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -82,7 +82,7 @@
 .prof-hero-info {
     flex: 1;
     min-width: 0;
-    padding-top: 14px;
+    padding-top: 10px;
 }
 
 .prof-name {
@@ -170,6 +170,14 @@
     grid-template-columns: 220px 1fr;
     gap: 16px;
     align-items: start;
+}
+
+/* Cuando el sidebar no tiene ningún card visible, se colapsa a columna única */
+.prof-body--nosidebar {
+    grid-template-columns: 1fr;
+}
+.prof-body--nosidebar .prof-sidebar {
+    display: none;
 }
 
 @media (max-width: 680px) {

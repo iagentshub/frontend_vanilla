@@ -183,6 +183,14 @@
         // Resources
         _loadResources(username);
 
+        // Si el sidebar no tiene ningún card visible, colapsar a columna única
+        var sidebarCards = document.querySelectorAll('.prof-sidebar .prof-card');
+        var anyVisible = Array.prototype.some.call(sidebarCards, function (c) { return !c.hidden; });
+        if (!anyVisible) {
+            var body = document.querySelector('.prof-body');
+            if (body) body.classList.add('prof-body--nosidebar');
+        }
+
         // Show
         document.getElementById('pub-loading').hidden = true;
         document.getElementById('pub-content').hidden = false;
@@ -315,6 +323,11 @@
     }
 
     function _loadResources(username) {
+        // Mostrar siempre la sección de recursos (con estado vacío si no hay nada)
+        var sec = document.getElementById('pub-resources-section');
+        if (sec) sec.hidden = false;
+        _renderActiveTab(); // muestra el estado vacío inicial
+
         fetch('/api/users/' + encodeURIComponent(username) + '/resources', { credentials: 'include' })
             .then(function (r) { return r.ok ? r.json() : []; })
             .then(function (items) {
@@ -322,19 +335,16 @@
                     _allResources[type] = items.filter(function (r) { return r.resource_type === type; });
                 });
                 var total = items.length;
+                // Contador de recursos en stats bar
+                var rcEl = document.getElementById('pub-res-count');
+                var rsEl = document.getElementById('pub-res-stat');
+                var sepEl = document.getElementById('pub-res-sep');
+                if (rcEl) rcEl.textContent = total;
                 if (total) {
-                    // Contador de recursos en stats bar
-                    var rcEl = document.getElementById('pub-res-count');
-                    var rsEl = document.getElementById('pub-res-stat');
-                    var sepEl = document.getElementById('pub-res-sep');
-                    if (rcEl) rcEl.textContent = total;
                     if (rsEl) rsEl.hidden = false;
                     if (sepEl) sepEl.hidden = false;
-
-                    var sec = document.getElementById('pub-resources-section');
-                    if (sec) sec.hidden = false;
-                    _renderActiveTab();
                 }
+                _renderActiveTab();
             })
             .catch(function () {});
     }
