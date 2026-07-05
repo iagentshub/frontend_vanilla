@@ -68,30 +68,30 @@ fetch('/api/auth/me').then(r => {
     if (r.ok) window.location.replace(_redirectTarget());
 });
 
-// Aplicar configuración de plataforma (invitado / registro / facturación)
+// Aplicar configuración de plataforma (invitado / registro / facturación).
+// Los elementos están ocultos por defecto en el HTML — aquí los mostramos
+// solo si la API confirma que deben ser visibles. Así nunca hay parpadeo.
 fetch('/api/settings/platform/public').then(r => r.ok ? r.json() : null).then(function (cfg) {
     if (!cfg) return;
 
     // Acceso como invitado
-    if (cfg.guest_enabled === false) {
+    if (cfg.guest_enabled) {
         var guestBtn = document.getElementById('btn-guest');
         var divider = document.querySelector('.login-divider');
-        if (guestBtn) guestBtn.style.display = 'none';
-        if (divider) divider.style.display = 'none';
+        if (guestBtn) guestBtn.style.display = '';
+        if (divider) divider.style.display = '';
     }
 
     // Link "¿No tienes cuenta? Crear cuenta"
     // Solo visible cuando el registro es abierto Y la facturación está desactivada.
-    // Con registro cerrado el admin crea las cuentas; con billing activo el registro
-    // lleva a planes de pago y se gestiona por otra vía.
     var showRegister = cfg.registration === 'open' && cfg.billing_enabled === false;
     var registerLink = document.querySelector('.login-register-link');
     if (registerLink) registerLink.style.display = showRegister ? '' : 'none';
 
     // Link de precios (solo visible con billing activado)
-    if (cfg.billing_enabled === false) {
+    if (cfg.billing_enabled) {
         document.querySelectorAll('a[href="/pricing/"]').forEach(function (a) {
-            a.style.display = 'none';
+            a.style.display = '';
         });
     }
 
