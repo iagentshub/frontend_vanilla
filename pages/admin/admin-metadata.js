@@ -275,10 +275,10 @@
             var size = _fmtBytes(r.size_bytes) || '—';
             var rowBg = i % 2 === 1 ? 'var(--surface-2,var(--surface))' : 'transparent';
             var emptyCol = r.rows ? '' : 'color:var(--text-2)';
-            return '<tr style="background:' + rowBg + ';cursor:pointer;transition:background .1s" ' +
-                'onclick="window._metaOpenTable(\'' + r.name + '\')" ' +
-                'onmouseenter="this.style.background=\'var(--surface-2)\';" ' +
-                'onmouseleave="this.style.background=\'' + rowBg + '\';">' +
+            // Sin inline event handlers (bloqueados por CSP). Se usa data-table
+            // y data-bg para event delegation en _bindTableBody().
+            return '<tr data-table="' + r.name + '" data-bg="' + rowBg + '"' +
+                ' style="background:' + rowBg + ';cursor:pointer;transition:background .1s">' +
                 '<td style="padding:8px 14px;border-bottom:1px solid var(--border);font-family:monospace;font-size:0.82rem">' + r.name + '</td>' +
                 '<td style="padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;' + emptyCol + (r.rows ? ';font-weight:600' : '') + '">' + (r.rows || 0).toLocaleString() + '</td>' +
                 '<td style="padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;color:var(--text-2)">' + (r.col_count || '—') + '</td>' +
@@ -367,7 +367,27 @@
         });
     }
 
+    function _bindTableBody() {
+        var tbody = document.getElementById('meta-tables-tbody');
+        if (!tbody) return;
+        // Click: abrir detalle de tabla
+        tbody.addEventListener('click', function (e) {
+            var tr = e.target.closest('tr[data-table]');
+            if (tr) _openTableDialog(tr.dataset.table);
+        });
+        // Hover: resaltar fila sin inline handlers (bloqueados por CSP)
+        tbody.addEventListener('mouseover', function (e) {
+            var tr = e.target.closest('tr[data-table]');
+            if (tr) tr.style.background = 'var(--surface-2,var(--surface))';
+        });
+        tbody.addEventListener('mouseout', function (e) {
+            var tr = e.target.closest('tr[data-table]');
+            if (tr) tr.style.background = tr.dataset.bg || 'transparent';
+        });
+    }
+
     function _bindTableDialog() {
+        _bindTableBody();
         var close = document.getElementById('meta-table-dialog-close');
         if (close) close.addEventListener('click', _closeTableDialog);
         var dialog = document.getElementById('meta-table-dialog');
