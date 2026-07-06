@@ -59,6 +59,7 @@
     "set_connection": "Set connection",
     "set_connection_hint": "Select the connection to test this shortcut.",
     "remove_link": "Remove shortcut",
+    "no_connection": "— No connection —",
     "set_my_connection": "Set my connection",
     "set_my_connection_hint": "Choose your own connection to chat with this shared agent.",
     "non_owner_hint": "This agent belongs to another user. You can only view or download it."

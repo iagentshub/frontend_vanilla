@@ -5,6 +5,20 @@
     gap: 12px;
 }
 
+@media (max-width: 768px) {
+    .skills-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
 .skills-empty {
     font-size: 13px;
     color: var(--ink-3);

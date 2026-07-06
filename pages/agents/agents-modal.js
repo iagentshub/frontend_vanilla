@@ -5,7 +5,11 @@
 var _agentLabels = ['private'];
 
 function _initLabelsPicker(currentLabels) {
-    _agentLabels = currentLabels && currentLabels.length ? currentLabels.slice() : ['private'];
+    // Eliminar etiquetas de origen (fork/linked) — el origen es un campo computado,
+    // no una etiqueta elegible por el usuario.
+    var _ORIGIN_LABELS = ['fork', 'linked'];
+    _agentLabels = (currentLabels && currentLabels.length ? currentLabels.slice() : ['private'])
+        .filter(function (k) { return _ORIGIN_LABELS.indexOf(k) === -1; });
     var wrap = document.getElementById('agent-labels-picker-wrap');
     if (!wrap || !window.LABELS) return;
     wrap.innerHTML = LABELS.renderPicker(_agentLabels, 'agent-labels-picker');

@@ -2,7 +2,6 @@
   "group": {
     "visibility":      "Visibility",
     "environment":     "Environment",
-    "origin":          "Origin",
     "status":          "Status",
     "exclusive_hint":  "Exclusive (only one active)",
     "multi_hint":      "Multi-select"
@@ -31,8 +30,11 @@
     "staging":     "Pre-production environment. The resource is ready for final validation before going to production.",
     "development": "Resource under development or testing. Signals it may still change.",
     "test":        "Resource reserved for testing and validation.",
-    "fork":        "Independent copy of another resource. You can freely modify it without affecting the original. Created via the Fork action.",
-    "linked":      "Live link to a source resource. You can sync it with the original when it changes using the Sync button.",
+    "fork":         "Independent copy of another resource. You can freely modify it without affecting the original. Created via the Fork action.",
+    "linked":       "Live link to a source resource. You can sync it with the original when it changes using the Sync button.",
+    "origin_owner": "You are the original owner of this agent. You can edit, export, and delete it.",
+    "origin_fork":  "This agent is an independent copy (fork) of another. You can edit it without affecting the original.",
+    "origin_linked":"This agent is a link to a resource from another user or workspace. It is read-only.",
     "favorite":    "Marks the resource as a favorite for quick access.",
     "draft":       "Work in progress, not ready to use. Blocks access until it is complete.",
     "review":      "The resource needs review before being used or published.",
@@ -45,10 +47,11 @@
     "title":     "Label catalog",
     "intro":     "Labels define the state and behavior of your resources. Every resource always has at least one visibility label.",
     "default":   "Default",
-    "blocks":    "Blocks the resource",
-    "warns":     "Visual warning",
-    "info":      "Informational",
-    "nav_title": "Labels"
+    "blocks":          "Blocks the resource",
+    "warns":           "Visual warning",
+    "info":            "Informational",
+    "origin_computed": "Computed automatically",
+    "nav_title":       "Labels"
   },
   "actions": {
     "fork":         "Fork",

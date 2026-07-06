@@ -761,7 +761,19 @@ a.knowledge-card-source:hover {
 }
 
 /* ── Responsive 480px ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .knowledge-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 10px;
+    }
+}
+
 @media (max-width: 480px) {
+    .knowledge-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
     .knowledge-tabs {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;

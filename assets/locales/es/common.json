@@ -1,4 +1,6 @@
 {
+  "cancel": "Cancelar",
+  "save": "Guardar",
   "nav": {
     "dashboard": "Dashboard",
     "agents": "Agentes",

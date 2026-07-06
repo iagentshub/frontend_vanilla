@@ -59,6 +59,7 @@
     "set_connection": "Asignar conexión",
     "set_connection_hint": "Selecciona la conexión para probar este acceso directo.",
     "remove_link": "Eliminar acceso directo",
+    "no_connection": "— Sin conexión —",
     "set_my_connection": "Definir mi conexión",
     "set_my_connection_hint": "Elige tu propia conexión para chatear con este agente compartido.",
     "non_owner_hint": "Este agente pertenece a otro usuario. Solo puedes verlo o descargarlo."

@@ -9,6 +9,10 @@
 .app-shell .page-content {
     flex: 1;
     min-width: 0;
+    /* El sidebar ya crea el límite visual; sin max-width el contenido
+       llena todo el ancho disponible en pantallas grandes. */
+    max-width: none;
+    margin: 0;
 }
 
 .main-nav {

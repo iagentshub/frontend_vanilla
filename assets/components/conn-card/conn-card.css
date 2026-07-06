@@ -5,6 +5,20 @@
     gap: 10px;
 }
 
+@media (max-width: 768px) {
+    .conn-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .conn-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
 /* ── Connection card ─────────────────────────────────────── */
 .conn-card {
     position: relative;
