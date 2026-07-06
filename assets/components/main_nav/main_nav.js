@@ -22,6 +22,7 @@ var NAV_ICONS = {
     explore: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 5.5l-2 4.5-4.5 2 2-4.5 4.5-2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/></svg>',
     feed: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
     labels: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 5a1 1 0 0 1 1-1h6.5l4 4-4 4H3a1 1 0 0 1-1-1V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="5.5" cy="8" r="1" fill="currentColor"/></svg>',
+    centinel: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
 function _renderLangSwitcher() {
@@ -125,6 +126,10 @@ function renderNav(mountId, activePage) {
                     '<a href="/admin/metadata/" class="nav-link' + (activePage === 'admin-metadata' ? ' active' : '') + '">' +
                     '<span class="nav-link-icon">' + NAV_ICONS.logs + '</span>' +
                     'Sistema' +
+                    '</a>' +
+                    '<a href="/admin/centinel/" class="nav-link' + (activePage === 'admin-centinel' ? ' active' : '') + '">' +
+                    '<span class="nav-link-icon">' + NAV_ICONS.centinel + '</span>' +
+                    'Centinel' +
                     '</a>' +
                     mailItem;
                 var spacer = mount.querySelector('.nav-spacer');
