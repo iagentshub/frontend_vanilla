@@ -78,12 +78,17 @@ window.centinel = (function () {
         }
     }
 
-    function _logAppend(text, cssClass) {
+    function _logAppend(text, cssClass, status) {
         _s.logLines.push(text);
         var log = $$('ctn-log');
         if (!log) return;
         var span = document.createElement('span');
         if (cssClass) span.className = cssClass;
+        span.dataset.status = status || 'info';
+        // Aplicar filtro actual al añadir la línea
+        if (_s.filter !== 'all' && (status || 'info') !== 'info' && (status || 'info') !== _s.filter) {
+            span.style.display = 'none';
+        }
         span.textContent = text + '\n';
         log.appendChild(span);
         if (_s.logActive) log.scrollTop = log.scrollHeight;
@@ -230,6 +235,14 @@ window.centinel = (function () {
             var visible = sec.querySelectorAll('.ctn-test-row:not(.hidden)').length;
             sec.style.display = visible > 0 ? '' : 'none';
         });
+        // Filtrar también el log pane (spans con data-status)
+        var log = $$('ctn-log');
+        if (log) {
+            log.querySelectorAll('span[data-status]').forEach(function (span) {
+                var s = span.dataset.status;
+                span.style.display = (_s.filter === 'all' || s === 'info' || s === _s.filter) ? '' : 'none';
+            });
+        }
     }
 
     // ── Load tree ──────────────────────────────────────────────────────
@@ -458,12 +471,12 @@ window.centinel = (function () {
         switch (ev.type) {
             case 'started':
                 _logClear();
-                _logAppend('=== Run iniciado: ' + ev.target + ' ===', 'ctn-log-line-sep');
+                _logAppend('=== Run iniciado: ' + ev.target + ' ===', 'ctn-log-line-sep', 'info');
                 $$('ctn-subtitle').textContent = 'Ejecutando: ' + ev.target;
                 break;
             case 'collecting':
                 _s.totalTests = ev.count;
-                _logAppend('collected ' + ev.count + ' items', 'ctn-log-line-info');
+                _logAppend('collected ' + ev.count + ' items', 'ctn-log-line-info', 'info');
                 $$('ctn-subtitle').textContent = 'Descubriendo ' + ev.count + ' tests…';
                 break;
             case 'test':
@@ -471,15 +484,16 @@ window.centinel = (function () {
                 (function () {
                     var pct = String(ev.progress);
                     var pad = pct.length < 3 ? Array(3 - pct.length + 1).join(' ') : '';
+                    var isFailed = ev.status === 'failed' || ev.status === 'error';
+                    var logStatus = ev.status === 'passed' ? 'passed' : isFailed ? 'failed' : 'skipped';
                     var line = ev.file + '::' + ev.name + ' ' +
-                        (ev.status === 'passed' ? 'PASSED' : ev.status === 'failed' || ev.status === 'error' ? 'FAILED' : 'SKIPPED') +
+                        (ev.status === 'passed' ? 'PASSED' : isFailed ? 'FAILED' : 'SKIPPED') +
                         ' [' + pad + pct + '%]';
                     var cls = ev.status === 'passed' ? 'ctn-log-line-passed' :
-                        (ev.status === 'failed' || ev.status === 'error') ? 'ctn-log-line-failed' :
-                            'ctn-log-line-skipped';
-                    _logAppend(line, cls);
+                        isFailed ? 'ctn-log-line-failed' : 'ctn-log-line-skipped';
+                    _logAppend(line, cls, logStatus);
                     if (ev.traceback) {
-                        _logAppend(ev.traceback, 'ctn-log-line-tb');
+                        _logAppend(ev.traceback, 'ctn-log-line-tb', 'failed');
                     }
                 }());
                 _handleTestEvent(ev);
@@ -500,8 +514,8 @@ window.centinel = (function () {
                     if (s.failed) parts.push(s.failed + ' failed');
                     if (s.skipped) parts.push(s.skipped + ' skipped');
                     _logAppend('\n' + (parts.join(', ') || 'done') + ' (exit ' + (ev.exit_code || 0) + ')',
-                        s.failed ? 'ctn-log-line-failed' : 'ctn-log-line-passed');
-                    _logAppend('='.repeat(60), 'ctn-log-line-sep');
+                        s.failed ? 'ctn-log-line-failed' : 'ctn-log-line-passed', 'info');
+                    _logAppend('='.repeat(60), 'ctn-log-line-sep', 'info');
                     var btn = $$('btn-log-download');
                     if (btn) btn.style.display = '';
                 }());
@@ -513,7 +527,7 @@ window.centinel = (function () {
                 _s.es = null;
                 _finalizeActiveFile();
                 _setIdleUI(_buildLocalSummary(), []);
-                _logAppend('--- Run abortado ---', 'ctn-log-line-skipped');
+                _logAppend('--- Run abortado ---', 'ctn-log-line-skipped', 'info');
                 toast.show('Run abortado');
                 _loadHistory();
                 break;
@@ -521,7 +535,7 @@ window.centinel = (function () {
                 _s.es && _s.es.close();
                 _s.es = null;
                 _setIdleUI({}, []);
-                _logAppend('ERROR: ' + ev.message, 'ctn-log-line-failed');
+                _logAppend('ERROR: ' + ev.message, 'ctn-log-line-failed', 'failed');
                 toast.error('Error en el run: ' + ev.message);
                 break;
         }
