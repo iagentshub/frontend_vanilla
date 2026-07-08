@@ -27,11 +27,11 @@ window.centinel = (function () {
     // ── Status icons ───────────────────────────────────────────────────
     var ICONS = {
         pending: '○',
-        passed:  '✓',
-        failed:  '✗',
+        passed: '✓',
+        failed: '✗',
         skipped: '⊘',
         running: '◌',
-        error:   '✗',
+        error: '✗',
     };
 
     // ID consistente para una fila de test
@@ -120,12 +120,12 @@ window.centinel = (function () {
     function _updateSelCount() {
         var totalTests = 0, selTests = 0;
         (_s.treeData && _s.treeData.dirs || []).forEach(function (dir) {
-            var dirId  = 'dir-' + dir.dir.replace(/[^a-z0-9]/gi, '_');
+            var dirId = 'dir-' + dir.dir.replace(/[^a-z0-9]/gi, '_');
             var dTotal = 0, dSel = 0;
             dir.files.forEach(function (f) {
                 var n = f.count || 0;
                 totalTests += n;
-                dTotal     += n;
+                dTotal += n;
                 var checked = _s.selectedFiles === null || _s.selectedFiles.has(f.file);
                 if (checked) { selTests += n; dSel += n; }
             });
@@ -198,7 +198,7 @@ window.centinel = (function () {
         (data.dirs || []).forEach(function (dir) {
             var dirId = 'dir-' + dir.dir.replace(/[^a-z0-9]/gi, '_');
             html += '<div class="ctn-dir-item">' +
-                '<div class="ctn-dir-hdr" data-dir="' + esc(dir.dir) + '" onclick="centinel._toggleDir(this)">' +
+                '<div class="ctn-dir-hdr" data-dir="' + esc(dir.dir) + '">' +
                 '<svg class="ctn-dir-chevron" viewBox="0 0 16 16" fill="none"><path d="M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
                 '<span class="ctn-dir-name">' + esc(dir.dir) + '</span>' +
                 '<span class="ctn-dir-count" id="dcnt-' + dirId + '">' + dir.count + '</span>' +
@@ -206,8 +206,8 @@ window.centinel = (function () {
                 '<div class="ctn-dir-files" id="' + dirId + '" style="display:none">';
             dir.files.forEach(function (f) {
                 var shortName = f.file.split('/').pop();
-                html += '<div class="ctn-file-row" data-file="' + esc(f.file) + '" onclick="centinel._toggleFile(this)">' +
-                    '<input type="checkbox" class="ctn-file-cb" data-file="' + esc(f.file) + '" checked onclick="event.stopPropagation();centinel._onFileCheck(this)" />' +
+                html += '<div class="ctn-file-row" data-file="' + esc(f.file) + '">' +
+                    '<input type="checkbox" class="ctn-file-cb" data-file="' + esc(f.file) + '" checked />' +
                     '<div class="ctn-file-dot" id="fdot-' + esc(f.file).replace(/[^a-z0-9]/gi, '_') + '"></div>' +
                     '<span class="ctn-file-name" title="' + esc(f.file) + '">' + esc(shortName) + '</span>' +
                     '<span class="ctn-file-count">' + f.count + '</span>' +
@@ -216,6 +216,15 @@ window.centinel = (function () {
             html += '</div></div>';
         });
         $$('ctn-tree').innerHTML = html;
+        // Delegación de eventos (evita inline handlers bloqueados por CSP)
+        $$('ctn-tree').addEventListener('click', function (e) {
+            var cb = e.target.closest('.ctn-file-cb');
+            if (cb) { e.stopPropagation(); _onFileCheck(cb); return; }
+            var fileRow = e.target.closest('.ctn-file-row');
+            if (fileRow) { _toggleFile(fileRow); return; }
+            var dirHdr = e.target.closest('.ctn-dir-hdr');
+            if (dirHdr) { _toggleDir(dirHdr); return; }
+        });
         _updateSelCount();
     }
 
@@ -427,10 +436,10 @@ window.centinel = (function () {
     function _buildLocalSummary() {
         var passed = 0, failed = 0, skipped = 0, total = 0;
         Object.values(_s.results).forEach(function (r) {
-            passed  += r.counts.passed;
-            failed  += r.counts.failed;
+            passed += r.counts.passed;
+            failed += r.counts.failed;
             skipped += r.counts.skipped;
-            total   += r.counts.passed + r.counts.failed + r.counts.skipped;
+            total += r.counts.passed + r.counts.failed + r.counts.skipped;
         });
         return { passed: passed, failed: failed, skipped: skipped };
     }
@@ -510,13 +519,17 @@ window.centinel = (function () {
         el.className = 'ctn-file-section';
         el.id = secId;
         el.innerHTML =
-            '<div class="ctn-file-sec-hdr" onclick="centinel._toggleFileSec(this)">' +
+            '<div class="ctn-file-sec-hdr">' +
             '<svg class="ctn-file-sec-chevron" viewBox="0 0 16 16" fill="none"><path d="M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
             '<span class="ctn-file-sec-name">' + esc(file) + '</span>' +
             '<div class="ctn-file-sec-badges" id="' + secId + '-badges"><span class="ctn-sec-badge pending">Pendiente</span></div>' +
             '<span class="ctn-file-sec-dur" id="' + secId + '-dur"></span>' +
             '</div>' +
             '<div class="ctn-file-sec-body collapsed" id="' + secId + '-body">' + bodyHtml + '</div>';
+        // Listener sin inline handler (bloqueado por CSP en producción)
+        el.querySelector('.ctn-file-sec-hdr').addEventListener('click', function () {
+            _toggleFileSec(this);
+        });
 
         var emptyState = $$('ctn-results').querySelector('.ctn-empty-state');
         if (emptyState) emptyState.remove();
@@ -532,18 +545,18 @@ window.centinel = (function () {
         var fd = _s.results[file];
         if (!fd || !fd.bodyEl) return;
 
-        var icon        = ICONS[ev.status] || '·';
+        var icon = ICONS[ev.status] || '·';
         var finalStatus = ev.status === 'error' ? 'failed' : ev.status;
         var isClickable = finalStatus === 'failed';
-        var tbId        = 'tb-' + (file + '-' + ev.name).replace(/[^a-z0-9]/gi, '_');
-        var rid         = _rowId(file, ev.name);
+        var tbId = 'tb-' + (file + '-' + ev.name).replace(/[^a-z0-9]/gi, '_');
+        var rid = _rowId(file, ev.name);
 
         // Buscar fila pendiente pre-poblada; actualizar si existe
         var row = document.getElementById(rid);
         if (row) {
-            row.className    = 'ctn-test-row' + (isClickable ? ' clickable' : '');
+            row.className = 'ctn-test-row' + (isClickable ? ' clickable' : '');
             row.dataset.status = finalStatus;
-            row.innerHTML    =
+            row.innerHTML =
                 '<span class="ctn-test-icon ' + ev.status + '">' + icon + '</span>' +
                 '<span class="ctn-test-name ' + ev.status + '">' + esc(ev.name) + '</span>';
             if (isClickable && ev.traceback) {
@@ -553,17 +566,17 @@ window.centinel = (function () {
                 });
                 var tbEl = document.createElement('pre');
                 tbEl.className = 'ctn-traceback';
-                tbEl.id        = tbId;
+                tbEl.id = tbId;
                 tbEl.textContent = ev.traceback;
                 row.parentNode.insertBefore(tbEl, row.nextSibling);
             }
         } else {
             // Fallback: test no estaba en el árbol → crear fila nueva
             row = document.createElement('div');
-            row.id         = rid;
-            row.className  = 'ctn-test-row' + (isClickable ? ' clickable' : '');
+            row.id = rid;
+            row.className = 'ctn-test-row' + (isClickable ? ' clickable' : '');
             row.dataset.status = finalStatus;
-            row.innerHTML  =
+            row.innerHTML =
                 '<span class="ctn-test-icon ' + ev.status + '">' + icon + '</span>' +
                 '<span class="ctn-test-name ' + ev.status + '">' + esc(ev.name) + '</span>';
             if (isClickable && ev.traceback) {
@@ -575,8 +588,8 @@ window.centinel = (function () {
             fd.bodyEl.appendChild(row);
             if (isClickable && ev.traceback) {
                 var tbEl2 = document.createElement('pre');
-                tbEl2.className  = 'ctn-traceback';
-                tbEl2.id         = tbId;
+                tbEl2.className = 'ctn-traceback';
+                tbEl2.id = tbId;
                 tbEl2.textContent = ev.traceback;
                 fd.bodyEl.appendChild(tbEl2);
             }
@@ -599,8 +612,8 @@ window.centinel = (function () {
         var c = fd.counts;
         var badges = '';
         if (isActive) badges += '<span class="ctn-sec-badge running">◌</span>';
-        if (c.passed)  badges += '<span class="ctn-sec-badge passed">'  + c.passed  + ' ✓</span>';
-        if (c.failed)  badges += '<span class="ctn-sec-badge failed">'  + c.failed  + ' ✗</span>';
+        if (c.passed) badges += '<span class="ctn-sec-badge passed">' + c.passed + ' ✓</span>';
+        if (c.failed) badges += '<span class="ctn-sec-badge failed">' + c.failed + ' ✗</span>';
         if (c.skipped) badges += '<span class="ctn-sec-badge skipped">' + c.skipped + ' ⊘</span>';
         if (fd.badgesEl) fd.badgesEl.innerHTML = badges;
         if (fd.hdrNameEl) fd.hdrNameEl.classList.toggle('has-failed', c.failed > 0);
@@ -732,9 +745,9 @@ window.centinel = (function () {
                 '<span class="ctn-history-date">' + esc(date) + '</span>' +
                 '<span class="ctn-history-target" title="' + esc(target) + '">' + esc(target) + '</span>' +
                 '<div class="ctn-history-summary">' +
-                (s.passed  !== undefined ? '<span class="ctn-badge passed" style="font-size:11px">✓ '  + s.passed  + '</span>' : '') +
-                (s.failed  ? '<span class="ctn-badge failed"  style="font-size:11px">✗ '  + s.failed  + '</span>' : '') +
-                (s.skipped ? '<span class="ctn-badge skipped" style="font-size:11px">⊘ '  + s.skipped + '</span>' : '') +
+                (s.passed !== undefined ? '<span class="ctn-badge passed" style="font-size:11px">✓ ' + s.passed + '</span>' : '') +
+                (s.failed ? '<span class="ctn-badge failed"  style="font-size:11px">✗ ' + s.failed + '</span>' : '') +
+                (s.skipped ? '<span class="ctn-badge skipped" style="font-size:11px">⊘ ' + s.skipped + '</span>' : '') +
                 '</div>' +
                 '<span class="ctn-history-dur">' + esc(dur) + '</span>' +
                 '</div>';
