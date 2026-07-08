@@ -55,6 +55,22 @@
     color: #6366f1;
 }
 
+/* Icono de propietario: compacto, solo icono, tooltip con el nombre, click → perfil */
+.res-badge--owner-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 5px;
+    text-decoration: none;
+    line-height: 1;
+    transition: background 0.15s;
+    border-radius: 4px;
+}
+
+.res-badge--owner-icon:hover {
+    background: rgba(99, 102, 241, 0.25);
+}
+
 /* ── Picker (formularios) ───────────────────────────────────────────────────── */
 
 .lbl-picker {

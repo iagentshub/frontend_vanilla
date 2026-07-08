@@ -77,7 +77,9 @@ var AgentCard = {
         if (inGroupMode) {
             if (agent._shared) {
                 var ownerLabel = agent.owner_id ? '@' + agent.owner_id : (t('teams.sharing.shared_badge') || 'Compartido');
-                ownerBadge = '<span class="res-badge res-badge--shared">' + esc(ownerLabel) + '</span>';
+                ownerBadge = '<a class="res-badge res-badge--shared res-badge--owner-icon" href="/u/' + esc(agent.owner_id) + '" title="' + esc(ownerLabel) + '" onclick="event.stopPropagation()" tabindex="-1">' +
+                    '<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+                    '</a>';
             } else {
                 ownerBadge = '<span class="res-badge res-badge--mine">' + (t('agents.card.badge_mine') || 'Tuyo') + '</span>';
             }
@@ -165,34 +167,34 @@ var AgentCard = {
                 '<button class="agent-action-icon" data-action="set-pref-conn" data-id="' + esc(agent.id) + '" data-conn-id="' + esc(agent._pref_conn_id || '') + '" title="' + (window.t ? t('agents.card.set_my_connection') : 'Definir mi conexión') + '">' +
                 '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="2.5" cy="8" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>' +
                 '</button>'
-            : agentLabels.indexOf('linked') !== -1 && !agent._shared ?
-                // Acceso directo (sistema antiguo): solo asignar conexión + eliminar
-                '<button class="agent-action-icon" data-action="set-conn" data-id="' + esc(agent.id) + '" data-conn-id="' + esc(agent.connection_id || '') + '" title="' + (t('agents.card.set_connection') || 'Asignar conexión') + '">' +
-                '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="2.5" cy="8" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>' +
-                '</button>' +
-                '<button class="agent-action-icon agent-action-icon--danger" data-action="delete" data-id="' + esc(agent.id) + '" title="' + t('agents.card.remove_link') + '">' +
-                '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-                '</button>'
-            : (
-                // Agente normal
-                (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="edit" data-id="' + esc(agent.id) + '" title="' + t('actions.edit') + '">' +
-                    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' +
-                    '</button>' : '') +
-                (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="share" data-id="' + esc(agent.id) + '" data-name="' + esc(agent.name) + '" title="' + (t('teams.sharing.share_with') || 'Compartir con grupo') + '">' +
-                    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.8L5.5 7.2M10.5 12.2L5.5 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' +
-                    '</button>' : '') +
-                (!agent._shared ? '<button class="agent-action-icon" data-action="export" data-id="' + esc(agent.id) + '" title="' + t('actions.export') + '">' +
-                    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
-                    '</button>' : '') +
-                (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="move-folder" data-id="' + esc(agent.id) + '" data-folder-id="' + esc(agent.folder_id || '') + '" title="' + (t('knowledge.folder.move_to') || 'Mover a carpeta') + '">' +
-                    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 13V5a1 1 0 0 1 1-1h3.5l1.5-2H13a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' +
-                    '</button>' : '') +
-                (isPublic ? '<button class="agent-action-icon" data-action="fork" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.fork') : 'Fork') + '">' + _SVG_FORK_AGENT + '</button>' : '') +
-                (isPublic ? '<button class="agent-action-icon" data-action="link" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.link') : 'Link') + '">' + _SVG_LINK_AGENT + '</button>' : '') +
-                (!isPublic && !agent._shared ? '<button class="agent-action-icon agent-action-icon--danger" data-action="delete" data-id="' + esc(agent.id) + '" title="' + t('actions.delete') + '">' +
+                : agentLabels.indexOf('linked') !== -1 && !agent._shared ?
+                    // Acceso directo (sistema antiguo): solo asignar conexión + eliminar
+                    '<button class="agent-action-icon" data-action="set-conn" data-id="' + esc(agent.id) + '" data-conn-id="' + esc(agent.connection_id || '') + '" title="' + (t('agents.card.set_connection') || 'Asignar conexión') + '">' +
+                    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="2.5" cy="8" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>' +
+                    '</button>' +
+                    '<button class="agent-action-icon agent-action-icon--danger" data-action="delete" data-id="' + esc(agent.id) + '" title="' + t('agents.card.remove_link') + '">' +
                     '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-                    '</button>' : '')
-            )) +
+                    '</button>'
+                    : (
+                        // Agente normal
+                        (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="edit" data-id="' + esc(agent.id) + '" title="' + t('actions.edit') + '">' +
+                            '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2l3 3-9 9H2v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' +
+                            '</button>' : '') +
+                        (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="share" data-id="' + esc(agent.id) + '" data-name="' + esc(agent.name) + '" title="' + (t('teams.sharing.share_with') || 'Compartir con grupo') + '">' +
+                            '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="12" cy="3" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="13" r="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 3.8L5.5 7.2M10.5 12.2L5.5 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' +
+                            '</button>' : '') +
+                        (!agent._shared ? '<button class="agent-action-icon" data-action="export" data-id="' + esc(agent.id) + '" title="' + t('actions.export') + '">' +
+                            '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+                            '</button>' : '') +
+                        (!isPublic && !agent._shared ? '<button class="agent-action-icon" data-action="move-folder" data-id="' + esc(agent.id) + '" data-folder-id="' + esc(agent.folder_id || '') + '" title="' + (t('knowledge.folder.move_to') || 'Mover a carpeta') + '">' +
+                            '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M1.5 13V5a1 1 0 0 1 1-1h3.5l1.5-2H13a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' +
+                            '</button>' : '') +
+                        (isPublic ? '<button class="agent-action-icon" data-action="fork" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.fork') : 'Fork') + '">' + _SVG_FORK_AGENT + '</button>' : '') +
+                        (isPublic ? '<button class="agent-action-icon" data-action="link" data-id="' + esc(agent.id) + '" title="' + (window.t ? t('labels.actions.link') : 'Link') + '">' + _SVG_LINK_AGENT + '</button>' : '') +
+                        (!isPublic && !agent._shared ? '<button class="agent-action-icon agent-action-icon--danger" data-action="delete" data-id="' + esc(agent.id) + '" title="' + t('actions.delete') + '">' +
+                            '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+                            '</button>' : '')
+                    )) +
             '</div>' +
             '</div>' +
             '</div>';
