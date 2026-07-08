@@ -94,8 +94,8 @@
     }
 
     async function init() {
-        await window.requireAuth();
         renderNav('nav-root', 'labels');
+        await window.requireAuth();
         if (window.i18n) {
             window.i18n.ready(function () { _render(); });
             window.i18n.onLangChange(function () { _render(); });

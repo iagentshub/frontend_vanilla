@@ -11,7 +11,25 @@
     var _readyCallbacks = [];
 
     var STORAGE_KEY = 'ga-lang';
+    var CACHE_KEY = 'ga-i18n-cache-v1';
     var SUPPORTED = ['es', 'en'];
+
+    // Persistir/leer las traducciones en localStorage para poder rehidratar de
+    // forma SÍNCRONA en cada navegación (sin esperar al fetch, que causaba el
+    // pestañeo del nav y del contenido en cada cambio de vista).
+    function _saveCache() {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(_cache)); } catch (e) { /* quota */ }
+    }
+    function _loadCacheSync(lang) {
+        try {
+            var obj = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (!obj) return false;
+            var complete = _namespaces.every(function (ns) { return obj[lang + '/' + ns]; });
+            if (!complete) return false;
+            _cache = obj;
+            return true;
+        } catch (e) { return false; }
+    }
 
     function _detectLang() {
         var stored = localStorage.getItem(STORAGE_KEY);
@@ -33,9 +51,9 @@
         });
     }
 
-    function _loadNs(lang, ns) {
+    function _loadNs(lang, ns, force) {
         var key = lang + '/' + ns;
-        if (_cache[key]) return Promise.resolve(_cache[key]);
+        if (!force && _cache[key]) return Promise.resolve(_cache[key]);
         return fetch('/assets/locales/' + lang + '/' + ns + '.json')
             .then(function (r) {
                 if (!r.ok) throw new Error('i18n: missing ' + key);
@@ -47,8 +65,8 @@
             });
     }
 
-    function _loadAll(lang) {
-        return Promise.all(_namespaces.map(function (ns) { return _loadNs(lang, ns); }));
+    function _loadAll(lang, force) {
+        return Promise.all(_namespaces.map(function (ns) { return _loadNs(lang, ns, force); }));
     }
 
     function t(key, params) {
@@ -80,6 +98,7 @@
         localStorage.setItem(STORAGE_KEY, lang);
         document.documentElement.setAttribute('lang', lang);
         return _loadAll(lang).then(function () {
+            _saveCache();
             _listeners.forEach(function (fn) { fn(lang); });
         });
     }
@@ -111,19 +130,34 @@
         });
     }
 
+    function _markReady() {
+        if (_ready) { applyDOM(); return; }
+        _ready = true;
+        applyDOM();
+        _readyCallbacks.forEach(function (fn) { fn(); });
+        _readyCallbacks = [];
+        onLangChange(function () { applyDOM(); });
+    }
+
     function init() {
         _lang = _detectLang();
         document.documentElement.setAttribute('lang', _lang);
+
+        // 1) Rehidratación SÍNCRONA desde caché → nav y contenido en el primer
+        //    frame, sin esperar red. Elimina el pestañeo al cambiar de vista.
+        var fromCache = _loadCacheSync(_lang);
+        if (fromCache) _markReady();
+
+        // 2) Revalidar en segundo plano (force) y refrescar la caché por si las
+        //    traducciones cambiaron en un despliegue. Si aún no estábamos listos
+        //    (primera visita), esto es lo que marca ready.
         var loads = _lang !== _fallback
-            ? [_loadAll(_lang), _loadAll(_fallback)]
-            : [_loadAll(_lang)];
+            ? [_loadAll(_lang, true), _loadAll(_fallback, true)]
+            : [_loadAll(_lang, true)];
         return Promise.all(loads).then(function () {
-            _ready = true;
-            applyDOM();
-            _readyCallbacks.forEach(function (fn) { fn(); });
-            _readyCallbacks = [];
-            onLangChange(function () { applyDOM(); });
-        });
+            _saveCache();
+            _markReady();
+        }).catch(function () { /* offline: seguimos con la caché si la había */ });
     }
 
     global.i18n = { t: t, setLang: setLang, getLang: getLang, onLangChange: onLangChange, offLangChange: offLangChange, ready: ready, init: init, applyDOM: applyDOM, SUPPORTED: SUPPORTED };

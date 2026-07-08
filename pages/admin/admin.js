@@ -90,8 +90,8 @@ function _bindFilters() {
 
 async function init() {
     var dataPromise = reloadData();
-    await window.requireAuth({ role: 'admin' });
     renderNav('nav-root', 'admin-users');
+    await window.requireAuth({ role: 'admin' });
     _bindTabs();
     _bindFilters();
     // Cargar config al arrancar para sincronizar el botón "Nuevo usuario"

@@ -28,6 +28,20 @@ jobs:
           repository: iagentshub/frontend
           path: frontend
 
+      # Contrato del router soft-nav: los scripts de página se RE-EJECUTAN al
+      # navegar sin recarga. let/const/class a nivel superior lanzan
+      # "SyntaxError: already declared" en la re-ejecución y rompen la vista en
+      # silencio. Usar var/function (re-declarables).
+      - name: Verificar contrato soft-nav (sin let/const/class top-level en pages/)
+        run: |
+          BAD=$(grep -rnE '^(let|const|class) ' frontend/pages --include='*.js' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::Declaraciones top-level prohibidas en scripts de página (rompen la navegación soft):"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "OK: ningún let/const/class top-level en pages/"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

@@ -24,8 +24,8 @@ function _switchCategory(cat) {
 }
 
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'connections');
+    await window.requireAuth();
 
     await Providers.load();
     buildProviderSelect(_activeCategory);

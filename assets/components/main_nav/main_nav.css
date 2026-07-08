@@ -15,6 +15,24 @@
     margin: 0;
 }
 
+/* Reserva el espacio y el aspecto del nav desde el PRIMER frame. El nav lo monta
+   el JS; sin esto, hasta que se monta, #nav-root mide 0 y el contenido salta al
+   aparecer la barra (el "pestañeo"). Con el hueco reservado no hay salto. */
+#nav-root {
+    flex-shrink: 0;
+    width: 232px;
+    background: var(--nav-bg);
+    border-right: 1px solid var(--line);
+}
+@media (max-width: 768px) {
+    /* En móvil el nav es un overlay (position:fixed), no ocupa columna. */
+    #nav-root {
+        width: auto;
+        background: none;
+        border-right: none;
+    }
+}
+
 .main-nav {
     width: 232px;
     min-height: 100vh;

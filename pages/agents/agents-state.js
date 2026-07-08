@@ -1,17 +1,17 @@
 // agents-state.js — estado global y carga de datos
 'use strict';
 
-let _agents = [];
-let _connections = [];
-let _skills = [];
-let _memories = [];
-let _knowledge = [];
-let _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
-let _activeFolderId = null; // null = todos
-let _activeGroupId = null;  // null = sin filtro de grupo
-let _groupAgents = [];      // agentes cargados al filtrar por grupo
-let _agentPage = 1;
-let _filteredAgents = [];
+var _agents = [];
+var _connections = [];
+var _skills = [];
+var _memories = [];
+var _knowledge = [];
+var _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
+var _activeFolderId = null; // null = todos
+var _activeGroupId = null;  // null = sin filtro de grupo
+var _groupAgents = [];      // agentes cargados al filtrar por grupo
+var _agentPage = 1;
+var _filteredAgents = [];
 
 async function _loadAll() {
     _connStatus = {};

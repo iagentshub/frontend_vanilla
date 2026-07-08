@@ -2,8 +2,8 @@
 'use strict';
 
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'agents');
+    await window.requireAuth();
     await _loadAll();
     _initFolders();   // después de loadAll para que _applyFilter no renderice vacío
     _initFilters();

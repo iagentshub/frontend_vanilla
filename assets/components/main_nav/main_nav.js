@@ -37,6 +37,10 @@ function _renderLangSwitcher() {
 function renderNav(mountId, activePage) {
     var mount = document.getElementById(mountId);
     if (!mount) return;
+    // Con el router soft (soft-nav.js) el nav PERSISTE entre vistas: si ya está
+    // montado, no reconstruirlo (el router actualiza el enlace activo). Evita
+    // el pestañeo del nav al re-ejecutarse el init() de cada vista.
+    if (window.__softNav && mount.querySelector('.main-nav')) return;
     var _buildGen = 0;
 
     function _build() {

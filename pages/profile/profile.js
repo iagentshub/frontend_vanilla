@@ -22,8 +22,8 @@ var _ALL_LANGS = [
 ];
 
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'profile');
+    await window.requireAuth();
     await loadUser();
     await renderThemePicker();
     await renderLangPicker();

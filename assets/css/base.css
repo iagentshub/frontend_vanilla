@@ -2,9 +2,13 @@
    BASE — resets, body, tipografía, scrollbar
 ══════════════════════════════════════════════ */
 
-/* Transición suave entre páginas (View Transitions cross-document, MPA).
-   Degrada de forma elegante: navegadores sin soporte simplemente no animan. */
-@view-transition { navigation: auto; }
+/* Fondo del elemento raíz + color-scheme por tema: evita el flash blanco del
+   navegador entre navegaciones (refuerzo declarativo del que fija theme-early.js). */
+html {
+    background: var(--bg);
+    color-scheme: dark;
+}
+html[data-theme^="light"] { color-scheme: light; }
 
 * {
     box-sizing: border-box;

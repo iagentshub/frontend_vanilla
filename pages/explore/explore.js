@@ -677,8 +677,8 @@
     }
 
     async function init() {
-        await window.requireAuth();
         renderNav('nav-root', 'explore');
+        await window.requireAuth();
         api.get('/api/auth/me')
             .then(function (d) {
                 _me = d.username || '';

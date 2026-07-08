@@ -20,8 +20,8 @@ var _dragOverId     = null;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'dashboard');
+    await window.requireAuth();
 
     _WIDGETS = window._WIDGET_REGISTRY || {};
 

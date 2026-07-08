@@ -1,13 +1,13 @@
 // agents-export.js — modal de exportación de agentes
 'use strict';
 
-let _exportId = null;
+var _exportId = null;
 
 // ── Install steps per format & OS ────────────────────────────────────────────
 // Each step: { label, hint?, cmd? }
 // {filepath} → full download path   {filename} → bare filename
 
-const _STEPS = {
+var _STEPS = {
     claude: {
         mac: [
             {
@@ -223,7 +223,7 @@ const _STEPS = {
     },
 };
 
-const _OS_LABELS = { mac: 'Mac', linux: 'Linux', windows: 'Windows' };
+var _OS_LABELS = { mac: 'Mac', linux: 'Linux', windows: 'Windows' };
 
 function _detectOS() {
     const ua = (navigator.userAgent || '').toLowerCase();

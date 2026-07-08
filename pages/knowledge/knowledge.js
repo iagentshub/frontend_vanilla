@@ -38,8 +38,8 @@ function _initFilters() {
 }
 
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'knowledge');
+    await window.requireAuth();
     try {
         var me = await api.get('/api/auth/me');
         window.__ME__ = me.username || null;

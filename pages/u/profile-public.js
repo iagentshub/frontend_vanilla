@@ -384,8 +384,8 @@
     // ── Init ──────────────────────────────────────────────────────────────────
 
     async function init() {
-        await window.requireAuth();
         renderNav('nav-root', '');
+        await window.requireAuth();
         _bindTabs();
         _bindResourceActions();
 

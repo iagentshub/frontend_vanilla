@@ -5,8 +5,8 @@ var _memories = [];
 var _editingFile = null;
 
 async function init() {
-    await window.requireAuth();
     renderNav('nav-root', 'memory');
+    await window.requireAuth();
     FilterMemory.init({
         mountEl: '#filter-memory-root',
         onChange: _applyFilter,

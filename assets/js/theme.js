@@ -35,6 +35,7 @@
     window.setTheme = function (theme) {
         var t = _resolve(theme);
         document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.style.colorScheme = (t.indexOf('light') === 0) ? 'light' : 'dark';
         localStorage.setItem('ga-theme', t);
     };
 
