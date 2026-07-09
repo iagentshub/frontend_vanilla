@@ -29,8 +29,8 @@ var _SVG_FOLDER = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none">'
 function _initFolders() {
     var folderPanel = document.getElementById('af-folder-panel');
     var groupsPanel = document.getElementById('af-groups-panel');
-    var btnFolders  = document.getElementById('btn-toggle-folders');
-    var btnGroups   = document.getElementById('btn-toggle-groups');
+    var btnFolders = document.getElementById('btn-toggle-folders');
+    var btnGroups = document.getElementById('btn-toggle-groups');
 
     var _folderVisible = localStorage.getItem('gaia-folders-agents') !== 'false';
     var _groupsVisible = false;
@@ -137,7 +137,7 @@ function _initFilters() {
         skills: _skills,
         connections: _connections,
         knowledge: _knowledge,
-        initialScope: 'private',
+        initialScope: null,
         onChange: function () { _applyFilter(); },
     });
 }
