@@ -8,7 +8,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .kf-section-label {
@@ -23,23 +23,26 @@
     width: 100%;
     background: none;
     border: none;
+    border-left: 2px solid transparent;
     cursor: pointer;
     text-align: left;
-    padding: 7px 8px;
-    border-radius: 7px;
+    padding: 6px 10px;
+    border-radius: 0;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    transition: background 0.12s;
+    align-items: center;
+    gap: 0;
+    transition: background 0.12s, border-color 0.12s;
     font-family: var(--font);
 }
 
 .kf-item:hover {
     background: var(--surface-2);
+    border-left-color: var(--line-strong);
 }
 
 .kf-item--active {
     background: var(--accent-dim) !important;
+    border-left-color: var(--accent) !important;
 }
 
 .kf-item--active .kf-item-name {
@@ -53,7 +56,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 130px;
 }
 
 /* ── Botón añadir grupo (+) ───────────────────────────────────────────────── */
@@ -78,17 +80,59 @@
 .gp-empty {
     font-size: 12px;
     color: var(--ink-3);
-    padding: 6px 8px;
+    padding: 6px 10px;
     margin: 0;
 }
 
 /* ── Drag & drop ──────────────────────────────────────────────────────────── */
 .kf-item.kd-drag-over {
     background: var(--accent-dim) !important;
-    outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    outline-offset: -2px;
+    border-left-color: var(--accent) !important;
 }
 
 .kf-item.kd-drag-over .kf-item-name {
     color: var(--accent);
+}
+
+/* ── Responsive: en pantallas pequeñas los items van en horizontal ─────────── */
+@media (max-width: 768px) {
+
+    .af-groups-panel,
+    .kf-panel {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0;
+        scrollbar-width: none;
+    }
+
+    .af-groups-panel::-webkit-scrollbar,
+    .kf-panel::-webkit-scrollbar {
+        display: none;
+    }
+
+    .kf-section-header {
+        display: none;
+    }
+
+    .kf-item {
+        width: auto;
+        flex-shrink: 0;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        border-top: none;
+        padding: 5px 12px;
+        font-size: 12px;
+    }
+
+    .kf-item:hover {
+        border-left-color: transparent;
+        border-bottom-color: var(--line-strong);
+    }
+
+    .kf-item--active {
+        border-left-color: transparent !important;
+        border-bottom-color: var(--accent) !important;
+    }
 }

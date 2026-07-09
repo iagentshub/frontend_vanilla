@@ -7,11 +7,11 @@ var AgentScanner = (function () {
 
     function _classify(path) {
         var p = path.replace(/\\/g, '/');
-        if (/(?:^|\/)\.claude\/agents\/[^/]+\.md$/i.test(p))        return 'agent_claude';
-        if (/(?:^|\/)\.claude\/agents\/[^/]+\.json$/i.test(p))       return 'agent_json';
-        if (/(?:^|\/)\.claude\/skills\/[^/]+\/SKILL\.md$/i.test(p))   return 'skill';
-        if (/(?:^|\/)\.github\/[^/]+\.agent\.md$/i.test(p))          return 'agent_github';
-        if (/(?:^|\/)\.github\/copilot-instructions\.md$/i.test(p))  return 'agent_github';
+        if (/(?:^|\/)\.claude\/agents\/[^/]+\.md$/i.test(p)) return 'agent_claude';
+        if (/(?:^|\/)\.claude\/agents\/[^/]+\.json$/i.test(p)) return 'agent_json';
+        if (/(?:^|\/)\.claude\/skills\/[^/]+\/SKILL\.md$/i.test(p)) return 'skill';
+        if (/(?:^|\/)\.github\/[^/]+\.agent\.md$/i.test(p)) return 'agent_github';
+        if (/(?:^|\/)\.github\/copilot-instructions\.md$/i.test(p)) return 'agent_github';
         return null;
     }
 
@@ -20,8 +20,8 @@ var AgentScanner = (function () {
     function _readFile(file) {
         return new Promise(function (resolve, reject) {
             var r = new FileReader();
-            r.onload  = function (e) { resolve(e.target.result); };
-            r.onerror = function ()  { reject(new Error('Read failed')); };
+            r.onload = function (e) { resolve(e.target.result); };
+            r.onerror = function () { reject(new Error('Read failed')); };
             r.readAsText(file);
         });
     }
@@ -57,127 +57,6 @@ var AgentScanner = (function () {
         return _skills.some(function (s) { return (s.name || '').toLowerCase() === lc; });
     }
 
-    // ─── Carpetas ─────────────────────────────────────────────────────────────
-
-    // Folders loaded per section: { agents: [...], skill: [...] }
-    var _loadedFolders = { agents: [], skill: [] };
-    // Name the user selected in the picker (empty string = no folder)
-    var _selectedFolderName = '';
-
-    async function _fetchFolders() {
-        try {
-            var results = await Promise.all([
-                api.get('/api/knowledge/folders?section=agents').catch(function () { return []; }),
-                api.get('/api/knowledge/folders?section=skill').catch(function () { return []; }),
-            ]);
-            _loadedFolders.agents = results[0] || [];
-            _loadedFolders.skill  = results[1] || [];
-        } catch (err) { console.error('[agents-scan] Error cargando carpetas:', err); }
-    }
-
-    // Returns folder_id for the given section+name, creating it if needed.
-    async function _resolveFolderId(section, name) {
-        if (!name) return null;
-        var list = _loadedFolders[section] || [];
-        var lc = name.trim().toLowerCase();
-        var found = list.filter(function (f) { return (f.name || '').toLowerCase() === lc; })[0];
-        if (found) return found.id;
-        // Create on the fly
-        try {
-            var created = await api.post('/api/knowledge/folders', { section: section, name: name.trim() });
-            if (created && created.id) {
-                (_loadedFolders[section] = _loadedFolders[section] || []).push(created);
-                return created.id;
-            }
-        } catch (err) { console.error('[agents-scan] Error creando carpeta:', err); }
-        return null;
-    }
-
-    function _buildFolderRow() {
-        var el = document.createElement('div');
-        el.className = 'scan-folder-row';
-
-        // Combine folder names from both sections (deduplicated by name)
-        var nameSet = {};
-        (_loadedFolders.agents || []).forEach(function (f) { nameSet[f.name] = true; });
-        (_loadedFolders.skill  || []).forEach(function (f) { nameSet[f.name] = true; });
-        // Si el directorio escaneado no existe aún como carpeta, añadirlo para que
-        // aparezca pre-seleccionado en el picker sin necesidad de crearlo antes.
-        if (_selectedFolderName && !nameSet[_selectedFolderName]) {
-            nameSet[_selectedFolderName] = true;
-        }
-        var names = Object.keys(nameSet).sort();
-
-        var selectHTML = '<select class="scan-folder-select" id="scan-folder-select">'
-            + '<option value="">' + esc(t('agents.scan.folder_none')) + '</option>';
-        names.forEach(function (n) {
-            var sel = (_selectedFolderName === n) ? ' selected' : '';
-            selectHTML += '<option value="' + esc(n) + '"' + sel + '>' + esc(n) + '</option>';
-        });
-        selectHTML += '<option value="__new__">' + esc(t('agents.scan.folder_new')) + '</option>';
-        selectHTML += '</select>';
-
-        el.innerHTML =
-            '<span class="scan-folder-label">' + esc(t('agents.scan.folder_label')) + '</span>'
-          + selectHTML
-          + '<span class="scan-folder-inline" id="scan-folder-inline" style="display:none">'
-          +   '<input class="scan-folder-input" id="scan-folder-input" type="text" placeholder="' + esc(t('agents.scan.folder_new_placeholder')) + '">'
-          +   '<button class="btn btn-ghost btn-xs" id="scan-folder-create-btn">' + esc(t('agents.scan.folder_create_btn')) + '</button>'
-          +   '<button class="btn btn-ghost btn-xs" id="scan-folder-cancel-btn">' + esc(t('agents.scan.folder_cancel_btn')) + '</button>'
-          + '</span>';
-
-        return el;
-    }
-
-    function _bindFolderRow() {
-        var sel    = _modal.querySelector('#scan-folder-select');
-        var inline = _modal.querySelector('#scan-folder-inline');
-        var input  = _modal.querySelector('#scan-folder-input');
-        var createBtn = _modal.querySelector('#scan-folder-create-btn');
-        var cancelBtn = _modal.querySelector('#scan-folder-cancel-btn');
-        if (!sel) return;
-
-        sel.addEventListener('change', function () {
-            if (sel.value === '__new__') {
-                sel.style.display = 'none';
-                inline.style.display = '';
-                input.focus();
-            } else {
-                _selectedFolderName = sel.value;
-            }
-        });
-
-        function _confirmNew() {
-            var name = input.value.trim();
-            if (name) {
-                _selectedFolderName = name;
-                // Add option and select it
-                var opt = document.createElement('option');
-                opt.value = name;
-                opt.textContent = name;
-                sel.insertBefore(opt, sel.querySelector('[value="__new__"]'));
-                sel.value = name;
-            } else {
-                sel.value = _selectedFolderName || '';
-            }
-            sel.style.display = '';
-            inline.style.display = 'none';
-            input.value = '';
-        }
-
-        createBtn.addEventListener('click', _confirmNew);
-        cancelBtn.addEventListener('click', function () {
-            sel.value = _selectedFolderName || '';
-            sel.style.display = '';
-            inline.style.display = 'none';
-            input.value = '';
-        });
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') _confirmNew();
-            if (e.key === 'Escape') cancelBtn.click();
-        });
-    }
-
     // ─── Vinculación inteligente agent→skills ─────────────────────────────────
 
     // Determina qué skills globales (sin id) deben vincularse a un agente concreto.
@@ -207,7 +86,7 @@ var AgentScanner = (function () {
         if (refs.length > 0) {
             var matched = globalSkills.filter(function (s) {
                 var slug = (s._fallback || '').toLowerCase();
-                var name = (s.meta.name  || '').toLowerCase();
+                var name = (s.meta.name || '').toLowerCase();
                 return refs.some(function (r) {
                     return r === slug || r === name || name.includes(r) || slug.includes(r);
                 });
@@ -219,7 +98,7 @@ var AgentScanner = (function () {
         var agentCtx = ((parsed.name || '') + ' ' + (parsed.description || '')).toLowerCase();
         var nameMatched = globalSkills.filter(function (s) {
             var slug = (s._fallback || '').toLowerCase();
-            var name = (s.meta.name  || '').toLowerCase();
+            var name = (s.meta.name || '').toLowerCase();
             return agentCtx.includes(slug) || agentCtx.includes(name)
                 || name.includes(agentCtx.trim());
         });
@@ -245,28 +124,28 @@ var AgentScanner = (function () {
         //   que las referencian por ese ID.
         // - Skills sin `id` (formato Claude Code SKILL.md): son globales del proyecto y
         //   se vinculan a todos los agentes del directorio.
-        var skillById    = {};  // id → rec (legado)
+        var skillById = {};  // id → rec (legado)
         var globalSkills = [];  // sin id → vinculadas a todos
-        var allSkills    = [];
+        var allSkills = [];
 
         await Promise.all(skillRaw.map(async function (item) {
             try {
-                var text   = await _readFile(item.file);
+                var text = await _readFile(item.file);
                 var parsed = _parseFrontmatter(text);
-                var fb     = item.path.replace(/\\/g, '/').split('/').slice(-2, -1)[0]
-                             || item.file.name.replace(/\.md$/i, '');
+                var fb = item.path.replace(/\\/g, '/').split('/').slice(-2, -1)[0]
+                    || item.file.name.replace(/\.md$/i, '');
                 var rec = { file: item.file, path: item.path, meta: parsed.meta, body: parsed.body, _fallback: fb };
                 allSkills.push(rec);
                 if (parsed.meta.id) skillById[parsed.meta.id] = rec;
-                else                globalSkills.push(rec);
+                else globalSkills.push(rec);
             } catch (err) { console.error('[agents-scan] Error leyendo skill:', err); }
         }));
 
         // Leer agentes y vincular skills.
         var agents = await Promise.all(agentRaw.map(async function (item) {
             try {
-                var text     = await _readFile(item.file);
-                var parsed   = _parseAndLoadAgent(item.file.name, text);
+                var text = await _readFile(item.file);
+                var parsed = _parseAndLoadAgent(item.file.name, text);
                 // Extraer campo skills: del frontmatter como texto crudo para la estrategia 2.
                 var fmSkills = text.match(/^skills\s*:\s*(.+)/m);
                 parsed._skillsMeta = fmSkills ? fmSkills[1] : '';
@@ -306,13 +185,10 @@ var AgentScanner = (function () {
     var _skillCache = {};
 
     async function _importAgent(agent) {
-        var agentFolderId = await _resolveFolderId('agents', _selectedFolderName);
-        var skillFolderId = await _resolveFolderId('skill',  _selectedFolderName);
-
         // 1. Crear skills vinculadas (una sola vez por nombre) y recoger sus IDs reales.
         var skillIds = [];
         for (var i = 0; i < agent.linkedSkills.length; i++) {
-            var s     = agent.linkedSkills[i];
+            var s = agent.linkedSkills[i];
             var sName = (s.meta.name || s._fallback || s.file.name.replace(/\.md$/i, '')).trim();
             var cacheKey = sName.toLowerCase();
             if (_skillCache[cacheKey]) {
@@ -321,12 +197,11 @@ var AgentScanner = (function () {
             }
             try {
                 var created = await api.post('/api/skills/private', {
-                    name:        sName,
+                    name: sName,
                     description: (s.meta.description || '').trim(),
-                    icon:        (s.meta.icon        || '').trim(),
-                    category:    (s.meta.category    || '').trim(),
-                    content:     s.body,
-                    folder_id:   skillFolderId || undefined,
+                    icon: (s.meta.icon || '').trim(),
+                    category: (s.meta.category || '').trim(),
+                    content: s.body,
                 });
                 if (created && created.id) {
                     _skillCache[cacheKey] = created.id;
@@ -338,48 +213,45 @@ var AgentScanner = (function () {
         // 2. Construir payload del agente
         var p = agent.parsed;
         var payload = {
-            name:          p.name || agent.file.name.replace(/\.(md|json)$/i, ''),
-            description:   p.description   || '',
-            agent_type:    p.agent_type    || 'claude',
+            name: p.name || agent.file.name.replace(/\.(md|json)$/i, ''),
+            description: p.description || '',
+            agent_type: p.agent_type || 'claude',
             connection_id: null,
             system_prompt: p.system_prompt || '',
-            temperature:   p.temperature != null ? p.temperature : 0.7,
-            skills:        skillIds,
-            knowledge:     [],
-            use_memory:    p.use_memory != null ? !!p.use_memory : false,
-            routines:      p.routines || [],
-            scope:         'private',
-            model:         p.model    || '',
-            folder_id:     agentFolderId || undefined,
+            temperature: p.temperature != null ? p.temperature : 0.7,
+            skills: skillIds,
+            knowledge: [],
+            use_memory: p.use_memory != null ? !!p.use_memory : false,
+            routines: p.routines || [],
+            scope: 'private',
+            model: p.model || '',
         };
         if (p.agent_type === 'claude') {
-            payload.extended_thinking      = !!p.extended_thinking;
-            payload.cache_control          = !!p.cache_control;
+            payload.extended_thinking = !!p.extended_thinking;
+            payload.cache_control = !!p.cache_control;
             payload.thinking_budget_tokens = p.thinking_budget_tokens || 10000;
         } else if (p.agent_type === 'openai') {
-            payload.response_format   = p.response_format   || 'text';
-            payload.tool_choice       = p.tool_choice       || 'auto';
+            payload.response_format = p.response_format || 'text';
+            payload.tool_choice = p.tool_choice || 'auto';
             payload.frequency_penalty = p.frequency_penalty || 0;
-            payload.presence_penalty  = p.presence_penalty  || 0;
+            payload.presence_penalty = p.presence_penalty || 0;
         } else if (p.agent_type === 'github') {
             payload.copilot_topic = p.copilot_topic || '';
         }
 
         await api.post('/api/agents', payload);
         if (typeof _loadAll === 'function') _loadAll();
-        if (window._folderAgents) window._folderAgents.load();
         return skillIds.length;
     }
 
     // ─── Modal ────────────────────────────────────────────────────────────────
 
-    var _modal    = null;
-    var _results  = null;
+    var _modal = null;
+    var _results = null;
 
     function _closeModal() {
         if (_modal) { _modal.remove(); _modal = null; }
         _results = null;
-        _selectedFolderName = '';
         _skillCache = {};
     }
 
@@ -387,14 +259,14 @@ var AgentScanner = (function () {
         var map = {
             agent_claude: ['scan-badge--claude', 'Claude Code'],
             agent_github: ['scan-badge--github', 'GitHub Copilot'],
-            agent_json:   ['scan-badge--native', 'iAgentsHub'],
+            agent_json: ['scan-badge--native', 'iAgentsHub'],
         };
         var pair = map[agentType] || ['scan-badge--claude', 'Claude Code'];
         return '<span class="scan-badge ' + pair[0] + '">' + pair[1] + '</span>';
     }
 
     function _buildAgentItem(agent) {
-        var el   = document.createElement('div');
+        var el = document.createElement('div');
         el.className = 'scan-agent-item';
         var name = (agent.parsed && agent.parsed.name) || agent.file.name.replace(/\.(md|json)$/i, '');
         var btnLabel = agent.exists ? t('agents.scan.replace_btn') : t('agents.scan.import_btn');
@@ -409,14 +281,14 @@ var AgentScanner = (function () {
 
         el.innerHTML =
             '<div class="scan-agent-row">'
-          +   '<div class="scan-item-info">'
-          +     '<span class="scan-item-name">' + esc(name) + '</span>'
-          +     _agentBadge(agent.agentType)
-          +     (agent.linkedSkills.length ? '<span class="scan-skill-count">+' + agent.linkedSkills.length + ' skill' + (agent.linkedSkills.length > 1 ? 's' : '') + '</span>' : '')
-          +   '</div>'
-          +   '<button class="btn btn-ghost btn-sm scan-action-btn">' + esc(btnLabel) + '</button>'
-          + '</div>'
-          + skillsHTML;
+            + '<div class="scan-item-info">'
+            + '<span class="scan-item-name">' + esc(name) + '</span>'
+            + _agentBadge(agent.agentType)
+            + (agent.linkedSkills.length ? '<span class="scan-skill-count">+' + agent.linkedSkills.length + ' skill' + (agent.linkedSkills.length > 1 ? 's' : '') + '</span>' : '')
+            + '</div>'
+            + '<button class="btn btn-ghost btn-sm scan-action-btn">' + esc(btnLabel) + '</button>'
+            + '</div>'
+            + skillsHTML;
 
         var btn = el.querySelector('.scan-action-btn');
         btn.addEventListener('click', function () { _doImportOne(agent, btn); });
@@ -431,10 +303,10 @@ var AgentScanner = (function () {
         var btnLabel = skill.exists ? t('agents.scan.replace_btn') : t('agents.scan.create_btn');
         el.innerHTML =
             '<div class="scan-item-info">'
-          +   '<span class="scan-item-name">' + esc(name) + '</span>'
-          +   '<span class="scan-badge scan-badge--skill">' + esc(t('agents.scan.type_skill')) + '</span>'
-          + '</div>'
-          + '<button class="btn btn-ghost btn-sm scan-action-btn">' + esc(btnLabel) + '</button>';
+            + '<span class="scan-item-name">' + esc(name) + '</span>'
+            + '<span class="scan-badge scan-badge--skill">' + esc(t('agents.scan.type_skill')) + '</span>'
+            + '</div>'
+            + '<button class="btn btn-ghost btn-sm scan-action-btn">' + esc(btnLabel) + '</button>';
 
         var btn = el.querySelector('.scan-action-btn');
         btn.addEventListener('click', function () { _doCreateSkill(skill, btn); });
@@ -445,43 +317,31 @@ var AgentScanner = (function () {
         _closeModal();
         _results = results;
 
-        // Load existing folders so the picker is populated
-        await _fetchFolders();
-
-        // Pre-select the scanned directory name as default folder destination
-        _selectedFolderName = dirName || '';
-
         var total = results.agents.length + results.orphanSkills.length;
 
         _modal = document.createElement('div');
         _modal.className = 'modal-bg';
         _modal.innerHTML =
             '<div class="modal-box">'
-          +   '<div class="modal-header">'
-          +     '<div>'
-          +       '<h2 class="modal-title">' + esc(dirName) + '</h2>'
-          +       '<p class="scan-modal-count">'
-          +         (total > 0 ? t('agents.scan.found', { n: String(total) }) : t('agents.scan.empty'))
-          +       '</p>'
-          +     '</div>'
-          +     '<div style="display:flex;gap:8px;align-items:center">'
-          +       (total > 0 ? '<button class="btn btn-primary btn-sm" id="scan-import-all">' + esc(t('agents.scan.import_all_btn')) + '</button>' : '')
-          +       '<button class="modal-close" id="scan-close">'
-          +         '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
-          +       '</button>'
-          +     '</div>'
-          +   '</div>'
-          +   '<div class="scan-modal-body"></div>'
-          + '</div>';
+            + '<div class="modal-header">'
+            + '<div>'
+            + '<h2 class="modal-title">' + esc(dirName) + '</h2>'
+            + '<p class="scan-modal-count">'
+            + (total > 0 ? t('agents.scan.found', { n: String(total) }) : t('agents.scan.empty'))
+            + '</p>'
+            + '</div>'
+            + '<div style="display:flex;gap:8px;align-items:center">'
+            + (total > 0 ? '<button class="btn btn-primary btn-sm" id="scan-import-all">' + esc(t('agents.scan.import_all_btn')) + '</button>' : '')
+            + '<button class="modal-close" id="scan-close">'
+            + '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+            + '</button>'
+            + '</div>'
+            + '</div>'
+            + '<div class="scan-modal-body"></div>'
+            + '</div>';
 
         document.body.appendChild(_modal);
         var body = _modal.querySelector('.scan-modal-body');
-
-        // Folder picker row
-        if (total > 0) {
-            body.appendChild(_buildFolderRow());
-            _bindFolderRow();
-        }
 
         if (results.agents.length) {
             var sec = document.createElement('div');
@@ -532,14 +392,12 @@ var AgentScanner = (function () {
         var orig = skill.exists ? t('agents.scan.replace_btn') : t('agents.scan.create_btn');
         btn.textContent = '…';
         try {
-            var folderId = await _resolveFolderId('skill', _selectedFolderName);
             await api.post('/api/skills/private', {
-                name:        (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
+                name: (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
                 description: (skill.meta.description || '').trim(),
-                icon:        (skill.meta.icon        || '').trim(),
-                category:    (skill.meta.category    || '').trim(),
-                content:     skill.body,
-                folder_id:   folderId || undefined,
+                icon: (skill.meta.icon || '').trim(),
+                category: (skill.meta.category || '').trim(),
+                content: skill.body,
             });
             btn.textContent = '✓';
             btn.classList.add('scan-btn--done');
@@ -558,10 +416,6 @@ var AgentScanner = (function () {
         if (!_results) return;
         btn.disabled = true;
         btn.textContent = '…';
-
-        // Pre-resolve folder IDs once for the whole batch
-        var agentFolderId = await _resolveFolderId('agents', _selectedFolderName);
-        var skillFolderId = await _resolveFolderId('skill',  _selectedFolderName);
 
         var agentCount = 0, skillCount = 0;
         var agentBtns = (_modal || document).querySelectorAll('.scan-agent-item .scan-action-btn');
@@ -594,12 +448,11 @@ var AgentScanner = (function () {
             if (skBtn) { skBtn.disabled = true; skBtn.textContent = '…'; }
             try {
                 await api.post('/api/skills/private', {
-                    name:        (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
+                    name: (skill.meta.name || skill._fallback || skill.file.name.replace(/\.md$/i, '')).trim(),
                     description: (skill.meta.description || '').trim(),
-                    icon:        (skill.meta.icon        || '').trim(),
-                    category:    (skill.meta.category    || '').trim(),
-                    content:     skill.body,
-                    folder_id:   skillFolderId || undefined,
+                    icon: (skill.meta.icon || '').trim(),
+                    category: (skill.meta.category || '').trim(),
+                    content: skill.body,
                 });
                 skill.exists = true;
                 skillCount++;
@@ -613,7 +466,6 @@ var AgentScanner = (function () {
         btn.classList.add('scan-btn--done');
         toast(t('agents.scan.all_done', { agents: String(agentCount), skills: String(skillCount) }), 'ok');
         if (typeof _loadAll === 'function') _loadAll();
-        if (window._folderAgents) window._folderAgents.load();
     }
 
     // ─── Entrada: drag-and-drop de archivos o carpetas ────────────────────────

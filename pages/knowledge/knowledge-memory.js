@@ -3,7 +3,6 @@
 
 var KnowledgeMemory = (function () {
     var _memories = [];
-    var _activeFolderId = null;
     var _editingFile = null;
     var _page = 1;
     var _query = '';
@@ -28,8 +27,8 @@ var KnowledgeMemory = (function () {
         if (btnNew) {
             btnNew.addEventListener('click', function () {
                 ActionMenu.show(this, [
-                    { icon: _SVG_UPLOAD, label: t('memory.page.new_from_file'),    sub: t('memory.page.new_from_file_sub'),    steps: 2, onClick: function () { document.getElementById('memory-file-input').click(); } },
-                    { icon: _SVG_PLUS,   label: t('memory.page.new_from_scratch'), sub: t('memory.page.new_from_scratch_sub'), steps: 1, onClick: function () { _editingFile = null; _openModal(null); } },
+                    { icon: _SVG_UPLOAD, label: t('memory.page.new_from_file'), sub: t('memory.page.new_from_file_sub'), steps: 2, onClick: function () { document.getElementById('memory-file-input').click(); } },
+                    { icon: _SVG_PLUS, label: t('memory.page.new_from_scratch'), sub: t('memory.page.new_from_scratch_sub'), steps: 1, onClick: function () { _editingFile = null; _openModal(null); } },
                 ]);
             });
         }
@@ -80,27 +79,20 @@ var KnowledgeMemory = (function () {
                         toast(t('memory.deleted') || 'Eliminado', 'info');
                         load();
                     } catch (err) { toast(err.message, 'error'); }
-                } else if (btn.dataset.action === 'move-memory') {
-                    var memItem = _memories.find(function (m) { return m.filename === file; });
-                    FolderMoveDialog.open('memory', file, memItem ? memItem.folder_id : null, function () { load(); });
                 }
             });
         }
     }
 
     async function load(folderId, groupId) {
-        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         var url = groupId ? '/api/memory?group_id=' + encodeURIComponent(groupId) : '/api/memory';
         _memories = await api.get(url).catch(function () { return []; });
         _page = 1;
         _render();
-        if (window._folderMemory) window._folderMemory.updateStats(_memories);
     }
 
     function _visibleMemories() {
-        var items = _activeFolderId
-            ? _memories.filter(function (m) { return m.folder_id === _activeFolderId; })
-            : _memories;
+        var items = _memories;
         if (!_query) return items;
         var q = _query.toLowerCase();
         return items.filter(function (m) {
@@ -136,7 +128,6 @@ var KnowledgeMemory = (function () {
                 '</div>' +
                 '<footer class="mem-card-actions">' +
                 '<button class="mem-action mem-action--edit" data-action="edit" data-file="' + esc(m.filename) + '" title="' + esc(t('memory.actions.edit') || 'Editar') + '">' + _SVG_EDIT + '</button>' +
-                '<button class="mem-action" data-action="move-memory" data-file="' + esc(m.filename) + '" title="' + esc(t('knowledge.folder.move_to') || 'Mover a carpeta') + '">' + _SVG_FOLDER + '</button>' +
                 '<button class="mem-action mem-action--delete" data-action="delete" data-file="' + esc(m.filename) + '" title="' + esc(t('memory.actions.delete') || 'Eliminar') + '">' + _SVG_TRASH + '</button>' +
                 '</footer>' +
                 '</article>';

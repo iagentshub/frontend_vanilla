@@ -7,7 +7,6 @@ var _skills = [];
 var _memories = [];
 var _knowledge = [];
 var _connStatus = {}; // { connId: true | false } — undefined = aún sin testar
-var _activeFolderId = null; // null = todos
 var _activeGroupId = null;  // null = sin filtro de grupo
 var _groupAgents = [];      // agentes cargados al filtrar por grupo
 var _agentPage = 1;
@@ -120,23 +119,15 @@ function _applyFilter() {
         list = list.filter(a => f.labels.some(lbl => (a.labels || ['private']).indexOf(lbl) !== -1));
     }
 
-    if (_activeFolderId !== null) {
-        list = list.filter(a => (a.folder_id || null) === _activeFolderId);
-    }
-
     _filteredAgents = list;
     _agentPage = 1;
     _renderAgentPage();
     _updateDeleteBanner();
-
-    if (window._folderAgents) {
-        window._folderAgents.updateStats(_agents.filter(a => (a.scope || 'private') === 'private' && !a._shared));
-    }
 }
 
 function _updateDeleteBanner() {
-    var banner   = document.getElementById('agents-delete-banner');
-    var countEl  = document.getElementById('agents-delete-count');
+    var banner = document.getElementById('agents-delete-banner');
+    var countEl = document.getElementById('agents-delete-count');
     var deleteBtn = document.getElementById('agents-delete-all-btn');
     if (!banner) return;
     var toDelete = _agents.filter(function (a) { return (a.labels || []).indexOf('delete') !== -1; });
@@ -171,16 +162,8 @@ function _renderAgentPage() {
     renderLoadMore(grid, _filteredAgents.length, shown, function () { _agentPage++; _renderAgentPage(); });
 }
 
-function _setActiveFolder(folderId) {
-    _activeFolderId = folderId;
-    _activeGroupId = null;
-    _groupAgents = [];
-    _applyFilter();
-}
-
 async function _setActiveGroup(groupId) {
     _activeGroupId = groupId;
-    _activeFolderId = null;
     // Limpiar inmediatamente para evitar race condition con _testUsedConnections:
     // si _renderAgentPage() se llama entre el await y el final de esta función,
     // mostraría datos del grupo anterior en vez del vacío correcto.
@@ -193,4 +176,3 @@ async function _setActiveGroup(groupId) {
         _applyFilter(); // actualizar con los datos cargados
     }
 }
-

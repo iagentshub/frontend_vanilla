@@ -4,7 +4,6 @@
 var KnowledgeDocs = (function () {
     var _items = [];
     var _loaded = false;
-    var _activeFolderId = null;
     var _page = 1;
     var _query = '';
 
@@ -14,19 +13,6 @@ var KnowledgeDocs = (function () {
             e.target.value = '';
             if (file) _uploadSingle(file);
         });
-
-        var folderInput = document.getElementById('folder-file-input');
-        if (folderInput) {
-            folderInput.addEventListener('change', function (e) {
-                var files = Array.from(e.target.files || []);
-                e.target.value = '';
-                if (!files.length) {
-                    toast('No se detectaron archivos. Puede que el navegador no soporte la selección de carpetas.', 'error');
-                    return;
-                }
-                _uploadFolder(files);
-            });
-        }
 
         // Drag & drop
         var dropzone = document.getElementById('docs-dropzone');
@@ -63,17 +49,10 @@ var KnowledgeDocs = (function () {
             if (shareBtn) { window.GroupShareDialog && GroupShareDialog.open('knowledge', shareBtn.dataset.shareId, shareBtn.dataset.shareName || ''); return; }
             var delBtn = e.target.closest('[data-del-id]');
             if (delBtn) { _deleteItem(delBtn.dataset.delId); return; }
-            var moveBtn = e.target.closest('[data-move-id]');
-            if (moveBtn) {
-                var item = _items.find(function (i) { return i.id === moveBtn.dataset.moveId; });
-                FolderMoveDialog.open('document', moveBtn.dataset.moveId, item ? item.folder_id : null, function () { load(); });
-                return;
-            }
         });
     }
 
     async function load(folderId, groupId) {
-        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         try {
             var url = '/api/knowledge?type=document';
             if (groupId) url += '&group_id=' + encodeURIComponent(groupId);
@@ -84,13 +63,10 @@ var KnowledgeDocs = (function () {
         }
         _page = 1;
         _render();
-        if (window._folderDocs) window._folderDocs.updateStats(_items);
     }
 
     function _visibleItems() {
-        var items = _activeFolderId
-            ? _items.filter(function (i) { return i.folder_id === _activeFolderId; })
-            : _items;
+        var items = _items;
         if (!_query) return items;
         var q = _query.toLowerCase();
         return items.filter(function (i) {
@@ -140,7 +116,6 @@ var KnowledgeDocs = (function () {
                 '</div>' +
                 '<div class="knowledge-card-source">' + esc(item.source) + '</div>' +
                 '<div class="knowledge-card-meta">' + esc(_fmtChars(item.char_count)) +
-                (_activeFolderId ? '' : '<button class="kf-move-inline" data-move-id="' + esc(item.id) + '" title="Mover a carpeta">→</button>') +
                 '</div>' +
                 '</div>';
         }).join('');
@@ -164,12 +139,11 @@ var KnowledgeDocs = (function () {
         var origText = span ? span.textContent : '';
         if (span) span.textContent = t('skills.knowledge.uploading') || 'Subiendo…';
         try {
-            var item = await _upload(file, _activeFolderId);
+            var item = await _upload(file, null);
             if (!item) { toast((t('skills.knowledge.formats_hint') || 'Formatos: .txt .md .pdf'), 'error'); return; }
             _items.unshift(item);
             _loaded = true;
             _page = 1; _render();
-            if (window._folderDocs) window._folderDocs.updateStats(_items);
             toast(item.title, 'success');
         } catch (e) {
             toast((t('skills.knowledge.upload_error') || 'Error: {{msg}}').replace('{{msg}}', e.message), 'error');
@@ -281,8 +255,8 @@ var KnowledgeDocs = (function () {
         var progress = _createUploadProgress(folderName, files.map(function (f) { return f.name; }));
 
         var btnFolder = document.getElementById('btn-upload-folder');
-        var span = btnFolder.querySelector('span');
-        btnFolder.disabled = true;
+        var span = btnFolder ? btnFolder.querySelector('span') : null;
+        if (btnFolder) btnFolder.disabled = true;
         if (span) span.textContent = 'Subiendo…';
 
         try {
@@ -305,12 +279,6 @@ var KnowledgeDocs = (function () {
             }
 
             _loaded = true;
-            _activeFolderId = folderId;
-            if (window._folderDocs) {
-                window._folderDocs.load().then(function () {
-                    window._folderDocs.updateStats(_items);
-                });
-            }
             _page = 1; _render();
             progress.finish();
 
@@ -327,7 +295,7 @@ var KnowledgeDocs = (function () {
             progress.dismiss();
             toast('Error al crear carpeta: ' + e.message, 'error');
         } finally {
-            btnFolder.disabled = false;
+            if (btnFolder) btnFolder.disabled = false;
             if (span) span.textContent = 'Subir carpeta';
         }
     }
@@ -339,7 +307,6 @@ var KnowledgeDocs = (function () {
             await api.del('/api/knowledge/' + encodeURIComponent(id));
             _items = _items.filter(function (i) { return i.id !== id; });
             _page = 1; _render();
-            if (window._folderDocs) window._folderDocs.updateStats(_items);
             toast(t('skills.knowledge.deleted') || 'Eliminado', 'info');
         } catch (e) { toast(e.message, 'error'); }
     }

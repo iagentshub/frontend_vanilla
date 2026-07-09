@@ -1,29 +1,4 @@
 @media (max-width: 768px) {
-    .af-folder-panel {
-        width: 100%;
-        border-right: none;
-        padding-right: 0;
-        border-bottom: 1px solid var(--line);
-        padding-bottom: 10px;
-        margin-bottom: 16px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 6px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        flex-wrap: nowrap;
-        scrollbar-width: none;
-    }
-
-    .af-folder-panel::-webkit-scrollbar {
-        display: none;
-    }
-
-    .af-folder-panel:empty {
-        display: none;
-    }
-
     .af-content {
         padding-left: 0;
     }
@@ -955,56 +930,6 @@ details[open]>.advanced-summary::before {
     flex-direction: column;
     max-height: 60vh;
     overflow-y: auto;
-}
-
-.scan-folder-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 24px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface-2);
-    flex-shrink: 0;
-}
-
-.scan-folder-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--ink-3);
-    white-space: nowrap;
-}
-
-.scan-folder-select {
-    flex: 1;
-    min-width: 0;
-    max-width: 220px;
-    height: 28px;
-    padding: 0 8px;
-    font-size: 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--ink);
-    cursor: pointer;
-}
-
-.scan-folder-input {
-    flex: 1;
-    height: 28px;
-    padding: 0 8px;
-    font-size: 12px;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--ink);
-    outline: none;
-}
-
-.scan-folder-inline {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
 }
 
 .scan-modal-count {

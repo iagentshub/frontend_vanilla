@@ -1,6 +1,6 @@
 /* knowledge.css — Conocimiento (Skills · Webs · Documentos) */
 
-/* ── Folder panel layout ──────────────────────────────────────────────────── */
+/* ── Panel layout ──────────────────────────────────────────────────────────── */
 .knowledge-tab-layout {
     display: flex;
     gap: 0;
@@ -21,158 +21,17 @@
     padding-right: 12px;
 }
 
-.kf-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.kf-section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-}
-
-.kf-add-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--ink-3);
-    padding: 2px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    transition: color 0.12s, background 0.12s;
-}
-
-.kf-add-btn:hover {
-    color: var(--accent);
-    background: var(--accent-dim);
-}
-
-.kf-item {
-    width: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    padding: 7px 8px;
-    border-radius: 7px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    transition: background 0.12s;
-    font-family: var(--font);
-}
-
-.kf-item:hover {
-    background: var(--surface-2);
-}
-
-.kf-item--active {
-    background: var(--accent-dim) !important;
-}
-
-.kf-item--active .kf-item-name {
-    color: var(--accent);
-}
-
-.kf-item-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 130px;
-}
-
-.kf-item-stats {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--ink-3);
-}
-
-.kf-item-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    border-radius: 7px;
-}
-
-.kf-item-row .kf-item {
-    flex: 1;
-    min-width: 0;
-}
-
-.kf-item-actions {
-    display: none;
-    gap: 2px;
-    padding-right: 4px;
-    flex-shrink: 0;
-}
-
-.kf-item-row:hover .kf-item-actions {
-    display: flex;
-}
-
-.kf-action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--ink-3);
-    padding: 3px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    transition: color 0.12s, background 0.12s;
-}
-
-.kf-action-btn:hover {
-    color: var(--ink);
-    background: var(--surface-3);
-}
-
-.kf-action-btn--danger:hover {
-    color: var(--danger);
-    background: color-mix(in srgb, var(--danger) 10%, transparent);
-}
-
-.kf-item--group.kf-item--active .kf-group-icon {
-    color: var(--accent);
-    opacity: 1;
-}
-
-/* Move-to-folder inline button inside card meta */
-.kf-move-inline {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--ink-3);
-    font-size: 11px;
-    padding: 0 4px;
-    opacity: 0;
-    transition: opacity 0.1s, color 0.1s;
-    vertical-align: middle;
-    font-family: var(--font-mono);
-}
-
-.knowledge-card:hover .kf-move-inline {
-    opacity: 1;
-}
-
-.kf-move-inline:hover {
-    color: var(--accent);
-}
-
-/* Responsive: folder chips on mobile */
+/* Responsive */
 @media (max-width: 768px) {
+
     /* Layout: stack vertically */
-    .knowledge-tab-layout    { flex-direction: column; }
-    .knowledge-tab-content   { padding-left: 0; }
+    .knowledge-tab-layout {
+        flex-direction: column;
+    }
+
+    .knowledge-tab-content {
+        padding-left: 0;
+    }
 
     /* Panel → horizontal chip strip */
     .kf-panel {
@@ -191,45 +50,25 @@
         flex-wrap: nowrap;
         scrollbar-width: none;
     }
-    .kf-panel::-webkit-scrollbar { display: none; }
-    .kf-panel:empty              { display: none; }
 
-    /* Ocultar header "Carpetas" y acciones rename/delete */
-    .kf-section-header { display: none; }
-    .kf-item-row       { display: contents; }
-    .kf-item-actions   { display: none !important; }
-    .kf-item-stats     { display: none; }
-
-    /* Chips */
-    .kf-item {
-        width: auto;
-        flex: none;
-        flex-direction: row;
-        padding: 5px 12px;
-        border-radius: 20px;
-        border: 1px solid var(--line-strong);
-        background: var(--surface-2);
-        font-size: 12px;
-        gap: 0;
+    .kf-panel::-webkit-scrollbar {
+        display: none;
     }
-    .kf-item:hover { background: var(--surface-3); }
-    .kf-item--active {
-        background: var(--accent) !important;
-        border-color: var(--accent) !important;
-    }
-    .kf-item--active .kf-item-name { color: #fff; }
 
-    /* Anular el flex:1 que aplica .kf-item-row .kf-item en desktop */
-    .kf-item-row .kf-item { flex: none; min-width: auto; }
-
-    .kf-item-name {
-        max-width: none;
-        font-size: 12px;
-        font-weight: 500;
-        overflow: visible;
-        text-overflow: clip;
-        white-space: nowrap;
+    .kf-panel:empty {
+        display: none;
     }
+}
+
+.kf-item-stats {
+    display: none;
+}
+
+.kf-item-name {
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
 }
 
 /* ── Tabs ─────────────────────────────────────────────────────────────────── */
@@ -515,8 +354,15 @@ a.knowledge-card-source:hover {
 }
 
 @keyframes kup-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .kup-header {
@@ -528,7 +374,10 @@ a.knowledge-card-source:hover {
     border-bottom: 1px solid var(--line);
 }
 
-.kup-folder-icon { flex-shrink: 0; font-size: 14px; }
+.kup-folder-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+}
 
 .kup-title {
     flex: 1;
@@ -561,7 +410,9 @@ a.knowledge-card-source:hover {
     transition: background 0.1s;
 }
 
-.kup-item--active { background: var(--surface-2); }
+.kup-item--active {
+    background: var(--surface-2);
+}
 
 .kup-item-name {
     flex: 1;
@@ -572,7 +423,9 @@ a.knowledge-card-source:hover {
     white-space: nowrap;
 }
 
-.kup-item--active .kup-item-name { color: var(--ink); }
+.kup-item--active .kup-item-name {
+    color: var(--ink);
+}
 
 .kup-status {
     flex-shrink: 0;
@@ -581,9 +434,18 @@ a.knowledge-card-source:hover {
     border-radius: 50%;
 }
 
-.kup-status--pending  { background: var(--line-strong); }
-.kup-status--ok       { background: #16a34a; }
-.kup-status--fail     { background: var(--danger); }
+.kup-status--pending {
+    background: var(--line-strong);
+}
+
+.kup-status--ok {
+    background: #16a34a;
+}
+
+.kup-status--fail {
+    background: var(--danger);
+}
+
 .kup-status--uploading {
     border: 2px solid var(--accent);
     border-top-color: transparent;
@@ -591,7 +453,11 @@ a.knowledge-card-source:hover {
     animation: kup-spin 0.7s linear infinite;
 }
 
-@keyframes kup-spin { to { transform: rotate(360deg); } }
+@keyframes kup-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 .kup-footer {
     padding: 8px 12px;
@@ -702,8 +568,17 @@ a.knowledge-card-source:hover {
         scrollbar-width: none;
         margin-bottom: 16px;
     }
-    .knowledge-tabs::-webkit-scrollbar { display: none; }
-    .ktab { white-space: nowrap; flex-shrink: 0; padding: 8px 14px; font-size: 12.5px; }
+
+    .knowledge-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ktab {
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding: 8px 14px;
+        font-size: 12.5px;
+    }
 
     .kup-dialog {
         right: 10px;

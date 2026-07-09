@@ -5,7 +5,7 @@ async function init() {
     renderNav('nav-root', 'agents');
     await window.requireAuth();
     await _loadAll();
-    _initFolders();   // después de loadAll para que _applyFilter no renderice vacío
+    _initGroups();
     _initFilters();
     _initCatalog();
     if (window.i18n) {
@@ -22,76 +22,28 @@ async function init() {
     _setupDragHandlers();
 }
 
-var _SVG_FOLDER = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none">' +
-    '<path d="M1.5 4.5A1 1 0 012.5 3.5h3.27l1.46 1.5H13.5A1 1 0 0114.5 6v6a1 1 0 01-1 1h-11a1 1 0 01-1-1V4.5z"' +
-    ' stroke="currentColor" stroke-width="1.4" fill="none"/></svg>';
-
-function _initFolders() {
-    var folderPanel = document.getElementById('af-folder-panel');
+function _initGroups() {
     var groupsPanel = document.getElementById('af-groups-panel');
-    var btnFolders = document.getElementById('btn-toggle-folders');
     var btnGroups = document.getElementById('btn-toggle-groups');
-
-    var _folderVisible = localStorage.getItem('gaia-folders-agents') !== 'false';
     var _groupsVisible = false;
 
-    function _applyPanels() {
-        if (folderPanel) folderPanel.classList.toggle('folder-panel--collapsed', !_folderVisible);
-        if (groupsPanel) groupsPanel.classList.toggle('folder-panel--collapsed', !_groupsVisible);
-        if (btnFolders) {
-            btnFolders.innerHTML = _SVG_FOLDER;
-            btnFolders.classList.toggle('folder-toggle-btn--on', _folderVisible);
-            btnFolders.title = _folderVisible ? 'Ocultar carpetas' : 'Mostrar carpetas';
-        }
-        if (btnGroups) {
-            btnGroups.classList.toggle('folder-toggle-btn--on', _groupsVisible);
-            btnGroups.title = _groupsVisible ? 'Ocultar grupos' : 'Grupos de trabajo';
-        }
-    }
-
-    // ── Panel de carpetas ────────────────────────────────────────────────────
-    if (folderPanel) {
-        var folderCtrl = KnowledgeFolders('agents', function (folderId) {
-            _setActiveFolder(folderId);
-            if (window._groupPanelAgents) window._groupPanelAgents.clearSelection();
-        });
-        folderCtrl.mount(folderPanel);
-        folderCtrl.load();
-        window._folderAgents = folderCtrl;
-    }
-
-    // ── Panel de grupos ──────────────────────────────────────────────────────
     if (groupsPanel && window.GroupPanel) {
         var groupCtrl = GroupPanel('agents', function (groupId) {
             _setActiveGroup(groupId);
-            if (!groupId && window._folderAgents) {
-                // al limpiar grupo, volver a vista normal
-            }
         });
         groupCtrl.mount(groupsPanel);
         groupCtrl.load();
         window._groupPanelAgents = groupCtrl;
     }
 
-    // ── Toggles con exclusión mutua ──────────────────────────────────────────
-    if (btnFolders) {
-        btnFolders.addEventListener('click', function () {
-            _folderVisible = !_folderVisible;
-            if (_folderVisible) _groupsVisible = false;
-            localStorage.setItem('gaia-folders-agents', String(_folderVisible));
-            _applyPanels();
-        });
-    }
-    if (btnGroups) {
+    if (btnGroups && groupsPanel) {
         btnGroups.addEventListener('click', function () {
             _groupsVisible = !_groupsVisible;
-            if (_groupsVisible) _folderVisible = false;
-            localStorage.setItem('gaia-folders-agents', String(_folderVisible));
-            _applyPanels();
+            groupsPanel.classList.toggle('folder-panel--collapsed', !_groupsVisible);
+            btnGroups.classList.toggle('folder-toggle-btn--on', _groupsVisible);
+            btnGroups.title = _groupsVisible ? 'Ocultar grupos' : 'Grupos de trabajo';
         });
     }
-
-    _applyPanels();
 }
 
 function _setupDragHandlers() {
@@ -268,9 +220,6 @@ function _bindActions() {
             _openSetConnModal(id, btn.dataset.connId || '');
         } else if (action === 'share') {
             if (window.GroupShareDialog) GroupShareDialog.open('agent', id, btn.dataset.name || id, _loadAll);
-        } else if (action === 'move-folder') {
-            const currentFolder = btn.dataset.folderId || null;
-            FolderMoveDialog.open('agents', id, currentFolder, function () { _loadAll(); });
         } else if (action === 'delete') {
             if (!confirm(t('agents.confirm_delete'))) return;
             try {

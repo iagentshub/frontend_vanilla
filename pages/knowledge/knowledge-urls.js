@@ -4,7 +4,6 @@
 var KnowledgeUrls = (function () {
     var _items = [];
     var _loaded = false;
-    var _activeFolderId = null;
     var _page = 1;
     var _query = '';
 
@@ -21,17 +20,10 @@ var KnowledgeUrls = (function () {
             if (shareBtn) { window.GroupShareDialog && GroupShareDialog.open('knowledge', shareBtn.dataset.shareId, shareBtn.dataset.shareName || ''); return; }
             var delBtn = e.target.closest('[data-del-id]');
             if (delBtn) { _deleteItem(delBtn.dataset.delId); return; }
-            var moveBtn = e.target.closest('[data-move-id]');
-            if (moveBtn) {
-                var item = _items.find(function (i) { return i.id === moveBtn.dataset.moveId; });
-                FolderMoveDialog.open('url', moveBtn.dataset.moveId, item ? item.folder_id : null, function () { load(); });
-                return;
-            }
         });
     }
 
     async function load(folderId, groupId) {
-        if (folderId !== undefined) { _activeFolderId = folderId; _page = 1; }
         try {
             var url = '/api/knowledge?type=url';
             if (groupId) url += '&group_id=' + encodeURIComponent(groupId);
@@ -42,13 +34,10 @@ var KnowledgeUrls = (function () {
         }
         _page = 1;
         _render();
-        if (window._folderUrls) window._folderUrls.updateStats(_items);
     }
 
     function _visibleItems() {
-        var items = _activeFolderId
-            ? _items.filter(function (i) { return i.folder_id === _activeFolderId; })
-            : _items;
+        var items = _items;
         if (!_query) return items;
         var q = _query.toLowerCase();
         return items.filter(function (i) {
@@ -97,7 +86,6 @@ var KnowledgeUrls = (function () {
                 '</div>' +
                 '<a class="knowledge-card-source" href="' + esc(item.source) + '" target="_blank" rel="noopener">' + esc(item.source) + '</a>' +
                 '<div class="knowledge-card-meta">' + esc(_fmtChars(item.char_count)) +
-                (_activeFolderId ? '' : '<button class="kf-move-inline" data-move-id="' + esc(item.id) + '" title="Mover a carpeta">→</button>') +
                 '</div>' +
                 '</div>';
         }).join('');
@@ -126,11 +114,9 @@ var KnowledgeUrls = (function () {
             var item = await api.post('/api/knowledge/url', {
                 url: url,
                 title: title || url,
-                folder_id: _activeFolderId || undefined,
             });
             _items.unshift(item);
             _page = 1; _render();
-            if (window._folderUrls) window._folderUrls.updateStats(_items);
             _closeModal();
             toast(item.title, 'success');
         } catch (e) {
@@ -148,7 +134,6 @@ var KnowledgeUrls = (function () {
             await api.del('/api/knowledge/' + encodeURIComponent(id));
             _items = _items.filter(function (i) { return i.id !== id; });
             _page = 1; _render();
-            if (window._folderUrls) window._folderUrls.updateStats(_items);
             toast(t('skills.knowledge.deleted') || 'Eliminado', 'info');
         } catch (e) { toast(e.message, 'error'); }
     }
