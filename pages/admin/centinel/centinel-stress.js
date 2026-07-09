@@ -41,6 +41,7 @@
     // ── Controles de configuración ──────────────────────────────────────────
     var _duration = 30;
     var _rampUp = 0;
+    var _timeout = 10;   // timeout por petición en segundos
 
     function _initControls() {
         // Slider de usuarios
@@ -75,6 +76,17 @@
                 });
                 btn.classList.add('active');
                 _rampUp = parseInt(btn.dataset.value, 10);
+            });
+        });
+
+        // Pills timeout
+        document.querySelectorAll('#stress-timeout-pills .stress-pill').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('#stress-timeout-pills .stress-pill').forEach(function (b) {
+                    b.classList.remove('active');
+                });
+                btn.classList.add('active');
+                _timeout = parseFloat(btn.dataset.value);
             });
         });
 
@@ -147,8 +159,9 @@
             users: users,
             duration: _duration,
             ramp_up: _rampUp,
+            timeout: _timeout,
             fluctuate_users: fluctuate,
-            token: '',   // HttpOnly — el backend ya tiene la cookie del request
+            token: '',
         };
     }
 
@@ -441,6 +454,14 @@
         var maxRps = Math.max(1, ..._ticks.map(function (t) { return t.rps || 0; }));
         var N = _ticks.length;
 
+        // Detectar punto de quiebre (primer tick con tasa de error > 5%)
+        var breakTick = -1;
+        for (var bi = 0; bi < _ticks.length; bi++) {
+            var t = _ticks[bi];
+            var errRate = t.count > 0 ? (t.errors / t.count) : 0;
+            if (errRate > 0.05) { breakTick = bi; break; }
+        }
+
         // Grid
         _ctx.strokeStyle = colorLine;
         _ctx.lineWidth = 1;
@@ -452,7 +473,6 @@
             _ctx.moveTo(PAD.left, y);
             _ctx.lineTo(PAD.left + cW, y);
             _ctx.stroke();
-            // Label eje izq (ms)
             var val = Math.round(maxMs * (1 - i / gridLines));
             _ctx.fillStyle = colorInk;
             _ctx.font = '10px Inter, sans-serif';
@@ -478,6 +498,23 @@
             _ctx.fillStyle = 'rgba(99,102,241,0.12)';
             _ctx.fillRect(barX - 2, PAD.top + cH - barH, 4, barH);
         });
+
+        // Marcador de punto de quiebre (línea vertical roja)
+        if (breakTick >= 0) {
+            var bx = PAD.left + (breakTick / Math.max(N - 1, 1)) * cW;
+            _ctx.strokeStyle = 'rgba(239,68,68,0.7)';
+            _ctx.lineWidth = 1.5;
+            _ctx.setLineDash([4, 3]);
+            _ctx.beginPath();
+            _ctx.moveTo(bx, PAD.top);
+            _ctx.lineTo(bx, PAD.top + cH);
+            _ctx.stroke();
+            _ctx.setLineDash([]);
+            _ctx.fillStyle = '#ef4444';
+            _ctx.font = 'bold 9px Inter, sans-serif';
+            _ctx.textAlign = 'left';
+            _ctx.fillText('quiebre', bx + 3, PAD.top + 10);
+        }
 
         // Línea p95_ms
         _ctx.strokeStyle = '#ef4444';
