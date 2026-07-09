@@ -200,7 +200,43 @@
     "downloaded": "Archivo descargado",
     "file_location": "Ruta del archivo descargado (editable)",
     "back": "Volver",
-    "done": "Listo"
+    "done": "Listo",
+    "step": {
+      "open_terminal": "Abre el Terminal",
+      "go_project_folder": "Ve a tu carpeta de proyecto",
+      "extract_into_project": "Extrae el archivo descargado en el proyecto",
+      "restart_claude": "Reinicia Claude Code para cargar el agente",
+      "extract_file": "Extrae el archivo descargado",
+      "open_ps_project": "Abre PowerShell en tu carpeta de proyecto",
+      "open_terminal_repo": "Abre el Terminal en tu carpeta de repositorio",
+      "go_repo_folder": "Ve a tu carpeta de repositorio",
+      "commit_files": "Haz commit de los archivos del agente",
+      "open_ps_repo": "Abre PowerShell en tu carpeta de repositorio",
+      "install_openai_sdk": "Instala el SDK Python de OpenAI (solo una vez)",
+      "create_assistant": "Crea el asistente con un solo comando",
+      "paste_manually_openai": "O pega los campos manualmente en platform.openai.com/assistants",
+      "install_mcp_sdk": "Instala el SDK MCP (solo una vez)",
+      "open_edit_mcp_file": "Abre el archivo generado y añade la lógica de tus herramientas",
+      "test_server": "Comprueba que el servidor arranca",
+      "register_mcp": "Registra el servidor en Claude Desktop"
+    },
+    "hint": {
+      "terminal_mac": "Pulsa ⌘ Espacio, escribe \"Terminal\" y pulsa Enter",
+      "drag_folder_mac": "Consejo: arrastra la carpeta del proyecto sobre la ventana de Terminal — rellena la ruta automáticamente",
+      "terminal_linux": "Pulsa Ctrl+Alt+T o clic derecho en el escritorio → \"Abrir Terminal\"",
+      "replace_path": "Sustituye la ruta de abajo por la carpeta real",
+      "ps_project_windows": "En el Explorador, navega a tu carpeta de proyecto, luego Mayús+clic derecho → \"Abrir ventana de PowerShell aquí\"",
+      "terminal_repo_mac": "En Finder, clic derecho en la carpeta del repositorio → \"Nueva Terminal en la carpeta\"",
+      "openai_api_key": "Asegúrate de tener OPENAI_API_KEY configurada en tu entorno antes",
+      "open_json_mac": "Abre el archivo JSON con TextEdit para ver los valores a copiar",
+      "open_json_linux": "Abre el archivo JSON con cualquier editor de texto para copiar los valores",
+      "open_json_windows": "Abre el archivo JSON con el Bloc de notas para copiar los valores",
+      "mcp_implement": "Cada función marcada con \"raise NotImplementedError\" necesita una implementación real — aquí es donde ocurre el trabajo",
+      "mcp_register_mac": "Añade una entrada en \"mcpServers\" en el archivo de configuración",
+      "mcp_register_linux": "Edita ~/.config/Claude/claude_desktop_config.json y añade una entrada en \"mcpServers\"",
+      "ps_repo_windows": "En el Explorador, ve a tu repositorio, luego Mayús+clic derecho → \"Abrir ventana de PowerShell aquí\"",
+      "mcp_register_windows": "Edita %APPDATA%\\Claude\\claude_desktop_config.json y añade una entrada en \"mcpServers\""
+    }
   },
   "step": {
     "counter": "Paso {{current}} de {{total}}"

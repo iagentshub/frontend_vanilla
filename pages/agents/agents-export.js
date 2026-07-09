@@ -12,52 +12,52 @@ var _STEPS = {
         mac: [
             {
                 label: 'Open Terminal',
-                hint:  'Press ⌘ Space, type "Terminal" and press Enter',
+                hint: 'Press ⌘ Space, type "Terminal" and press Enter',
             },
             {
                 label: 'Go to your project folder',
-                hint:  'Tip: drag your project folder onto the Terminal window — it fills in the path automatically',
+                hint: 'Tip: drag your project folder onto the Terminal window — it fills in the path automatically',
             },
             {
                 label: 'Extract the downloaded file into the project',
-                cmd:   'unzip {filepath}',
+                cmd: 'unzip {filepath}',
             },
             {
                 label: 'Restart Claude Code to load the agent',
-                cmd:   'claude',
+                cmd: 'claude',
             },
         ],
         linux: [
             {
                 label: 'Open Terminal',
-                hint:  'Press Ctrl+Alt+T or right-click the desktop → "Open Terminal"',
+                hint: 'Press Ctrl+Alt+T or right-click the desktop → "Open Terminal"',
             },
             {
                 label: 'Go to your project folder',
-                hint:  'Replace the path below with the actual folder',
-                cmd:   'cd ~/projects/your-project',
+                hint: 'Replace the path below with the actual folder',
+                cmd: 'cd ~/projects/your-project',
             },
             {
                 label: 'Extract the downloaded file',
-                cmd:   'unzip {filepath}',
+                cmd: 'unzip {filepath}',
             },
             {
                 label: 'Restart Claude Code to load the agent',
-                cmd:   'claude',
+                cmd: 'claude',
             },
         ],
         windows: [
             {
                 label: 'Open PowerShell in your project folder',
-                hint:  'In File Explorer, navigate to your project folder, then Shift+Right-click → "Open PowerShell window here"',
+                hint: 'In File Explorer, navigate to your project folder, then Shift+Right-click → "Open PowerShell window here"',
             },
             {
                 label: 'Extract the downloaded file',
-                cmd:   'Expand-Archive -Path "{filepath}" -DestinationPath . -Force',
+                cmd: 'Expand-Archive -Path "{filepath}" -DestinationPath . -Force',
             },
             {
                 label: 'Restart Claude Code to load the agent',
-                cmd:   'claude',
+                cmd: 'claude',
             },
         ],
     },
@@ -66,47 +66,47 @@ var _STEPS = {
         mac: [
             {
                 label: 'Open Terminal in your repository folder',
-                hint:  'In Finder, right-click your repository folder → "New Terminal at Folder"',
+                hint: 'In Finder, right-click your repository folder → "New Terminal at Folder"',
             },
             {
                 label: 'Extract the downloaded file',
-                cmd:   'unzip {filepath}',
+                cmd: 'unzip {filepath}',
             },
             {
                 label: 'Commit the agent and skill files',
-                cmd:   'git add .github && git commit -m "Add Copilot agent" && git push',
+                cmd: 'git add .github && git commit -m "Add Copilot agent" && git push',
             },
         ],
         linux: [
             {
                 label: 'Open Terminal',
-                hint:  'Press Ctrl+Alt+T or right-click the desktop → "Open Terminal"',
+                hint: 'Press Ctrl+Alt+T or right-click the desktop → "Open Terminal"',
             },
             {
                 label: 'Go to your repository folder',
-                cmd:   'cd ~/projects/your-repo',
+                cmd: 'cd ~/projects/your-repo',
             },
             {
                 label: 'Extract the downloaded file',
-                cmd:   'unzip {filepath}',
+                cmd: 'unzip {filepath}',
             },
             {
                 label: 'Commit the agent and skill files',
-                cmd:   'git add .github && git commit -m "Add Copilot agent" && git push',
+                cmd: 'git add .github && git commit -m "Add Copilot agent" && git push',
             },
         ],
         windows: [
             {
                 label: 'Open PowerShell in your repository folder',
-                hint:  'In File Explorer, go to your repo folder, then Shift+Right-click → "Open PowerShell window here"',
+                hint: 'In File Explorer, go to your repo folder, then Shift+Right-click → "Open PowerShell window here"',
             },
             {
                 label: 'Extract the downloaded file',
-                cmd:   'Expand-Archive -Path "{filepath}" -DestinationPath . -Force',
+                cmd: 'Expand-Archive -Path "{filepath}" -DestinationPath . -Force',
             },
             {
                 label: 'Commit the agent and skill files',
-                cmd:   'git add .github && git commit -m "Add Copilot agent" && git push',
+                cmd: 'git add .github && git commit -m "Add Copilot agent" && git push',
             },
         ],
     },
@@ -115,48 +115,48 @@ var _STEPS = {
         mac: [
             {
                 label: 'Install the OpenAI Python SDK (only once)',
-                cmd:   'pip3 install openai',
+                cmd: 'pip3 install openai',
             },
             {
                 label: 'Create the assistant with one command',
-                hint:  'Make sure OPENAI_API_KEY is set in your environment first',
-                cmd:   "python3 -c \"import json,openai; openai.beta.assistants.create(**json.load(open('{filepath}')))\"",
+                hint: 'Make sure OPENAI_API_KEY is set in your environment first',
+                cmd: "python3 -c \"import json,openai; openai.beta.assistants.create(**json.load(open('{filepath}')))\"",
             },
             {
                 label: 'Or paste the fields manually at platform.openai.com/assistants',
-                hint:  'Open the JSON file in TextEdit to see the values to copy',
-                cmd:   'open {filepath}',
+                hint: 'Open the JSON file in TextEdit to see the values to copy',
+                cmd: 'open {filepath}',
             },
         ],
         linux: [
             {
                 label: 'Install the OpenAI Python SDK (only once)',
-                cmd:   'pip3 install openai',
+                cmd: 'pip3 install openai',
             },
             {
                 label: 'Create the assistant with one command',
-                hint:  'Make sure OPENAI_API_KEY is set in your environment first',
-                cmd:   "python3 -c \"import json,openai; openai.beta.assistants.create(**json.load(open('{filepath}')))\"",
+                hint: 'Make sure OPENAI_API_KEY is set in your environment first',
+                cmd: "python3 -c \"import json,openai; openai.beta.assistants.create(**json.load(open('{filepath}')))\"",
             },
             {
                 label: 'Or paste the fields manually at platform.openai.com/assistants',
-                hint:  'Open the JSON file in any text editor to copy the values',
+                hint: 'Open the JSON file in any text editor to copy the values',
             },
         ],
         windows: [
             {
                 label: 'Install the OpenAI Python SDK (only once)',
-                cmd:   'pip install openai',
+                cmd: 'pip install openai',
             },
             {
                 label: 'Create the assistant with one command',
-                hint:  'Make sure OPENAI_API_KEY is set in your environment first',
-                cmd:   'python -c "import json,openai; openai.beta.assistants.create(**json.load(open(\'{filepath}\')))"',
+                hint: 'Make sure OPENAI_API_KEY is set in your environment first',
+                cmd: 'python -c "import json,openai; openai.beta.assistants.create(**json.load(open(\'{filepath}\')))"',
             },
             {
                 label: 'Or paste the fields manually at platform.openai.com/assistants',
-                hint:  'Open the JSON file in Notepad to copy the values',
-                cmd:   'notepad "{filepath}"',
+                hint: 'Open the JSON file in Notepad to copy the values',
+                cmd: 'notepad "{filepath}"',
             },
         ],
     },
@@ -165,59 +165,59 @@ var _STEPS = {
         mac: [
             {
                 label: 'Install the MCP SDK (only once)',
-                cmd:   'pip3 install mcp',
+                cmd: 'pip3 install mcp',
             },
             {
                 label: 'Open the generated file and add your tool logic',
-                hint:  'Each function marked "raise NotImplementedError" needs a real implementation — this is where the actual work happens',
-                cmd:   'open {filepath}',
+                hint: 'Each function marked "raise NotImplementedError" needs a real implementation — this is where the actual work happens',
+                cmd: 'open {filepath}',
             },
             {
                 label: 'Test that the server starts',
-                cmd:   'python3 {filepath}',
+                cmd: 'python3 {filepath}',
             },
             {
                 label: 'Register the server in Claude Desktop',
-                hint:  'Add an entry under "mcpServers" in the config file',
-                cmd:   'open ~/Library/Application\\ Support/Claude/claude_desktop_config.json',
+                hint: 'Add an entry under "mcpServers" in the config file',
+                cmd: 'open ~/Library/Application\\ Support/Claude/claude_desktop_config.json',
             },
         ],
         linux: [
             {
                 label: 'Install the MCP SDK (only once)',
-                cmd:   'pip3 install mcp',
+                cmd: 'pip3 install mcp',
             },
             {
                 label: 'Open the generated file and add your tool logic',
-                hint:  'Each function marked "raise NotImplementedError" needs a real implementation',
-                cmd:   'nano {filepath}',
+                hint: 'Each function marked "raise NotImplementedError" needs a real implementation',
+                cmd: 'nano {filepath}',
             },
             {
                 label: 'Test that the server starts',
-                cmd:   'python3 {filepath}',
+                cmd: 'python3 {filepath}',
             },
             {
                 label: 'Register the server in Claude Desktop',
-                hint:  'Edit ~/.config/Claude/claude_desktop_config.json and add an entry under "mcpServers"',
+                hint: 'Edit ~/.config/Claude/claude_desktop_config.json and add an entry under "mcpServers"',
             },
         ],
         windows: [
             {
                 label: 'Install the MCP SDK (only once)',
-                cmd:   'pip install mcp',
+                cmd: 'pip install mcp',
             },
             {
                 label: 'Open the generated file and add your tool logic',
-                hint:  'Each function marked "raise NotImplementedError" needs a real implementation',
-                cmd:   'notepad "{filepath}"',
+                hint: 'Each function marked "raise NotImplementedError" needs a real implementation',
+                cmd: 'notepad "{filepath}"',
             },
             {
                 label: 'Test that the server starts',
-                cmd:   'python "{filepath}"',
+                cmd: 'python "{filepath}"',
             },
             {
                 label: 'Register the server in Claude Desktop',
-                hint:  'Edit %APPDATA%\\Claude\\claude_desktop_config.json and add an entry under "mcpServers"',
+                hint: 'Edit %APPDATA%\\Claude\\claude_desktop_config.json and add an entry under "mcpServers"',
             },
         ],
     },
@@ -256,13 +256,13 @@ function _renderFormatList() {
         openai: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5v15M1.5 9h15M3.2 3.2l11.6 11.6M14.8 3.2L3.2 14.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
         claude: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9.5L9 14l-.5-2H3a1 1 0 0 1-1-1V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
         github: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6.5 6L2.5 9l4 4M11.5 6l4 3-4 4M11 3.5L7 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-        mcp:    '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="3.5" cy="9" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="14.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.4 8.2L12.6 4.3M5.4 9.8L12.6 13.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+        mcp: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="3.5" cy="9" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="3.5" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="14.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M5.4 8.2L12.6 4.3M5.4 9.8L12.6 13.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
     };
     const formats = [
         { fmt: 'openai', label: t('agents.export.openai_label'), sub: t('agents.export.openai_sub'), path: t('agents.export.openai_path') },
         { fmt: 'claude', label: t('agents.export.claude_label'), sub: t('agents.export.claude_sub'), path: t('agents.export.claude_path') },
         { fmt: 'github', label: t('agents.export.github_label'), sub: t('agents.export.github_sub'), path: t('agents.export.github_path') },
-        { fmt: 'mcp',    label: t('agents.export.mcp_label'),    sub: t('agents.export.mcp_sub'),    path: t('agents.export.mcp_path') },
+        { fmt: 'mcp', label: t('agents.export.mcp_label'), sub: t('agents.export.mcp_sub'), path: t('agents.export.mcp_path') },
     ];
     document.getElementById('export-options').innerHTML = formats.map(o => `
         <div class="export-opt" data-fmt="${o.fmt}">
@@ -308,8 +308,8 @@ function _renderInstallPanel(fmt, filename) {
         <p class="export-install-status"><span class="export-install-check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 8.5l3.5 3.5 8.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${t('agents.export.downloaded')} <span class="install-filename">${_esc(filename)}</span></p>
         <div class="export-os-pills">
             ${Object.entries(_OS_LABELS).map(([k, v]) =>
-                `<button class="skill-chip export-os-pill${k === os ? ' selected' : ''}" data-os="${k}">${v}</button>`
-            ).join('')}
+        `<button class="skill-chip export-os-pill${k === os ? ' selected' : ''}" data-os="${k}">${v}</button>`
+    ).join('')}
         </div>
         <div class="install-path-row">
             <label class="install-path-label">${t('agents.export.file_location')}</label>
@@ -350,11 +350,12 @@ function _renderInstallPanel(fmt, filename) {
 function _renderSteps(fmt, filename, os, fp) {
     if (fp === undefined) fp = _filepath(os, filename);
     const steps = (_STEPS[fmt] || {})[os] || [];
+    const _t = window.t || function (k) { return k.split('.').pop().replace(/_/g, ' '); };
     document.getElementById('export-install-steps').innerHTML = steps.map(s => {
         const cmd = s.cmd ? s.cmd.replace(/\{filepath\}/g, fp).replace(/\{filename\}/g, filename) : null;
         return `<li class="export-install-step">
-            <span class="install-step-label">${_esc(s.label)}</span>
-            ${s.hint ? `<span class="install-hint">${_esc(s.hint)}</span>` : ''}
+            <span class="install-step-label">${_esc(_t(s.label))}</span>
+            ${s.hint ? `<span class="install-hint">${_esc(_t(s.hint))}</span>` : ''}
             ${cmd ? `<code class="install-cmd">${_esc(cmd)}</code>` : ''}
         </li>`;
     }).join('');

@@ -200,7 +200,43 @@
     "downloaded": "File downloaded",
     "file_location": "Downloaded file path (editable)",
     "back": "Back",
-    "done": "Done"
+    "done": "Done",
+    "step": {
+      "open_terminal": "Open Terminal",
+      "go_project_folder": "Go to your project folder",
+      "extract_into_project": "Extract the downloaded file into the project",
+      "restart_claude": "Restart Claude Code to load the agent",
+      "extract_file": "Extract the downloaded file",
+      "open_ps_project": "Open PowerShell in your project folder",
+      "open_terminal_repo": "Open Terminal in your repository folder",
+      "go_repo_folder": "Go to your repository folder",
+      "commit_files": "Commit the agent and skill files",
+      "open_ps_repo": "Open PowerShell in your repository folder",
+      "install_openai_sdk": "Install the OpenAI Python SDK (only once)",
+      "create_assistant": "Create the assistant with one command",
+      "paste_manually_openai": "Or paste the fields manually at platform.openai.com/assistants",
+      "install_mcp_sdk": "Install the MCP SDK (only once)",
+      "open_edit_mcp_file": "Open the generated file and add your tool logic",
+      "test_server": "Test that the server starts",
+      "register_mcp": "Register the server in Claude Desktop"
+    },
+    "hint": {
+      "terminal_mac": "Press ⌘ Space, type \"Terminal\" and press Enter",
+      "drag_folder_mac": "Tip: drag your project folder onto the Terminal window — it fills in the path automatically",
+      "terminal_linux": "Press Ctrl+Alt+T or right-click the desktop → \"Open Terminal\"",
+      "replace_path": "Replace the path below with the actual folder",
+      "ps_project_windows": "In File Explorer, navigate to your project folder, then Shift+Right-click → \"Open PowerShell window here\"",
+      "terminal_repo_mac": "In Finder, right-click your repository folder → \"New Terminal at Folder\"",
+      "openai_api_key": "Make sure OPENAI_API_KEY is set in your environment first",
+      "open_json_mac": "Open the JSON file in TextEdit to see the values to copy",
+      "open_json_linux": "Open the JSON file in any text editor to copy the values",
+      "open_json_windows": "Open the JSON file in Notepad to copy the values",
+      "mcp_implement": "Each function marked \"raise NotImplementedError\" needs a real implementation — this is where the actual work happens",
+      "mcp_register_mac": "Add an entry under \"mcpServers\" in the config file",
+      "mcp_register_linux": "Edit ~/.config/Claude/claude_desktop_config.json and add an entry under \"mcpServers\"",
+      "ps_repo_windows": "In File Explorer, go to your repo folder, then Shift+Right-click → \"Open PowerShell window here\"",
+      "mcp_register_windows": "Edit %APPDATA%\\Claude\\claude_desktop_config.json and add an entry under \"mcpServers\""
+    }
   },
   "step": {
     "counter": "Step {{current}} of {{total}}"
