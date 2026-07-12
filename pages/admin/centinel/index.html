@@ -56,6 +56,13 @@
                         </svg>
                         Rendimiento
                     </button>
+                    <button class="ctn-section-tab" data-section="probe">
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
+                            <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        </svg>
+                        Buscar límite
+                    </button>
                 </div>
                 <!-- Acciones funcionalidad -->
                 <div class="ctn-header-actions" id="ctn-actions-functional">
@@ -89,6 +96,22 @@
                         Iniciar prueba
                     </button>
                     <button id="btn-stress-abort" class="btn btn-danger btn-sm" style="display:none">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="margin-right:5px">
+                            <rect x="3" y="3" width="10" height="10" rx="1" />
+                        </svg>
+                        Detener
+                    </button>
+                </div>
+                <!-- Acciones búsqueda de límite -->
+                <div class="ctn-header-actions" id="ctn-actions-probe" style="display:none">
+                    <button id="btn-probe-start" class="btn btn-primary btn-sm">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="margin-right:5px">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" />
+                            <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                        </svg>
+                        Iniciar búsqueda
+                    </button>
+                    <button id="btn-probe-abort" class="btn btn-danger btn-sm" style="display:none">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="margin-right:5px">
                             <rect x="3" y="3" width="10" height="10" rx="1" />
                         </svg>
@@ -266,109 +289,176 @@
                                 <button class="stress-pill" data-value="30">30s</button>
                             </div>
                         </div>
+                        <!-- Concurrencia máxima -->
+                        <div class="stress-field">
+                            <label class="stress-label">
+                                Concurrencia máx
+                                <button id="stress-concurrency-info" class="stress-info-btn" type="button"
+                                    title="Máx. peticiones en vuelo simultáneo. Reduce ConnectErrors en cargas altas. 0 = sin límite.">&#x24D8;</button>
+                            </label>
+                            <div class="stress-slider-row">
+                                <input id="stress-concurrency" type="range" min="0" max="1000" value="0" step="1"
+                                    class="stress-slider">
+                                <span id="stress-concurrency-val" class="stress-val">∞</span>
+                            </div>
+                            <div id="stress-concurrency-custom-wrap" style="display:none;margin-top:8px">
+                                <label class="stress-label" style="margin-bottom:4px">Valor personalizado (mayor de
+                                    1000,
+                                    0 = sin límite)</label>
+                                <input id="stress-concurrency-custom" type="number" min="0" max="10000" value="1000"
+                                    class="stress-input" style="width:120px">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tooltip Ramp-up -->
+                    <div id="stress-rampup-tooltip" class="stress-tooltip" style="display:none">
+                        <strong>¿Qué es el Ramp-up?</strong><br>
+                        El ramp-up es el tiempo que tarda en alcanzarse la carga máxima de usuarios. En lugar de lanzar
+                        todos los usuarios a la vez (lo que puede generar un pico artificial), el ramp-up los arranca de
+                        forma progresiva y escalonada.<br><br>
+                        <strong>Ejemplo:</strong> 100 usuarios con ramp-up de 10s → cada 0,1s arranca un usuario nuevo
+                        hasta
+                        llegar a 100.<br><br>
+                        Útil para detectar el punto de quiebre gradual y simular tráfico más realista.
+                        <button class="stress-tooltip-close" id="btn-rampup-info-close">✕</button>
+                    </div>
+
+                    <!-- Aviso: el backend limitó los hilos reales por debajo de lo pedido -->
+                    <div id="stress-cap-notice" class="stress-cap-notice" style="display:none">
+                        <span>⚠</span><span id="stress-cap-notice-text"></span>
+                    </div>
+
+                    <!-- Gráfica en tiempo real -->
+                    <div class="stress-chart-card">
+                        <div class="stress-chart-header">
+                            <span class="stress-chart-title">Tiempo de respuesta en tiempo real</span>
+                            <div class="stress-legend">
+                                <span class="stress-legend-item stress-legend--avg"
+                                    title="Tiempo medio de respuesta por segundo. Verde = mejor que la media acumulada del test hasta ese momento, rojo = peor (compara si subir usuarios penaliza la latencia).">Promedio</span>
+                                <span class="stress-legend-item stress-legend--p95"
+                                    title="Percentil 95: el 95% de peticiones tardaron menos de este valor. Los picos son el 5% restante.">p95</span>
+                                <span class="stress-legend-item stress-legend--rps"
+                                    title="Peticiones completadas por segundo (throughput real del servidor)">req/s</span>
+                                <span class="stress-legend-item stress-legend--users"
+                                    title="Usuarios concurrentes activos en ese segundo (constante salvo que uses ramp-up). Compárala con la línea de Promedio para ver si más usuarios penaliza el tiempo de respuesta.">Usuarios</span>
+                            </div>
+                        </div>
+                        <div class="stress-chart-wrap">
+                            <canvas id="stress-canvas" class="stress-canvas"></canvas>
+                            <div id="stress-chart-empty" class="stress-chart-empty">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" opacity=".3">
+                                    <path d="M3 17l4-8 4 6 3-4 4 6" stroke="currentColor" stroke-width="1.4"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <p>Inicia la prueba para ver la gráfica</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de resultados -->
+                    <div id="stress-summary" class="stress-summary-card" style="display:none">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                            <div class="stress-summary-title" style="margin-bottom:0">Resultados</div>
+                            <button id="btn-stress-export" class="btn btn-ghost btn-sm">
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="margin-right:5px">
+                                    <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.4"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Exportar CSV
+                            </button>
+                        </div>
+                        <div class="stress-summary-grid stress-summary-grid--compact">
+                            <div class="stress-stat"><span class="stress-stat-val" id="sstat-total">–</span><span
+                                    class="stress-stat-label">Peticiones totales</span></div>
+                            <div class="stress-stat"><span class="stress-stat-val" id="sstat-errors">–</span><span
+                                    class="stress-stat-label">Errores</span></div>
+                            <div class="stress-stat"><span class="stress-stat-val" id="sstat-avg">–</span><span
+                                    class="stress-stat-label">Media de resolución</span></div>
+                            <div class="stress-stat"><span class="stress-stat-val" id="sstat-avg-per-user">–</span><span
+                                    class="stress-stat-label" title="Media de cada hilo/usuario, promediada entre todos. Si se aleja mucho de la 'Media de resolución' global, algunos usuarios están recibiendo peor servicio que otros.">Media por usuario</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="stress-top3" class="stress-top3-grid" style="display:none"></div>
+                </div>
+
+                <!-- Tabla de errores -->
+                <div id="stress-errors-card" class="stress-errors-card" style="display:none">
+                    <div class="stress-errors-header">
+                        <span class="stress-errors-title">Errores detectados</span>
+                        <span id="stress-errors-count" class="stress-errors-badge">0</span>
+                    </div>
+                    <div class="stress-errors-wrap">
+                        <table class="stress-errors-table">
+                            <thead>
+                                <tr>
+                                    <th>t (s)</th>
+                                    <th>Método</th>
+                                    <th>Endpoint</th>
+                                    <th>Código</th>
+                                    <th>Error</th>
+                                    <th>s</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stress-errors-body"></tbody>
+                        </table>
                     </div>
                 </div>
+            </div><!-- /ctn-section-stress -->
 
-                <!-- Tooltip Ramp-up -->
-                <div id="stress-rampup-tooltip" class="stress-tooltip" style="display:none">
-                    <strong>¿Qué es el Ramp-up?</strong><br>
-                    El ramp-up es el tiempo que tarda en alcanzarse la carga máxima de usuarios. En lugar de lanzar
-                    todos los usuarios a la vez (lo que puede generar un pico artificial), el ramp-up los arranca de
-                    forma progresiva y escalonada.<br><br>
-                    <strong>Ejemplo:</strong> 100 usuarios con ramp-up de 10s → cada 0,1s arranca un usuario nuevo hasta
-                    llegar a 100.<br><br>
-                    Útil para detectar el punto de quiebre gradual y simular tráfico más realista.
-                    <button class="stress-tooltip-close" id="btn-rampup-info-close">✕</button>
+            <!-- ── Sección: Buscar límite ─────────────────────────────────── -->
+            <div id="ctn-section-probe" style="display:none">
+                <div class="stress-config-card">
+                    <div class="probe-config-row" id="probe-config">
+                        <label class="probe-cfg-label">Inicio
+                            <input id="probe-start" type="number" value="10" min="1" max="999" class="probe-num-input">
+                        </label>
+                        <label class="probe-cfg-label">Paso
+                            <input id="probe-step" type="number" value="50" min="1" max="1000" class="probe-num-input">
+                        </label>
+
+                        <label class="probe-cfg-label">Dur./paso
+                            <div class="stress-pills" id="probe-duration-pills" style="margin-top:4px">
+                                <button class="stress-pill" data-value="10">10s</button>
+                                <button class="stress-pill active" data-value="30">30s</button>
+                                <button class="stress-pill" data-value="60">1min</button>
+                            </div>
+                        </label>
+                        <label class="probe-cfg-label">Concurrencia máx
+                            <input id="probe-concurrency" type="number" value="0" min="0" max="10000"
+                                class="probe-num-input probe-num-input--wide" placeholder="0=∞">
+                        </label>
+                        </label>
+                        <label class="probe-cfg-label">Timeout/req (s)
+                            <input id="probe-timeout" type="number" value="10" min="1" max="60" step="0.5"
+                                class="probe-num-input probe-num-input--wide">
+                        </label>
+                    </div>
+                    <p class="probe-hint">Lanza pruebas secuenciales aumentando el número de usuarios de paso en paso.
+                        Se detiene cuando aparece el primer error, mostrando el límite estable de la plataforma.</p>
                 </div>
 
-                <!-- Gráfica en tiempo real -->
-                <div class="stress-chart-card">
-                    <div class="stress-chart-header">
-                        <span class="stress-chart-title">Tiempo de respuesta en tiempo real</span>
+                <!-- Gráfica en tiempo real del probe -->
+                <div class="probe-chart-card">
+                    <div class="probe-chart-header">
+                        <span class="probe-chart-title">Evolución en tiempo real</span>
                         <div class="stress-legend">
-                            <span class="stress-legend-item stress-legend--avg"
-                                title="Tiempo medio de respuesta por segundo">Promedio</span>
-                            <span class="stress-legend-item stress-legend--p95"
-                                title="Percentil 95: el 95% de peticiones tardaron menos de este valor. Los picos son el 5% restante.">p95</span>
-                            <span class="stress-legend-item stress-legend--rps"
-                                title="Peticiones completadas por segundo (throughput real del servidor)">req/s</span>
+                            <span class="stress-legend-item" style="--leg-color:#22c55e">req/s</span>
+                            <span class="stress-legend-item" style="--leg-color:#6366f1">Avg s</span>
+                            <span class="stress-legend-item" style="--leg-color:#f97316">Usuarios</span>
+                            <span class="stress-legend-item" style="--leg-color:#ef4444">Error</span>
                         </div>
                     </div>
-                    <div class="stress-chart-wrap">
-                        <canvas id="stress-canvas" class="stress-canvas"></canvas>
-                        <div id="stress-chart-empty" class="stress-chart-empty">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" opacity=".3">
-                                <path d="M3 17l4-8 4 6 3-4 4 6" stroke="currentColor" stroke-width="1.4"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <p>Inicia la prueba para ver la gráfica</p>
-                        </div>
+                    <div class="probe-chart-wrap">
+                        <canvas id="probe-canvas" class="probe-canvas"></canvas>
                     </div>
                 </div>
 
-                <!-- Resumen de resultados -->
-                <div id="stress-summary" class="stress-summary-card" style="display:none">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-                        <div class="stress-summary-title" style="margin-bottom:0">Resultados</div>
-                        <button id="btn-stress-export" class="btn btn-ghost btn-sm">
-                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="margin-right:5px">
-                                <path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.4"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Exportar CSV
-                        </button>
-                    </div>
-                    <div class="stress-summary-grid">
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-total">–</span><span
-                                class="stress-stat-label">Peticiones</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-errors">–</span><span
-                                class="stress-stat-label">Errores</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-rps">–</span><span
-                                class="stress-stat-label">req/s</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-avg">–</span><span
-                                class="stress-stat-label">Avg ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-p50">–</span><span
-                                class="stress-stat-label">p50 ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-p90">–</span><span
-                                class="stress-stat-label">p90 ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-p95">–</span><span
-                                class="stress-stat-label">p95 ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-p99">–</span><span
-                                class="stress-stat-label">p99 ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-min">–</span><span
-                                class="stress-stat-label">Min ms</span></div>
-                        <div class="stress-stat"><span class="stress-stat-val" id="sstat-max">–</span><span
-                                class="stress-stat-label">Max ms</span></div>
-                    </div>
-                </div>
-                <div id="stress-top3" class="stress-top3-grid" style="display:none"></div>
-            </div>
+                <div id="probe-verdict" class="probe-verdict" style="display:none"></div>
+            </div><!-- /ctn-section-probe -->
 
-            <!-- Tabla de errores -->
-            <div id="stress-errors-card" class="stress-errors-card" style="display:none">
-                <div class="stress-errors-header">
-                    <span class="stress-errors-title">Errores detectados</span>
-                    <span id="stress-errors-count" class="stress-errors-badge">0</span>
-                </div>
-                <div class="stress-errors-wrap">
-                    <table class="stress-errors-table">
-                        <thead>
-                            <tr>
-                                <th>t (s)</th>
-                                <th>Método</th>
-                                <th>Endpoint</th>
-                                <th>Código</th>
-                                <th>Error</th>
-                                <th>ms</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stress-errors-body"></tbody>
-                    </table>
-                </div>
-            </div>
-    </div>
-
-    </main>
+        </main>
     </div>
 
     <script src="/assets/js/flog.js" defer></script>

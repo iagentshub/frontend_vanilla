@@ -33,6 +33,7 @@ window.adminConfig = (function () {
             _set('cfg-landing-enabled', _cfg.landing_enabled ?? false);
             _set('cfg-billing', _cfg.billing_enabled ?? false);
             _set('cfg-log-retention', _cfg.log_retention_days ?? 30);
+            _set('cfg-stress-concurrency', _cfg.stress_max_concurrency ?? 50);
             _syncNewUserButton(mode);
         } catch (e) {
             console.error('[admin-config] Error cargando configuración:', e);
@@ -57,6 +58,7 @@ window.adminConfig = (function () {
                 landing_enabled: document.getElementById('cfg-landing-enabled')?.checked,
                 billing_enabled: document.getElementById('cfg-billing')?.checked,
                 log_retention_days: parseInt(document.getElementById('cfg-log-retention')?.value || '30', 10),
+                stress_max_concurrency: parseInt(document.getElementById('cfg-stress-concurrency')?.value ?? '50', 10),
             };
             _cfg = await api.put('/api/settings/platform', payload);
             _syncNewUserButton(mode);
