@@ -113,6 +113,14 @@
                             </svg>
                             <span>Grupos</span>
                         </button>
+                        <button class="profile-nav-item" data-section="section-tokens" id="nav-tokens">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <circle cx="5.5" cy="8" r="3" stroke="currentColor" stroke-width="1.4" />
+                                <path d="M8.5 8H14M12 8v2.5M10.5 8v2" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <span>Tokens</span>
+                        </button>
                         <button class="profile-nav-item" data-section="section-privacy">
                             <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                                 <path d="M8 2L3 4.5V8c0 2.8 2.1 5.4 5 6 2.9-.6 5-3.2 5-6V4.5L8 2z" stroke="currentColor"
@@ -262,6 +270,47 @@
                         <div id="ws-panel-invitations" class="teams-tab-panel" style="display:none">
                             <div id="ws-inv-wrap"></div>
                         </div>
+                    </div>
+
+                    <!-- Tokens personales -->
+                    <div id="section-tokens" class="profile-section" hidden>
+                        <div class="section-title-row">
+                            <div class="section-title">Tokens personales</div>
+                        </div>
+
+                        <p class="profile-empty-msg" style="margin-top:0">
+                            Un token te permite conectar clientes que no son un navegador —como la
+                            extensión de VS Code— con tu cuenta. Concede
+                            <strong>acceso completo a la API con tus mismos permisos</strong>:
+                            trátalo como una contraseña y revócalo si lo expones.
+                        </p>
+
+                        <form class="admin-toolbar" id="pat-form">
+                            <input class="admin-search" id="pat-name" maxlength="100"
+                                placeholder="Para qué es (p. ej. VS Code del portátil)" />
+                            <select class="admin-select" id="pat-expiry">
+                                <option value="30">30 días</option>
+                                <option value="90" selected>90 días</option>
+                                <option value="180">180 días</option>
+                                <option value="never">Sin caducidad</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" type="submit">+ Crear token</button>
+                        </form>
+
+                        <div class="profile-ws-card" id="pat-new-box" hidden
+                            style="flex-direction:column;align-items:stretch;gap:10px">
+                            <div class="section-subtitle" style="margin:0">
+                                Cópialo ahora — no volverá a mostrarse
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <code id="pat-new-value"
+                                    style="flex:1;overflow-x:auto;padding:8px 10px;background:var(--bg-soft,rgba(127,127,127,.12));border-radius:6px;font-size:13px"></code>
+                                <button class="btn btn-primary btn-sm" type="button" id="pat-copy">Copiar</button>
+                                <button class="btn btn-ghost btn-sm" type="button" id="pat-hide">Ocultar</button>
+                            </div>
+                        </div>
+
+                        <div id="pat-list-wrap"></div>
                     </div>
 
                     <!-- Preferencias -->
@@ -773,6 +822,7 @@
     <script src="/manager/manager-team.js" defer></script>
     <script src="/profile/profile-teams.js" defer></script>
     <script src="/profile/profile-workspaces.js" defer></script>
+    <script src="/profile/profile-tokens.js" defer></script>
     <script src="/profile/profile-privacy.js" defer></script>
     <script src="/profile/profile-avatar-crop.js" defer></script>
     <script src="/profile/profile-billing.js" defer></script>
