@@ -16,8 +16,8 @@
 **Docker**
 
 ```bash
-docker build -t iagentshub-frontend .
-docker run -p 80:80 iagentshub-frontend
+docker build -t frontend .
+docker run -p 80:80 frontend
 ```
 
 **Without Docker**

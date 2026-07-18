@@ -24,7 +24,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: iagenthub/iagentshub-frontend:vanilla
+          tags: iagenthub/frontend:vanilla
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
