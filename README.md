@@ -24,7 +24,7 @@ docker run -p 80:80 iagentshub-frontend
 
 Serve the static files with any HTTP server. API calls require a running backend reachable at `/api/`.
 
-> For the full stack (backend + frontend + skills), deploy from [iAgentsHub](https://github.com/iagentshub/iagentshub).
+> For the full stack (backend + frontend + skills), deploy from [iAgentsHub](https://github.com/iagentshub/iAgents).
 
 ---
 

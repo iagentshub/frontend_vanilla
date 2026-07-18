@@ -7,9 +7,9 @@
 
 # Deployment
 
-The frontend is designed to be deployed as part of the [iAgentsHub](https://github.com/iagentshub/iagentshub) stack, which automatically handles building, reverse proxying, and connecting to the backend.
+The frontend is designed to be deployed as part of the [iAgentsHub](https://github.com/iagentshub/iAgents) stack, which automatically handles building, reverse proxying, and connecting to the backend.
 
-See the [iAgentsHub documentation](https://github.com/iagentshub/iagentshub/blob/main/docs/en/index.md) for full deployment instructions.
+See the [iAgentsHub documentation](https://github.com/iagentshub/iAgents/blob/main/docs/en/index.md) for full deployment instructions.
 
 ---
 

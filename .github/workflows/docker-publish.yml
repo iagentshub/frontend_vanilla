@@ -13,19 +13,19 @@ jobs:
       - name: Checkout iagentshub (Dockerfile + scripts)
         uses: actions/checkout@v4
         with:
-          repository: iagentshub/iagentshub
+          repository: iagentshub/iAgents
           path: iagentshub
 
       - name: Checkout backend
         uses: actions/checkout@v4
         with:
-          repository: iagentshub/backend
+          repository: iagentshub/backend_fastapi
           path: backend
 
       - name: Checkout frontend
         uses: actions/checkout@v4
         with:
-          repository: iagentshub/frontend
+          repository: iagentshub/frontend_vanilla
           path: frontend
 
       # Contrato del router soft-nav: los scripts de página se RE-EJECUTAN al
@@ -56,9 +56,9 @@ jobs:
           mkdir -p build-ctx
           cp -r backend/  build-ctx/backend
           cp -r frontend/ build-ctx/frontend
-          cp iagentshub/Dockerfile.unified     build-ctx/Dockerfile
-          cp iagentshub/supervisord.conf       build-ctx/supervisord.conf
-          cp iagentshub/entrypoint-unified.sh  build-ctx/entrypoint-unified.sh
+          cp iagentshub/docker/Dockerfile.unified.vanilla     build-ctx/Dockerfile
+          cp iagentshub/docker/supervisord.conf                build-ctx/supervisord.conf
+          cp iagentshub/docker/entrypoint-unified-vanilla.sh   build-ctx/entrypoint-unified.sh
 
       - name: Build y push imagen multi-plataforma
         uses: docker/build-push-action@v5
@@ -66,6 +66,6 @@ jobs:
           context: build-ctx
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: iagenthub/iagentshub:latest
+          tags: iagenthub/iagentshub:vanilla
           cache-from: type=gha
           cache-to: type=gha,mode=max

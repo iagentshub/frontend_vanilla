@@ -7,9 +7,9 @@
 
 # Despliegue
 
-El frontend está diseñado para desplegarse como parte del stack de [iAgentsHub](https://github.com/iagentshub/iagentshub), que gestiona automáticamente la construcción, el proxy inverso y la conexión con el backend.
+El frontend está diseñado para desplegarse como parte del stack de [iAgentsHub](https://github.com/iagentshub/iAgents), que gestiona automáticamente la construcción, el proxy inverso y la conexión con el backend.
 
-Consulta la [documentación de iAgentsHub](https://github.com/iagentshub/iagentshub/blob/main/docs/es/index.md) para instrucciones completas de despliegue.
+Consulta la [documentación de iAgentsHub](https://github.com/iagentshub/iAgents/blob/main/docs/es/index.md) para instrucciones completas de despliegue.
 
 ---
 

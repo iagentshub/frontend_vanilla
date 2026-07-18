@@ -52,17 +52,17 @@ document.getElementById('landing-copy-btn').addEventListener('click', function (
 });
 
 // Instalación: un botón de ciclo por dimensión (modo, plataforma) en vez
-// de mostrar todas las opciones a la vez. Matriz honesta: 5 de las 6
-// combinaciones tienen un script real y documentado en el README; la
-// única que no existe (Docker en Windows nativo, sin WSL2) se marca
-// "Sin definir" en vez de inventar o improvisar un comando.
+// de mostrar todas las opciones a la vez. install.sh (Linux/macOS) e
+// install.ps1 (Windows) son ahora un único instalador por SO: preguntan
+// interactivamente Docker vs sin-Docker, así que el comando es el mismo
+// para ambos modos — la única variable real es el sistema operativo.
 var INSTALL_MATRIX = {
-    'docker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iagentshub/main/install.sh | bash',
-    'docker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iagentshub/main/install.sh | bash',
-    'docker|windows': null,
-    'nodocker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iagentshub/main/install-local-linux.sh | bash',
-    'nodocker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iagentshub/main/install-local-mac.sh | bash',
-    'nodocker|windows': 'irm https://raw.githubusercontent.com/iagentshub/iagentshub/main/install-local-windows.ps1 | iex'
+    'docker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
+    'docker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
+    'docker|windows': 'irm https://raw.githubusercontent.com/iagentshub/iAgents/main/install.ps1 | iex',
+    'nodocker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
+    'nodocker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
+    'nodocker|windows': 'irm https://raw.githubusercontent.com/iagentshub/iAgents/main/install.ps1 | iex'
 };
 var MODES = ['docker', 'nodocker'];
 var OSES = ['linux', 'mac', 'windows'];
