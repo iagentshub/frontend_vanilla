@@ -1,6 +1,26 @@
 // api.js — helper para llamadas a la API REST
 'use strict';
 
+function _translateApiErrorCode(detail) {
+    // detail = { code, message, ...extra } — code se traduce con el namespace
+    // 'errors' del i18n; extra (resource/field) se traduce primero por su cuenta
+    // e se interpola en la plantilla del code. Fallback al message del backend
+    // si el code no tiene traducción (cliente desactualizado).
+    var extra = {};
+    for (var k in detail) {
+        if (k !== 'code' && k !== 'message') extra[k] = detail[k];
+    }
+    if (extra.resource) {
+        extra.resource = (window.t && window.t('errors.resources.' + extra.resource)) || extra.resource;
+    }
+    if (extra.field) {
+        extra.field = (window.t && window.t('errors.fields.' + extra.field)) || extra.field;
+    }
+    var key = 'errors.' + detail.code;
+    var translated = window.t ? window.t(key, extra) : key;
+    return (translated && translated !== key) ? translated : (detail.message || key);
+}
+
 function _apiError(status, detail) {
     var msg;
     if (!detail) {
@@ -10,6 +30,8 @@ function _apiError(status, detail) {
     } else if (Array.isArray(detail)) {
         // FastAPI validation errors: [{loc, msg, type}, ...]
         msg = detail.map(function (e) { return e.msg || JSON.stringify(e); }).join('; ');
+    } else if (detail && typeof detail === 'object' && detail.code) {
+        msg = _translateApiErrorCode(detail);
     } else {
         msg = JSON.stringify(detail);
     }
@@ -17,6 +39,7 @@ function _apiError(status, detail) {
     e.status = status;
     if (detail && typeof detail === 'object' && !Array.isArray(detail)) {
         e.data = detail;
+        if (detail.code) e.code = detail.code;
     }
     return e;
 }
