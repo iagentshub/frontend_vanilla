@@ -329,7 +329,7 @@ function bindEvents() {
         var reader = new FileReader();
         reader.onload = function (ev) {
             try {
-                var skill = _parseAndLoadSkill(ev.target.result);
+                var skill = _parseAndLoadSkill(file.name, ev.target.result);
                 DialogSkill.open(skill, loadSkills);
             } catch (err) {
                 toast(t('skills.page.load_error', { msg: err.message }), 'error');

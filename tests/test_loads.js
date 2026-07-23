@@ -87,11 +87,11 @@ function _parseAndLoadAgent(filename, text) {
     return { name: data.name || '', description: data.description || '', system_prompt: data.system_prompt || data.instructions || '', model: data.model || '', temperature: data.temperature, agent_type: 'generic', routines: data.routines || [], _source: 'generic_json' };
 }
 
-function _parseAndLoadSkill(text) {
-    var data = JSON.parse(text);
-    if (!data.name) throw new Error('Missing required field: name');
-    delete data.id;
-    return { name: data.name || '', description: data.description || '', icon: data.icon || '', category: data.category || '', content: data.content || '' };
+function _parseAndLoadSkill(filename, text) {
+    var parsed = _parseFrontmatter(text);
+    var name = parsed.meta.name || (filename || '').replace(/\.md$/i, '');
+    if (!name) throw new Error('Missing required field: name');
+    return { name: name, description: parsed.meta.description || '', icon: parsed.meta.icon || '', category: parsed.meta.category || '', content: parsed.body };
 }
 
 function _parseAndLoadMemory(filename, text) {
@@ -460,22 +460,23 @@ test('native JSON: agent_type preservado (openai)', function () {
 
 console.log('\n_parseAndLoadSkill');
 
-test('valid skill JSON', function () {
-    var text = JSON.stringify({ name: 'My Skill', description: 'Does stuff', icon: '🔧', category: 'dev', content: 'Instructions...' });
-    var r = _parseAndLoadSkill(text);
+test('SKILL.md with frontmatter', function () {
+    var text = '---\nname: My Skill\ndescription: Does stuff\nicon: 🔧\ncategory: dev\n---\nInstructions...';
+    var r = _parseAndLoadSkill('SKILL.md', text);
     assert.strictEqual(r.name, 'My Skill');
     assert.strictEqual(r.icon, '🔧');
     assert.strictEqual(r.category, 'dev');
+    assert.strictEqual(r.content, 'Instructions...');
 });
 
-test('id field is discarded', function () {
-    var text = JSON.stringify({ id: 'should-be-gone', name: 'Skill', content: 'x' });
-    var r = _parseAndLoadSkill(text);
-    assert.strictEqual(r.id, undefined);
+test('plain .md without frontmatter falls back to filename', function () {
+    var r = _parseAndLoadSkill('my-skill.md', '# Body only, no frontmatter');
+    assert.strictEqual(r.name, 'my-skill');
+    assert.ok(r.content.includes('Body only'));
 });
 
-test('missing name throws', function () {
-    assert.throws(function () { _parseAndLoadSkill(JSON.stringify({ content: 'x' })); }, /name/);
+test('missing name throws when filename has no usable name', function () {
+    assert.throws(function () { _parseAndLoadSkill('', '---\ncontent: x\n---\nbody'); }, /name/);
 });
 
 // ─── _parseAndLoadMemory ──────────────────────────────────────────────────────
