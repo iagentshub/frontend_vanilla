@@ -172,6 +172,7 @@
 
         .landing-install-toggles {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 14px;
         }
@@ -210,11 +211,6 @@
             background: var(--surface-2);
             border-radius: var(--radius);
             padding: 12px 14px;
-        }
-
-        .landing-install-code.is-undefined {
-            font-style: italic;
-            color: var(--ink-3);
         }
 
         .landing-install-code {
@@ -286,6 +282,8 @@
             <div class="landing-install">
                 <div class="landing-install-title" data-i18n="landing.install.title">Instalación</div>
                 <div class="landing-install-toggles">
+                    <button class="landing-toggle" id="landing-install-frontend-toggle" type="button"
+                        data-frontend="vanilla"></button>
                     <button class="landing-toggle" id="landing-install-mode-toggle" type="button"
                         data-mode="docker"></button>
                     <button class="landing-toggle" id="landing-install-os-toggle" type="button"

@@ -51,48 +51,48 @@ document.getElementById('landing-copy-btn').addEventListener('click', function (
         .catch(function () { });
 });
 
-// Instalación: un botón de ciclo por dimensión (modo, plataforma) en vez
-// de mostrar todas las opciones a la vez. install.sh (Linux/macOS) e
-// install.ps1 (Windows) son ahora un único instalador por SO: preguntan
-// interactivamente Docker vs sin-Docker, así que el comando es el mismo
-// para ambos modos — la única variable real es el sistema operativo.
-var INSTALL_MATRIX = {
-    'docker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
-    'docker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
-    'docker|windows': 'irm https://raw.githubusercontent.com/iagentshub/iAgents/main/install.ps1 | iex',
-    'nodocker|linux': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
-    'nodocker|mac': 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | bash',
-    'nodocker|windows': 'irm https://raw.githubusercontent.com/iagentshub/iAgents/main/install.ps1 | iex'
-};
+// Instalación: un botón de ciclo por dimensión (frontend, modo, plataforma)
+// en vez de mostrar todas las opciones a la vez. install.sh/install.ps1
+// preguntan frontend y modo de forma interactiva, pero ese prompt depende de
+// una TTY real (`[ -t 0 ]`) que NO existe en "curl ... | bash" (stdin es el
+// pipe) — sin esto, el script cae siempre al valor por defecto (docker) sin
+// importar qué mostrara el toggle. Por eso frontend y modo se fijan siempre
+// explícitos vía variables de entorno (bash: tras el pipe, antes de "bash",
+// ya que "VAR=x curl ... | bash" solo afecta a curl, no al bash del pipe;
+// PowerShell: $env: antes de invocar irm).
+var MODE_TO_FLAG = { docker: 'docker', nodocker: 'local' };
+function _buildInstallCmd(frontend, mode, os) {
+    var modeFlag = MODE_TO_FLAG[mode];
+    if (os === 'windows') {
+        return '$env:IAGENTSHUB_FRONTEND = "' + frontend + '"; $env:IAGENTSHUB_MODE = "' + modeFlag + '"; irm https://raw.githubusercontent.com/iagentshub/iAgents/main/install.ps1 | iex';
+    }
+    return 'curl -fsSL https://raw.githubusercontent.com/iagentshub/iAgents/main/install.sh | IAGENTSHUB_FRONTEND=' + frontend + ' IAGENTSHUB_MODE=' + modeFlag + ' bash';
+}
+var FRONTENDS = ['vanilla', 'react'];
 var MODES = ['docker', 'nodocker'];
 var OSES = ['linux', 'mac', 'windows'];
+var _installFrontend = 'vanilla';
 var _installMode = 'docker';
 var _installOs = 'linux';
 
 function _t(key, fallback) { return window.i18n ? window.i18n.t(key) : fallback; }
 
 function _renderInstall() {
+    var frontendBtn = document.getElementById('landing-install-frontend-toggle');
     var modeBtn = document.getElementById('landing-install-mode-toggle');
     var osBtn = document.getElementById('landing-install-os-toggle');
+    frontendBtn.textContent = _t('landing.install.frontend_' + _installFrontend, _installFrontend);
     modeBtn.textContent = _t('landing.install.mode_' + _installMode, _installMode);
     osBtn.textContent = _t('landing.install.os_' + _installOs, _installOs);
 
-    var cmd = INSTALL_MATRIX[_installMode + '|' + _installOs];
     var codeEl = document.getElementById('landing-install-cmd');
-    var copyBtn = document.getElementById('landing-copy-btn');
-    if (cmd) {
-        codeEl.textContent = cmd;
-        codeEl.classList.remove('is-undefined');
-        copyBtn.disabled = false;
-        copyBtn.style.display = '';
-    } else {
-        codeEl.textContent = _t('landing.install.undefined', 'Sin definir');
-        codeEl.classList.add('is-undefined');
-        copyBtn.disabled = true;
-        copyBtn.style.display = 'none';
-    }
+    codeEl.textContent = _buildInstallCmd(_installFrontend, _installMode, _installOs);
 }
 
+document.getElementById('landing-install-frontend-toggle').addEventListener('click', function () {
+    _installFrontend = FRONTENDS[(FRONTENDS.indexOf(_installFrontend) + 1) % FRONTENDS.length];
+    _renderInstall();
+});
 document.getElementById('landing-install-mode-toggle').addEventListener('click', function () {
     _installMode = MODES[(MODES.indexOf(_installMode) + 1) % MODES.length];
     _renderInstall();
